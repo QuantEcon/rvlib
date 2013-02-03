@@ -31,7 +31,7 @@
  */
 
 
-#ifdef RMATH_NORMRAND
+#ifndef EXT_RNG
 
 #include <R_ext/Random.h>
 #include "nmath.h"

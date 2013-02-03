@@ -35,7 +35,7 @@
  *    Comm. ACM, 15, 873-882.
  */
 
-#ifdef RMATH_EXPRAND
+#ifndef EXT_RNG
 
 #include "nmath.h"
 

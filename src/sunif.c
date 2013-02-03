@@ -21,7 +21,7 @@
 
 /* A version of Marsaglia-MultiCarry */
 
-#ifdef RMATH_SUNIF
+#ifndef EXT_RNG
 
 static unsigned int I1=1234, I2=5678;
 
