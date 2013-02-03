@@ -1,7 +1,6 @@
 /*
  *  Mathlib : A C Library of Special Functions
- *  Copyright (C) 2000, 2003  The R Development Core Team
- *  Copyright (C) 2012 Viral B. Shah (DSFMT)
+ *  Copyright (C) 2000, 2003  The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,8 +20,6 @@
 
 /* A version of Marsaglia-MultiCarry */
 
-#ifndef EXT_RNG
-
 static unsigned int I1=1234, I2=5678;
 
 void set_seed(unsigned int i1, unsigned int i2)
@@ -40,16 +37,5 @@ double unif_rand(void)
 {
     I1= 36969*(I1 & 0177777) + (I1>>16);
     I2= 18000*(I2 & 0177777) + (I2>>16);
-    return ((I1 << 16)^(I2 & 0177777)) * 2.328306437080797e-10; // in [0,1)
+    return ((I1 << 16)^(I2 & 0177777)) * 2.328306437080797e-10; /* in [0,1) */
 }
-
-#else
-
-extern double dsfmt_gv_genrand_close_open();
-
-double unif_rand(void)
-{
-    return dsfmt_gv_genrand_close_open();
-}
-
-#endif /* RMATH_SUNIF */

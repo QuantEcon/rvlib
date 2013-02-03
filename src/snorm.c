@@ -1,8 +1,7 @@
 /*
  *  Mathlib : A C Library of Special Functions
  *  Copyright (C) 1998   Ross Ihaka
- *  Copyright (C) 2000-9 The R Development Core Team
- *  Copyright (C) 2012 Viral B. Shah (randmtzig)
+ *  Copyright (C) 2000-9 The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,9 +28,6 @@
  *
  * Is called from  rnorm(..), but also rt(), rf(), rgamma(), ...
  */
-
-
-#ifndef EXT_RNG
 
 #include <R_ext/Random.h>
 #include "nmath.h"
@@ -331,14 +327,3 @@ double norm_rand(void)
 	    return 0.0;/*- -Wall */
     }/*switch*/
 }
-
-#else
-
-extern double randmtzig_randn (void);
-
-double norm_rand(void) {
-    return randmtzig_randn();
-}
-
-#endif /* RMATH_NORMRAND */
-

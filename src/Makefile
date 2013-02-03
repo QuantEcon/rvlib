@@ -12,14 +12,14 @@ SRCS =  bd0.c        dnbeta.c     i1mach.c     pnbinom.c    qlnorm.c     rgeom.c
 	dbeta.c      dweibull.c   pbinom.c     punif.c      qt.c         rt.c \
 	dbinom.c     expm1.c      pcauchy.c    pweibull.c   qtukey.c     runif.c \
 	dcauchy.c    fmax2.c      pchisq.c     qbeta.c      qunif.c      rweibull.c \
-	dchisq.c     fmin2.c      pexp.c       qbinom.c     qweibull.c   sexp.c \
+	dchisq.c     fmin2.c      pexp.c       qbinom.c     qweibull.c \
 	dexp.c       fprec.c      pf.c         qcauchy.c    rbeta.c      sign.c \
 	df.c         fround.c     pgamma.c     qchisq.c     rbinom.c     signrank.c \
-	dgamma.c     fsign.c      pgeom.c      qexp.c       rcauchy.c    snorm.c \
+	dgamma.c     fsign.c      pgeom.c      qexp.c       rcauchy.c \
 	dgeom.c      ftrunc.c     phyper.c     qf.c         rchisq.c     stirlerr.c \
 	dhyper.c     gamma.c      plnorm.c     qgamma.c     rexp.c       toms708.c \
 	dlnorm.c     gamma_cody.c plogis.c     qgeom.c      rf.c         wilcox.c \
-	dlogis.c     gammalims.c  pnbeta.c     qhyper.c     rgamma.c	 sunif.c
+	dlogis.c     gammalims.c  pnbeta.c     qhyper.c     rgamma.c	
 
 OBJS = $(SRCS:%.c=%.o)
 DOBJS = $(SRCS:%.c=%.do)
@@ -30,12 +30,18 @@ else
 XOBJS = $(DOBJS)
 endif
 
-CFLAGS += -DMATHLIB_STANDALONE # -DRNG_EXT
+CFLAGS += -DMATHLIB_STANDALONE 
+
+ifeq ($(USE_LIBRANDOM),yes)
+SRCS += librandom.c
+else
+SRCS += sunif.c sexp.c snorm.c
+endif
 
 default: release
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(fPIC) -std=gnu99 -I../include -DNDEBUG -O3 -c $< -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(fPIC) -std=gnu99 -I../include -DNDEBUG -c $< -o $@
 %.do: %.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(fPIC) -std=gnu99 -I../include -g  -c $< -o $@
 
