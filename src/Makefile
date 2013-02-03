@@ -1,5 +1,4 @@
-JULIAHOME = $(abspath ../../..)
-include $(JULIAHOME)/Make.inc
+include ../Make.inc
 
 SRCS =  bd0.c        dnbeta.c     i1mach.c     pnbinom.c    qlnorm.c     rgeom.c \
 	bessel_i.c   dnbinom.c    imax2.c      pnchisq.c    qlogis.c     rhyper.c \
