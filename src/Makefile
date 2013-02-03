@@ -32,7 +32,7 @@ endif
 
 CFLAGS += -DMATHLIB_STANDALONE 
 
-ifeq ($(USE_LIBRANDOM),yes)
+ifeq ($(USE_LIBRANDOM),1)
 SRCS += librandom.c
 else
 SRCS += sunif.c sexp.c snorm.c
@@ -49,8 +49,11 @@ release debug: libRmath.$(SHLIB_EXT)
 
 libRmath.$(SHLIB_EXT): $(XOBJS)
 	rm -rf $@
-#	$(CC) $(LDFLAGS) -shared -o $@ $^ -L$(BUILD)/lib -lrandom $(RPATH_ORIGIN)
+ifeq ($(USE_LIBRANDOM),1)
+	$(CC) $(LDFLAGS) -shared -o $@ $^ -L$(LIBRANDOM_PATH) -lrandom
+else
 	$(CC) $(LDFLAGS) -shared -o $@ $^ 
+endif
 
 clean:
 	rm -f *.o *.do *.a *.$(SHLIB_EXT) core* *~ *#
