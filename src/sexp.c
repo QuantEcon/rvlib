@@ -35,15 +35,11 @@
  *    Comm. ACM, 15, 873-882.
  */
 
-extern double randmtzig_exprnd (void);
-
-double exp_rand(void) {
-    return randmtzig_exprnd();
-}
+#ifdef RMATH_EXPRAND
 
 #include "nmath.h"
 
-double exp_rand_rmath(void)
+double exp_rand(void)
 {
     /* q[k-1] = sum(log(2)^k / k!)  k=1,..,n, */
     /* The highest n (here 16) is determined by q[n-1] = 1.0 */
@@ -92,3 +88,13 @@ double exp_rand_rmath(void)
     } while (u > q[i]);
     return a + umin * q[0];
 }
+
+#else
+
+extern double randmtzig_exprnd (void);
+
+double exp_rand(void) {
+    return randmtzig_exprnd();
+}
+
+#endif /* RMATH_EXPRAND */

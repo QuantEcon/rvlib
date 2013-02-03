@@ -21,7 +21,8 @@
 
 /* A version of Marsaglia-MultiCarry */
 
-/*
+#ifdef RMATH_SUNIF
+
 static unsigned int I1=1234, I2=5678;
 
 void set_seed(unsigned int i1, unsigned int i2)
@@ -41,7 +42,8 @@ double unif_rand(void)
     I2= 18000*(I2 & 0177777) + (I2>>16);
     return ((I1 << 16)^(I2 & 0177777)) * 2.328306437080797e-10; // in [0,1)
 }
-*/
+
+#else
 
 extern double dsfmt_gv_genrand_close_open();
 
@@ -50,3 +52,4 @@ double unif_rand(void)
     return dsfmt_gv_genrand_close_open();
 }
 
+#endif /* RMATH_SUNIF */

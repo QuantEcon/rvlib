@@ -30,18 +30,21 @@ else
 XOBJS = $(DOBJS)
 endif
 
+CFLAGS += -DMATHLIB_STANDALONE -DRMATH_SUNIF -DRMATH_NORMRAND -DRMATH_EXPRAND
+
 default: release
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(fPIC) -std=gnu99 -I../include -DMATHLIB_STANDALONE -DNDEBUG -O3 -c $< -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(fPIC) -std=gnu99 -I../include -DNDEBUG -O3 -c $< -o $@
 %.do: %.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(fPIC) -std=gnu99 -I../include -DMATHLIB_STANDALONE -g  -c $< -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(fPIC) -std=gnu99 -I../include -g  -c $< -o $@
 
 release debug: libRmath.$(SHLIB_EXT)
 
 libRmath.$(SHLIB_EXT): $(XOBJS)
 	rm -rf $@
-	$(CC) $(LDFLAGS) -shared -o $@ $^ -L$(BUILD)/lib -lrandom $(RPATH_ORIGIN)
+#	$(CC) $(LDFLAGS) -shared -o $@ $^ -L$(BUILD)/lib -lrandom $(RPATH_ORIGIN)
+	$(CC) $(LDFLAGS) -shared -o $@ $^ 
 
 clean:
 	rm -f *.o *.do *.a *.$(SHLIB_EXT) core* *~ *#

@@ -30,11 +30,8 @@
  * Is called from  rnorm(..), but also rt(), rf(), rgamma(), ...
  */
 
-extern double randmtzig_randn (void);
 
-double norm_rand(void) {
-    return randmtzig_randn();
-}
+#ifdef RMATH_NORMRAND
 
 #include <R_ext/Random.h>
 #include "nmath.h"
@@ -66,7 +63,7 @@ extern DL_FUNC  User_norm_fun; /* declared and set in ../main/RNG.c */
  *    The definitions of the constants a[k], d[k], t[k] and
  *    h[k] are according to the abovementioned article
  */
-double norm_rand_rmath(void)
+double norm_rand(void)
 {
 
     const static double a[32] =
@@ -334,3 +331,14 @@ double norm_rand_rmath(void)
 	    return 0.0;/*- -Wall */
     }/*switch*/
 }
+
+#else
+
+extern double randmtzig_randn (void);
+
+double norm_rand(void) {
+    return randmtzig_randn();
+}
+
+#endif /* RMATH_NORMRAND */
+
