@@ -30,7 +30,7 @@ else
 XOBJS = $(DOBJS)
 endif
 
-CFLAGS += -DMATHLIB_STANDALONE 
+CFLAGS-add += -DMATHLIB_STANDALONE
 
 ifeq ($(USE_LIBRANDOM),1)
 SRCS += librandom.c
@@ -41,18 +41,18 @@ endif
 default: release
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(fPIC) -std=gnu99 -I../include -DNDEBUG -c $< -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS-add) $(CFLAGS) $(fPIC) -std=gnu99 -I../include -DNDEBUG -c $< -o $@
 %.do: %.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(fPIC) -std=gnu99 -I../include -g  -c $< -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS-add) $(CFLAGS) $(fPIC) -std=gnu99 -I../include -g  -c $< -o $@
 
 release debug: libRmath.$(SHLIB_EXT)
 
 libRmath.$(SHLIB_EXT): $(XOBJS)
 	rm -rf $@
 ifeq ($(USE_LIBRANDOM),1)
-	$(CC) $(LDFLAGS) -shared -o $@ $^ -L$(LIBRANDOM_PATH) -lrandom
+	$(CC) $(LDFLAGS-add) $(LDFLAGS) -shared -o $@ $^ -L$(LIBRANDOM_PATH) -lrandom
 else
-	$(CC) $(LDFLAGS) -shared -o $@ $^ 
+	$(CC) $(LDFLAGS-add) $(LDFLAGS) -shared -o $@ $^
 endif
 
 clean:
