@@ -1,6 +1,6 @@
 /*
  *  Mathlib : A C Library of Special Functions
- *  Copyright (C) 1998-2011  The R Development Core Team
+ *  Copyright (C) 1998-2011  The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,6 +23,13 @@
 
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
+#endif
+
+/* Required by C99 but might be slow */
+#ifdef HAVE_LONG_DOUBLE
+#  define LDOUBLE long double
+#else
+#  define LDOUBLE double
 #endif
 
 #include <math.h>
@@ -187,7 +194,7 @@ double  attribute_hidden pnchisq_raw(double, double, double, double, double, int
 double  attribute_hidden pgamma_raw(double, double, int, int);
 double	attribute_hidden pbeta_raw(double, double, double, int, int);
 double  attribute_hidden qchisq_appr(double, double, double, int, int, double tol);
-long double attribute_hidden pnbeta_raw(double, double, double, double, double);
+LDOUBLE attribute_hidden pnbeta_raw(double, double, double, double, double);
 double	attribute_hidden pnbeta2(double, double, double, double, double, int, int);
 
 int	Rf_i1mach(int);
