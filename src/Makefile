@@ -45,9 +45,9 @@ default: release
 %.do: %.c
 	$(CC) $(CPPFLAGS) $(CFLAGS-add) $(CFLAGS) $(fPIC) -std=gnu99 -I../include -g  -c $< -o $@
 
-release debug: libRmath.$(SHLIB_EXT)
+release debug: libRmath-julia.$(SHLIB_EXT)
 
-libRmath.$(SHLIB_EXT): $(XOBJS)
+libRmath-julia.$(SHLIB_EXT): $(XOBJS)
 	rm -rf $@
 ifeq ($(USE_LIBRANDOM),1)
 	$(CC) $(LDFLAGS-add) $(LDFLAGS) -shared -o $@ $^ -L$(LIBRANDOM_PATH) -lrandom
