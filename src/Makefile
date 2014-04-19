@@ -33,7 +33,8 @@ endif
 CFLAGS-add += -DMATHLIB_STANDALONE
 
 ifeq ($(USE_LIBRANDOM),1)
-SRCS += librandom.c
+SRCS += librandom.c randmtzig.c
+CFLAGS-add += -I$(DSFMT_PATH)
 else
 SRCS += sunif.c sexp.c snorm.c
 endif
