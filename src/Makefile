@@ -32,9 +32,9 @@ endif
 
 CFLAGS-add += -DMATHLIB_STANDALONE
 
-ifeq ($(USE_LIBRANDOM),1)
+ifeq ($(USE_DSFMT),1)
 SRCS += librandom.c randmtzig.c
-CFLAGS-add += -I$(DSFMT_PATH)
+CFLAGS-add += -I$(DSFMT_includedir)
 else
 SRCS += sunif.c sexp.c snorm.c
 endif
@@ -50,8 +50,8 @@ release debug: libRmath-julia.$(SHLIB_EXT)
 
 libRmath-julia.$(SHLIB_EXT): $(XOBJS)
 	rm -rf $@
-ifeq ($(USE_LIBRANDOM),1)
-	$(CC) $(LDFLAGS-add) $(LDFLAGS) -shared -o $@ $^ -L$(LIBRANDOM_PATH) -lrandom
+ifeq ($(USE_DSFMT),1)
+	$(CC) $(LDFLAGS-add) $(LDFLAGS) -shared -o $@ $^ -L$(DSFMT_libdir) -ldSFMT
 else
 	$(CC) $(LDFLAGS-add) $(LDFLAGS) -shared -o $@ $^
 endif
