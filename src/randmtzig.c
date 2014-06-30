@@ -65,7 +65,7 @@
 #include <string.h>
 
 #define DSFMT_DO_NOT_USE_OLD_NAMES
-#include "dSFMT.h"
+#include <dSFMT.h>
 
 typedef ptrdiff_t randmtzig_idx_type;
 typedef signed char randmtzig_int8_t;
@@ -80,11 +80,8 @@ typedef unsigned long long randmtzig_uint64_t;
 /* Declarations */
 
 extern double randmtzig_randn (dsfmt_t *dsfmt);
-extern void randmtzig_fill_randn (dsfmt_t *dsfmt, double *p, randmtzig_idx_type n);
 extern double randmtzig_gv_randn (void);
-extern void randmtzig_gv_fill_randn (double *p, randmtzig_idx_type n);
-extern double randmtzig_exprnd (void);
-extern void randmtzig_fill_exprnd (double *p, randmtzig_idx_type n);
+extern double randmtzig_gv_exprnd (void);
 
 /* ===== Uniform generators ===== */
 
@@ -765,7 +762,7 @@ double randmtzig_gv_randn (void)
     }
 }
 
-double randmtzig_exprnd (void)
+double randmtzig_gv_exprnd (void)
 {
      while (1)
      {
@@ -787,29 +784,6 @@ double randmtzig_exprnd (void)
 	       return x;
      }
 }
-
-void randmtzig_gv_fill_randn (double *p, randmtzig_idx_type n)
-{
-     randmtzig_idx_type i;
-     for (i = 0; i < n; i++)
-          p[i] = randmtzig_gv_randn();
-}
-
-void randmtzig_fill_randn (dsfmt_t *dsfmt, double *p, randmtzig_idx_type n)
-{
-     randmtzig_idx_type i;
-     for (i = 0; i < n; i++)
-          p[i] = randmtzig_randn(dsfmt);
-}
-
-
-void randmtzig_fill_exprnd (double *p, randmtzig_idx_type n)
-{
-     randmtzig_idx_type i;
-     for (i = 0; i < n; i++)
-          p[i] = randmtzig_exprnd();
-}
-
 
 #ifdef STANDALONE
 
