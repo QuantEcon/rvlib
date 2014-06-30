@@ -65,6 +65,7 @@
 #include <string.h>
 
 #define DSFMT_DO_NOT_USE_OLD_NAMES
+#define DSFMT_MEXP 19937
 #include <dSFMT.h>
 
 typedef ptrdiff_t randmtzig_idx_type;
