@@ -42,3 +42,10 @@ endif
 ifeq ($(OS), WINNT)
 SHLIB_EXT = dll
 endif
+
+# SunOS with gcc
+ifeq ($(OS), SunOS)
+SHLIB_EXT = so
+CFLAGS-add+=-fPIC
+FFLAGS-add+=-fPIC
+endif
