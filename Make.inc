@@ -33,6 +33,12 @@ CFLAGS-add+=-fPIC
 FFLAGS-add+=-fPIC
 endif
 
+ifeq ($(OS), OpenBSD)
+SHLIB_EXT = so
+CFLAGS-add+=-fPIC
+FFLAGS-add+=-fPIC
+endif
+
 ifeq ($(OS), Darwin)
 SHLIB_EXT = dylib
 CFLAGS-add+=-fPIC

@@ -1,5 +1,5 @@
 all:
-	make -C src
+	$(MAKE) -C src
 
 clean:
-	make -C src clean
+	$(MAKE) -C src clean
