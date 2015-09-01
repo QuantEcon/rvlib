@@ -28,3 +28,9 @@ julia> [rand(Uniform()), rand(Uniform())]
  0.236033
  0.346517
 ````
+
+Build instructions
+------------------
+
+Rmath-julia requires GNU Make (https://www.gnu.org/software/make). Just run
+`make` to compile the library.
