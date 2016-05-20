@@ -1,6 +1,6 @@
 import glob
 import os
-import platform
+# import platform
 
 from cffi import FFI
 
@@ -13,8 +13,7 @@ rmath_src = glob.glob(os.path.join('..', 'src', '*.c'))
 rmath_src = [f for f in rmath_src if ('librandom.c' not in f) and ('randmtzig.c' not in f)]
 
 extra_compile_args = ['-DMATHLIB_STANDALONE']
-if platform.system() == 'Windows':
-    extra_compile_args.append('-std=c99')
+extra_compile_args.append('-std=c99')
 
 ffi = FFI()
 ffi.set_source('_rmath_ffi', '#include <Rmath.h>',
@@ -43,4 +42,4 @@ double pgamma(double, double, double, int, int);
 if __name__ == '__main__':
     # Normally set verbose to `True`, but silence output
     # for reduced notebook noise
-    ffi.compile(verbose=False)
+    ffi.compile(verbose=True)
