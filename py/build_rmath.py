@@ -166,7 +166,7 @@ def _initiate_classes():
 
     """
 
-    # 
+    #
     with open("rmath_univ_class.py", "w") as f:
         f.write(textwrap.dedent(pre_code))
 
@@ -176,7 +176,7 @@ def _initiate_classes():
 # ======================================================================
 
 Normal = """\
-    
+
     #  ------
     #  Normal
     #  ------
@@ -290,15 +290,15 @@ Normal = """\
         # ==========
 
         def insupport(self, x):
-            \"""When x is a scalar, it returns whether x is within 
-            the support of the distribution. When x is an array, 
+            \"""When x is a scalar, it returns whether x is within
+            the support of the distribution. When x is an array,
             it returns whether every element.\"""
             return -inf < x < inf
     """
 
 
 Chisq = """\
-    
+
     #  -----------
     #  Chi-squared
     #  -----------
@@ -341,7 +341,7 @@ Chisq = """\
 
         # note: either @property is on, or approx feature is working
         def median(self, approx=False):
-            \"""Returns median. If approx==True, returns 
+            \"""Returns median. If approx==True, returns
             approximation of median.\"""
             if approx:
                 return self.v * (1.0 - 2.0 / (9.0 * self.v))**3
@@ -409,25 +409,25 @@ Chisq = """\
         # ==========
 
         def insupport(self, x):
-            \"""When x is a scalar, it returns whether x is 
-            within the support of the distribution. When x 
+            \"""When x is a scalar, it returns whether x is
+            within the support of the distribution. When x
             is an array, it returns whether every element.\"""
             return 0 <= x < inf
 
     """
 
 
-def _import_rmath(rname, pyname, *pargs):
+def _import_rmath(rname, glob_code, *pargs):
     """
     # now we map from the _rmath_ffi.lib.Xnorm functions
     # to the friendly names from the julia file here:
     # https://github.com/JuliaStats/StatsFuns.jl/blob/master/src/rmath.jl
     """
     # extract Rmath.h function names
-    dfun = "d{}".format(rname)
-    pfun = "p{}".format(rname)
-    qfun = "q{}".format(rname)
-    rfun = "r{}".format(rname)
+    dfun = "_rmath_ffi.lib.d{}".format(rname)
+    pfun = "_rmath_ffi.lib.p{}".format(rname)
+    qfun = "_rmath_ffi.lib.q{}".format(rname)
+    rfun = "_rmath_ffi.lib.r{}".format(rname)
 
     # make sure all names are available
     has_rand = True
@@ -437,119 +437,110 @@ def _import_rmath(rname, pyname, *pargs):
     # append 'self.' at the beginning of each parameter
     p_args = ", ".join(["".join(("self.", par)) for par in pargs])
 
-    glob_code = """\
-    
-    {Normal}
-
-    """.format(**globals())
-
     # append code for class to main file
     with open("rmath_univ_class.py", "a") as f:
         f.write(textwrap.dedent(glob_code))
 
     loc_code = """\
 
-    # indent issue
-        {dfun} = _rmath_ffi.lib.{dfun}
-        {pfun} = _rmath_ffi.lib.{pfun}
-        {qfun} = _rmath_ffi.lib.{qfun}
-
-        @vectorize(nopython=True)
-        def pdf({p_args}, x):
-            \"""The pdf value(s) evaluated at x.\"""
-            return {dfun}(x, {p_args}, 0)
+    @vectorize(nopython=True)
+    def pdf(self, x):
+        \"""The pdf value(s) evaluated at x.\"""
+        return {dfun}(x, {p_args}, 0)
 
 
-        @vectorize(nopython=True)
-        def logpdf({p_args}, x):
-            \"""The logarithm of the pdf value(s) evaluated at x.\"""
-            return {dfun}(x, {p_args}, 1)
+    @vectorize(nopython=True)
+    def logpdf(self, x):
+        \"""The logarithm of the pdf value(s) evaluated at x.\"""
+        return {dfun}(x, {p_args}, 1)
 
-        def loglikelihood(self, x):
-            \"""The log-likelihood of the Normal distribution w.r.t. all
-            samples contained in array x.\"""
-            return sum(self.logpdf({p_args}, x))
+    def loglikelihood(self, x):
+        \"""The log-likelihood of the Normal distribution w.r.t. all
+        samples contained in array x.\"""
+        return sum(self.logpdf({p_args}, x))
 
-        @vectorize(nopython=True)
-        def cdf({p_args}, x):
-            \"""The cdf value(s) evaluated at x.\"""
-            return {pfun}(x, {p_args}, 1, 0)
-
-
-        @vectorize(nopython=True)
-        def ccdf({p_args}, x):
-            \"""The complementary cdf evaluated at x, i.e. 1- cdf(x).\"""
-            return {pfun}(x, {p_args}, 0, 0)
+    @vectorize(nopython=True)
+    def cdf(self, x):
+        \"""The cdf value(s) evaluated at x.\"""
+        return {pfun}(x, {p_args}, 1, 0)
 
 
-        @vectorize(nopython=True)
-        def logcdf({p_args}, x):
-            \"""The logarithm of the cdf value(s) evaluated at x.\"""
-            return {pfun}(x, {p_args}, 1, 1)
+    @vectorize(nopython=True)
+    def ccdf(self, x):
+        \"""The complementary cdf evaluated at x, i.e. 1- cdf(x).\"""
+        return {pfun}(x, {p_args}, 0, 0)
 
 
-        @vectorize(nopython=True)
-        def logccdf({p_args}, x):
-            \"""The logarithm of the complementary cdf evaluated at x.\"""
-            return {pfun}(x, {p_args}, 0, 1)
+    @vectorize(nopython=True)
+    def logcdf(self, x):
+        \"""The logarithm of the cdf value(s) evaluated at x.\"""
+        return {pfun}(x, {p_args}, 1, 1)
 
 
-        @vectorize(nopython=True)
-        def quantile({p_args}, q):
-            \"""The quantile value evaluated at q.\"""
-            return {qfun}(q, {p_args}, 1, 0)
+    @vectorize(nopython=True)
+    def logccdf(self, x):
+        \"""The logarithm of the complementary cdf evaluated at x.\"""
+        return {pfun}(x, {p_args}, 0, 1)
 
 
-        @vectorize(nopython=True)
-        def cquantile({p_args}, q):
-            \"""The complementary quantile value evaluated at q.\"""
-            return {qfun}(q, {p_args}, 0, 0)
+    @vectorize(nopython=True)
+    def quantile(self, q):
+        \"""The quantile value evaluated at q.\"""
+        return {qfun}(q, {p_args}, 1, 0)
 
 
-        @vectorize(nopython=True)
-        def invlogcdf({p_args}, lq):
-            \"""The inverse function of logcdf.\"""
-            return {qfun}(lq, {p_args}, 1, 1)
+    @vectorize(nopython=True)
+    def cquantile(self, q):
+        \"""The complementary quantile value evaluated at q.\"""
+        return {qfun}(q, {p_args}, 0, 0)
 
 
-        @vectorize(nopython=True)
-        def invlogccdf({p_args}, lq):
-            \"""The inverse function of logccdf.\"""
-            return {qfun}(lq, {p_args}, 0, 1)
+    @vectorize(nopython=True)
+    def invlogcdf(self, lq):
+        \"""The inverse function of logcdf.\"""
+        return {qfun}(lq, {p_args}, 1, 1)
+
+
+    @vectorize(nopython=True)
+    def invlogccdf(self, lq):
+        \"""The inverse function of logccdf.\"""
+        return {qfun}(lq, {p_args}, 0, 1)
 
     """.format(**locals())
 
     # append code for class to main file
     with open("rmath_univ_class.py", "a") as f:
-        f.write(textwrap.dedent(loc_code))
+        f.write(loc_code)
 
-    if has_rand:
-        rand_code = """\
-            
-            # ========
-            # Sampling
-            # ========
+    if not has_rand:
+        # end here if we don't have rand. I put it in a `not has_rand` block
+        # to the rand_code can be at the right indentation level below
+        return
 
-            {rfun} = _rmath_ffi.lib.{rfun}
+    rand_code = """\
 
-            @jit(nopython=True)
-            def rand(self, *n):
-                \"""Generates a random draw from the distribution.\"""
-                if len(n) == 0:
-                    n = (1,)
+    # ========
+    # Sampling
+    # ========
 
-                out = np.empty(n)
-                for i, _ in np.ndenumerate(out):
-                    out[i] = {rfun}({p_args})
+    @jit(nopython=True)
+    def rand(self, *n):
+        \"""Generates a random draw from the distribution.\"""
+        if len(n) == 0:
+            n = (1,)
 
-                return out   
-        """.format(**locals())
-        with open("rmath_univ_class.py", "a") as f:
-            f.write(textwrap.dedent(rand_code))
+        out = np.empty(n)
+        for i, _ in np.ndenumerate(out):
+            out[i] = {rfun}({p_args})
+
+        return out
+    """.format(**locals())
+    with open("rmath_univ_class.py", "a") as f:
+        f.write(rand_code)
 
 
 if __name__ == '__main__':
-    # ffi.compile(verbose=False)
+    # ffi.compile(verbose=True)
     _initiate_classes()
     _import_rmath("norm", Normal, "mu", "sigma")
     # _import_rmath("unif", "uniform", "a", "b")
