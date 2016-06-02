@@ -424,10 +424,10 @@ def _import_rmath(rname, glob_code, *pargs):
     # https://github.com/JuliaStats/StatsFuns.jl/blob/master/src/rmath.jl
     """
     # extract Rmath.h function names
-    dfun = "_rmath_ffi.lib.d{}".format(rname)
-    pfun = "_rmath_ffi.lib.p{}".format(rname)
-    qfun = "_rmath_ffi.lib.q{}".format(rname)
-    rfun = "_rmath_ffi.lib.r{}".format(rname)
+    dfun = "d{}".format(rname)
+    pfun = "p{}".format(rname)
+    qfun = "q{}".format(rname)
+    rfun = "r{}".format(rname)
 
     # make sure all names are available
     has_rand = True
@@ -446,13 +446,13 @@ def _import_rmath(rname, glob_code, *pargs):
     @vectorize(nopython=True)
     def pdf(self, x):
         \"""The pdf value(s) evaluated at x.\"""
-        return {dfun}(x, {p_args}, 0)
+        return _rmath_ffi.lib.{dfun}(x, {p_args}, 0)
 
 
     @vectorize(nopython=True)
     def logpdf(self, x):
         \"""The logarithm of the pdf value(s) evaluated at x.\"""
-        return {dfun}(x, {p_args}, 1)
+        return _rmath_ffi.lib.{dfun}(x, {p_args}, 1)
 
     def loglikelihood(self, x):
         \"""The log-likelihood of the Normal distribution w.r.t. all
@@ -462,49 +462,49 @@ def _import_rmath(rname, glob_code, *pargs):
     @vectorize(nopython=True)
     def cdf(self, x):
         \"""The cdf value(s) evaluated at x.\"""
-        return {pfun}(x, {p_args}, 1, 0)
+        return _rmath_ffi.lib.{pfun}(x, {p_args}, 1, 0)
 
 
     @vectorize(nopython=True)
     def ccdf(self, x):
         \"""The complementary cdf evaluated at x, i.e. 1- cdf(x).\"""
-        return {pfun}(x, {p_args}, 0, 0)
+        return _rmath_ffi.lib.{pfun}(x, {p_args}, 0, 0)
 
 
     @vectorize(nopython=True)
     def logcdf(self, x):
         \"""The logarithm of the cdf value(s) evaluated at x.\"""
-        return {pfun}(x, {p_args}, 1, 1)
+        return _rmath_ffi.lib.{pfun}(x, {p_args}, 1, 1)
 
 
     @vectorize(nopython=True)
     def logccdf(self, x):
         \"""The logarithm of the complementary cdf evaluated at x.\"""
-        return {pfun}(x, {p_args}, 0, 1)
+        return _rmath_ffi.lib.{pfun}(x, {p_args}, 0, 1)
 
 
     @vectorize(nopython=True)
     def quantile(self, q):
         \"""The quantile value evaluated at q.\"""
-        return {qfun}(q, {p_args}, 1, 0)
+        return _rmath_ffi.lib.{qfun}(q, {p_args}, 1, 0)
 
 
     @vectorize(nopython=True)
     def cquantile(self, q):
         \"""The complementary quantile value evaluated at q.\"""
-        return {qfun}(q, {p_args}, 0, 0)
+        return _rmath_ffi.lib.{qfun}(q, {p_args}, 0, 0)
 
 
     @vectorize(nopython=True)
     def invlogcdf(self, lq):
         \"""The inverse function of logcdf.\"""
-        return {qfun}(lq, {p_args}, 1, 1)
+        return _rmath_ffi.lib.{qfun}(lq, {p_args}, 1, 1)
 
 
     @vectorize(nopython=True)
     def invlogccdf(self, lq):
         \"""The inverse function of logccdf.\"""
-        return {qfun}(lq, {p_args}, 0, 1)
+        return _rmath_ffi.lib.{qfun}(lq, {p_args}, 0, 1)
 
     """.format(**locals())
 
@@ -531,7 +531,7 @@ def _import_rmath(rname, glob_code, *pargs):
 
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
-            out[i] = {rfun}({p_args})
+            out[i] = _rmath_ffi.lib.{rfun}({p_args})
 
         return out
     """.format(**locals())
