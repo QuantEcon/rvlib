@@ -449,7 +449,7 @@ def _import_rmath(rname, pyname, *pargs):
 
     loc_code = """\
 
-
+    # indent issue
         {dfun} = _rmath_ffi.lib.{dfun}
         {pfun} = _rmath_ffi.lib.{pfun}
         {qfun} = _rmath_ffi.lib.{qfun}
@@ -521,7 +521,7 @@ def _import_rmath(rname, pyname, *pargs):
 
     # append code for class to main file
     with open("rmath_univ_class.py", "a") as f:
-        f.write(textwrap.wrap(loc_code))
+        f.write(textwrap.dedent(loc_code))
 
     if has_rand:
         rand_code = """\
