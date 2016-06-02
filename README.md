@@ -1,5 +1,16 @@
-Rmath-julia
-===========
+## Distributions.py
+
+A Python library that mimics
+[Distributions.jl](https://github.com/JuliaStats/Distributions.jl)
+
+This is a fork of the [Rmath-julia](https://github.com/JuliaLang/Rmath-julia)
+library, with Python support added.
+
+The original readme of the Rmath-julia repository is included below.
+
+---
+
+## Rmath-julia
 
 This is the Rmath library from R, which is used mainly by Julia's
 [Distributions.jl](https://github.com/JuliaStats/Distributions.jl)
@@ -29,8 +40,7 @@ julia> [rand(Uniform()), rand(Uniform())]
  0.346517
 ````
 
-Build instructions
-------------------
+### Build instructions
 
 Rmath-julia requires GNU Make (https://www.gnu.org/software/make). Just run
 `make` to compile the library.
