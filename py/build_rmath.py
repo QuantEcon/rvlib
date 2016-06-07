@@ -589,11 +589,11 @@ def _write_class(rname, pyname, glob_code, *pargs):
 
     def pdf(self, x):
         \"""The pdf value(s) evaluated at x.\"""
-        return {pdf}(x, {p_args}, 0)
+        return {pdf}({p_args}, x)
     
     def logpdf(self, x):
         \"""The logarithm of the pdf value(s) evaluated at x.\"""
-        return {logpdf}(x, {p_args}, 1)
+        return {logpdf}({p_args}, x)
 
     def loglikelihood(self, x):
         \"""The log-likelihood of the Normal distribution w.r.t. all
@@ -602,35 +602,35 @@ def _write_class(rname, pyname, glob_code, *pargs):
     
     def cdf(self, x):
         \"""The cdf value(s) evaluated at x.\"""
-        return {cdf}(x, {p_args}, 1, 0)
+        return {cdf}({p_args}, x)
     
     def ccdf(self, x):
         \"""The complementary cdf evaluated at x, i.e. 1 - cdf(x).\"""
-        return {ccdf}(x, {p_args}, 0, 0)
+        return {ccdf}({p_args}, x)
     
     def logcdf(self, x):
         \"""The logarithm of the cdf value(s) evaluated at x.\"""
-        return {logcdf}(x, {p_args}, 1, 1)
+        return {logcdf}({p_args}, x)
     
     def logccdf(self, x):
         \"""The logarithm of the complementary cdf evaluated at x.\"""
-        return {logccdf}(x, {p_args}, 0, 1)
+        return {logccdf}({p_args}, x)
     
     def quantile(self, q):
         \"""The quantile value evaluated at q.\"""
-        return {invcdf}(q, {p_args}, 1, 0)
+        return {invcdf}({p_args}, q)
     
     def cquantile(self, q):
         \"""The complementary quantile value evaluated at q.\"""
-        return {invccdf}(q, {p_args}, 0, 0)
+        return {invccdf}({p_args}, q)
     
     def invlogcdf(self, lq):
         \"""The inverse function of logcdf.\"""
-        return {invlogcdf}(lq, {p_args}, 1, 1)
+        return {invlogcdf}({p_args}, lq)
     
     def invlogccdf(self, lq):
         \"""The inverse function of logccdf.\"""
-        return {invlogccdf}(lq, {p_args}, 0, 1)
+        return {invlogccdf}({p_args}, lq)
     """.format(**locals())
 
     # append code for class to main file
