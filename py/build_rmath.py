@@ -149,7 +149,7 @@ double	rlogis(double, double);
 ''')
 
 # write out preamble for whole file
-def _initiate_classes():
+def _initiate_univariate():
     '''
     Initiate python file which collects all the classes of different distributions.
     '''
@@ -590,7 +590,7 @@ _metadata_chisq = {
 
 if __name__ == '__main__':
     # ffi.compile(verbose=True)
-    _initiate_classes()
+    _initiate_univariate()
     _import_rmath("norm", "norm", "mu", "sigma")
     _write_class_specific(_metadata_normal, "mu", "sigma")
     _write_class_rmath("norm",  "norm", "mu", "sigma")
