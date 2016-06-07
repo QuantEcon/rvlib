@@ -148,6 +148,7 @@ double	qlogis(double, double, double, int, int);
 double	rlogis(double, double);
 ''')
 
+# write out preamble for whole file
 def _initiate_classes():
     '''
     Initiate python file which collects all the classes of different distributions.
@@ -155,18 +156,18 @@ def _initiate_classes():
 
     # Define code which appears irrespective of specific classes of distributions
     pre_code = """\
-    import _rmath_ffi
-    from numba import vectorize, jit
-    from numba import cffi_support
+    from numba import vectorize, jit, jitclass
+    from numba import int32, float32
+
     import numpy as np
     from math import inf, lgamma
     from scipy.special import digamma
 
+    import _rmath_ffi
+    from numba import cffi_support
+
     cffi_support.register_module(_rmath_ffi)
-
     """
-
-    #
     with open("rmath_univ_class.py", "w") as f:
         f.write(textwrap.dedent(pre_code))
 
@@ -177,249 +178,265 @@ def _initiate_classes():
 
 Normal = """\
 
-    #  ------
-    #  Normal
-    #  ------
+@vectorize(nopython=True)
+def norm_mgf(mu, sigma, x):
+    return np.exp(x * mu + 0.5 * sigma**2 * x**2)
 
-    class Normal():
-        \"""
-        The Normal distribution with mean mu and standard deviation sigma.
+@vectorize(nopython=True)
+def norm_cf(mu, sigma, x):
+    return np.exp(1j * x * mu - 0.5 * sigma**2 * x**2)
 
-        Parameters
-        ----------
-        mu : scalar(float)
-            Mean of the normal distribution
-        sigma : scalar(float)
-            Standard deviaton of the normal distribution
-        \"""
 
-        def __init__(self, mu, sigma):
-            self.mu = mu
-            self.sigma = sigma
+#  ------
+#  Normal
+#  ------
 
-        # ===================
-        # Parameter retrieval
-        # ===================
+class Normal():
+    \"""
+    The Normal distribution with mean mu and standard deviation sigma.
 
-        @property
-        def params(self):
-            \"""Returns parameters.\"""
-            return (self.mu, self.sigma)
+    Parameters
+    ----------
+    mu : scalar(float)
+        Mean of the normal distribution
+    sigma : scalar(float)
+        Standard deviaton of the normal distribution
+    \"""
 
-        @property
-        def location(self):
-            \"""Returns parameters.\"""
-            return self.mu
+    def __init__(self, mu, sigma):
+        self.mu = mu
+        self.sigma = sigma
 
-        @property
-        def scale(self):
-            \"""Returns parameters.\"""
-            return self.sigma
+    # ===================
+    # Parameter retrieval
+    # ===================
 
-        # ==========
-        # Statistics
-        # ==========
+    @property
+    def params(self):
+        \"""Returns parameters.\"""
+        return (self.mu, self.sigma)
 
-        @property
-        def mean(self):
-            \"""Returns mean.\"""
-            return self.mu
+    @property
+    def location(self):
+        \"""Returns parameters.\"""
+        return self.mu
 
-        @property
-        def median(self):
-            \"""Returns median.\"""
-            return self.mu
+    @property
+    def scale(self):
+        \"""Returns parameters.\"""
+        return self.sigma
 
-        @property
-        def mode(self):
-            \"""Returns mode.\"""
-            return self.mu
+    # ==========
+    # Statistics
+    # ==========
 
-        @property
-        def var(self):
-            \"""Returns variance.\"""
-            return self.sigma ** 2
+    @property
+    def mean(self):
+        \"""Returns mean.\"""
+        return self.mu
 
-        @property
-        def std(self):
-            \"""Returns standard deviation.\"""
-            return self.sigma
+    @property
+    def median(self):
+        \"""Returns median.\"""
+        return self.mu
 
-        @property
-        def skewness(self):
-            \"""Returns skewness.\"""
-            return 0.0
+    @property
+    def mode(self):
+        \"""Returns mode.\"""
+        return self.mu
 
-        @property
-        def kurtosis(self):
-            \"""Returns kurtosis.\"""
-            return 0.0
+    @property
+    def var(self):
+        \"""Returns variance.\"""
+        return self.sigma ** 2
 
-        @property
-        def isplatykurtic(self):
-            \"""Kurtosis being greater than zero.\"""
-            return self.kurtosis > 0
+    @property
+    def std(self):
+        \"""Returns standard deviation.\"""
+        return self.sigma
 
-        @property
-        def isleptokurtic(self):
-            \"""Kurtosis being smaller than zero.\"""
-            return self.kurtosis < 0
+    @property
+    def skewness(self):
+        \"""Returns skewness.\"""
+        return 0.0
 
-        @property
-        def ismesokurtic(self):
-            \"""Kurtosis being equal to zero.\"""
-            return self.kurtosis == 0.0
+    @property
+    def kurtosis(self):
+        \"""Returns kurtosis.\"""
+        return 0.0
 
-        @property
-        def entropy(self):
-            \"""Returns entropy.\"""
-            return 0.5 * (np.log(2*np.pi) + 1.0) + np.log(self.sigma)
+    @property
+    def isplatykurtic(self):
+        \"""Kurtosis being greater than zero.\"""
+        return self.kurtosis > 0
 
-        @vectorize(nopython=True)
-        def mgf(self, x):
-            \"""Evaluate moment generating function at x.\"""
-            return np.exp(x * self.mu + 0.5 * self.sigma**2 * x**2)
+    @property
+    def isleptokurtic(self):
+        \"""Kurtosis being smaller than zero.\"""
+        return self.kurtosis < 0
 
-        @vectorize(nopython=True)
-        def cf(self, x):
-            \"""Evaluate characteristic function at x.\"""
-            return np.exp(1j * x * self.mu - 0.5 * self.sigma**2 * x**2)
+    @property
+    def ismesokurtic(self):
+        \"""Kurtosis being equal to zero.\"""
+        return self.kurtosis == 0.0
 
-        # ==========
-        # Evaluation
-        # ==========
+    @property
+    def entropy(self):
+        \"""Returns entropy.\"""
+        return 0.5 * (np.log(2*np.pi) + 1.0) + np.log(self.sigma)
 
-        def insupport(self, x):
-            \"""When x is a scalar, it returns whether x is within
-            the support of the distribution. When x is an array,
-            it returns whether every element.\"""
-            return -inf < x < inf
+    def mgf(self, x):
+        \"""Evaluate moment generating function at x.\"""
+        return norm_mgf(self.mu, self.sigma, x)
+
+    def cf(self, x):
+        \"""Evaluate characteristic function at x.\"""
+        return norm_cf(self.mu, self.sigma, x)
+
+    # ==========
+    # Evaluation
+    # ==========
+
+    def insupport(self, x):
+        \"""When x is a scalar, it returns whether x is within
+        the support of the distribution. When x is an array,
+        it returns whether every element.\"""
+        return -inf < x < inf
     """
 
 
 Chisq = """\
 
-    #  -----------
-    #  Chi-squared
-    #  -----------
+@vectorize(nopython=True)
+def chisq_mgf(v, x):
+    return (1.0 - 2.0 * x)**(-v * 0.5)
 
-    class Chisq():
-        \"""
-        The Chi-squared distribution with nu, "v", degrees of freedom.
+@vectorize(nopython=True)
+def chisq_cf(v, x):
+    return (1.0 - 2.0 * 1j * x)**(-v * 0.5)
 
-        Parameters
-        ----------
-        v : scalar(float)
-            Degrees of freedom
-        \"""
 
-        def __init__(self, v):
-            self.v = v
+#  -----------
+#  Chi-squared
+#  -----------
 
-        # ===================
-        # Parameter retrieval
-        # ===================
+class Chisq():
+    \"""
+    The Chi-squared distribution with nu, "v", degrees of freedom.
 
-        @property
-        def params(self):
-            \"""Returns parameters.\"""
-            return (self.v,)
+    Parameters
+    ----------
+    v : scalar(float)
+        Degrees of freedom
+    \"""
 
-        @property
-        def shape(self):
-            \"""Returns shape as degrees of freedom.\"""
-            return self.v
+    def __init__(self, v):
+        self.v = v
 
-        # ==========
-        # Statistics
-        # ==========
+    # ===================
+    # Parameter retrieval
+    # ===================
 
-        @property
-        def mean(self):
-            \"""Returns mean.\"""
-            return self.v
+    @property
+    def params(self):
+        \"""Returns parameters.\"""
+        return (self.v,)
 
-        # note: either @property is on, or approx feature is working
-        def median(self, approx=False):
-            \"""Returns median. If approx==True, returns
-            approximation of median.\"""
-            if approx:
-                return self.v * (1.0 - 2.0 / (9.0 * self.v))**3
-            else:
-                return self.quantile(.5)
+    @property
+    def shape(self):
+        \"""Returns shape as degrees of freedom.\"""
+        return self.v
 
-        @property
-        def mode(self):
-            \"""Returns mode.\"""
-            return max(self.v - 2, 0)
+    # ==========
+    # Statistics
+    # ==========
 
-        @property
-        def var(self):
-            \"""Returns variance.\"""
-            return self.v * 2.0
+    @property
+    def mean(self):
+        \"""Returns mean.\"""
+        return self.v
 
-        @property
-        def std(self):
-            \"""Returns standard deviation.\"""
-            return np.sqrt(self.v * 2.0)
+    # note: either @property is on, or approx feature is working
+    def median(self, approx=False):
+        \"""Returns median. If approx==True, returns
+        approximation of median.\"""
+        if approx:
+            return self.v * (1.0 - 2.0 / (9.0 * self.v))**3
+        else:
+            return self.quantile(.5)
 
-        @property
-        def skewness(self):
-            \"""Returns skewness.\"""
-            return np.sqrt(8.0 / self.v)
+    @property
+    def mode(self):
+        \"""Returns mode.\"""
+        return max(self.v - 2, 0)
 
-        @property
-        def kurtosis(self):
-            \"""Returns kurtosis.\"""
-            return 12.0 / self.v
+    @property
+    def var(self):
+        \"""Returns variance.\"""
+        return self.v * 2.0
 
-        @property
-        def isplatykurtic(self):
-            \"""Kurtosis being greater than zero.\"""
-            return self.kurtosis > 0
+    @property
+    def std(self):
+        \"""Returns standard deviation.\"""
+        return np.sqrt(self.v * 2.0)
 
-        @property
-        def isleptokurtic(self):
-            \"""Kurtosis being smaller than zero.\"""
-            return self.kurtosis < 0
+    @property
+    def skewness(self):
+        \"""Returns skewness.\"""
+        return np.sqrt(8.0 / self.v)
 
-        @property
-        def ismesokurtic(self):
-            \"""Kurtosis being equal to zero.\"""
-            return self.kurtosis == 0.0
+    @property
+    def kurtosis(self):
+        \"""Returns kurtosis.\"""
+        return 12.0 / self.v
 
-        @property # does it make sense to jit this?
-        def entropy(self):
-            \"""Returns entropy.\"""
-            hv = .5 * self.v
-            return hv +  np.log(2.0) + lgamma(hv) + (1.0 - hv) * digamma(hv)
+    @property
+    def isplatykurtic(self):
+        \"""Kurtosis being greater than zero.\"""
+        return self.kurtosis > 0
 
-        @vectorize(nopython=True)
-        def mgf(self, x):
-            \"""Evaluate moment generating function at x.\"""
-            return (1.0 - 2.0 * x)**(-self.v * 0.5)
+    @property
+    def isleptokurtic(self):
+        \"""Kurtosis being smaller than zero.\"""
+        return self.kurtosis < 0
 
-        @vectorize(nopython=True)
-        def cf(self, x):
-            \"""Evaluate characteristic function at x.\"""
-            return (1.0 - 2.0 * 1j * t)**(-self.v * 0.5)
+    @property
+    def ismesokurtic(self):
+        \"""Kurtosis being equal to zero.\"""
+        return self.kurtosis == 0.0
 
-        # ==========
-        # Evaluation
-        # ==========
+    @property # does it make sense to jit this?
+    def entropy(self):
+        \"""Returns entropy.\"""
+        hv = .5 * self.v
+        return hv +  np.log(2.0) + lgamma(hv) + (1.0 - hv) * digamma(hv)
 
-        def insupport(self, x):
-            \"""When x is a scalar, it returns whether x is
-            within the support of the distribution. When x
-            is an array, it returns whether every element.\"""
-            return 0 <= x < inf
+    def mgf(self, x):
+        \"""Evaluate moment generating function at x.\"""
+        return chisq_mgf(self.v, x)
+
+    def cf(self, x):
+        \"""Evaluate characteristic function at x.\"""
+        return chisq_cf(self.v, x)
+
+    # ==========
+    # Evaluation
+    # ==========
+
+    def insupport(self, x):
+        \"""When x is a scalar, it returns whether x is
+        within the support of the distribution. When x
+        is an array, it returns whether every element.\"""
+        return 0 <= x < inf
 
     """
 
+# function to import and @vectorize the 
+# distribution specific rmath functions 
 
-def _import_rmath(rname, glob_code, *pargs):
+def _import_rmath(rname, pyname, *pargs):
     """
-    # now we map from the _rmath_ffi.lib.Xnorm functions
+    # now we map from the _rmath_ffi.lib.Xrname functions
     # to the friendly names from the julia file here:
     # https://github.com/JuliaStats/StatsFuns.jl/blob/master/src/rmath.jl
     """
@@ -429,6 +446,132 @@ def _import_rmath(rname, glob_code, *pargs):
     qfun = "q{}".format(rname)
     rfun = "r{}".format(rname)
 
+    # construct python function names
+    pdf = "{}_pdf".format(pyname)
+    cdf = "{}_cdf".format(pyname)
+    ccdf = "{}_ccdf".format(pyname)
+
+    logpdf = "{}_logpdf".format(pyname)
+    logcdf = "{}_logcdf".format(pyname)
+    logccdf = "{}_logccdf".format(pyname)
+
+    invcdf = "{}_invcdf".format(pyname)
+    invccdf = "{}_invccdf".format(pyname)
+    invlogcdf = "{}_invlogcdf".format(pyname)
+    invlogccdf = "{}_invlogccdf".format(pyname)
+
+    rand = "{}_rand".format(pyname)
+
+    # make sure all names are available
+    has_rand = True
+    if rname == "nbeta" or rname == "nf" or rname == "nt":
+        has_rand = False
+
+    # append 'self.' at the beginning of each parameter
+    p_args = ", ".join(pargs)
+    
+    
+    code = """\
+
+    {dfun} = _rmath_ffi.lib.{dfun}
+    {pfun} = _rmath_ffi.lib.{pfun}
+    {qfun} = _rmath_ffi.lib.{qfun}
+
+    @vectorize(nopython=True)
+    def {pdf}({p_args}, x):
+        return {dfun}(x, {p_args}, 0)
+
+
+    @vectorize(nopython=True)
+    def {logpdf}({p_args}, x):
+        return {dfun}(x, {p_args}, 1)
+
+
+    @vectorize(nopython=True)
+    def {cdf}({p_args}, x):
+        return {pfun}(x, {p_args}, 1, 0)
+
+
+    @vectorize(nopython=True)
+    def {ccdf}({p_args}, x):
+        return {pfun}(x, {p_args}, 0, 0)
+
+
+    @vectorize(nopython=True)
+    def {logcdf}({p_args}, x):
+        return {pfun}(x, {p_args}, 1, 1)
+
+
+    @vectorize(nopython=True)
+    def {logccdf}({p_args}, x):
+        return {pfun}(x, {p_args}, 0, 1)
+
+
+    @vectorize(nopython=True)
+    def {invcdf}({p_args}, q):
+        return {qfun}(q, {p_args}, 1, 0)
+
+
+    @vectorize(nopython=True)
+    def {invccdf}({p_args}, q):
+        return {qfun}(q, {p_args}, 0, 0)
+
+
+    @vectorize(nopython=True)
+    def {invlogcdf}({p_args}, lq):
+        return {qfun}(lq, {p_args}, 1, 1)
+
+
+    @vectorize(nopython=True)
+    def {invlogccdf}({p_args}, lq):
+        return {qfun}(lq, {p_args}, 0, 1)
+
+    """.format(**locals())
+
+    # append code for class to main file
+    with open("rmath_univ_class.py", "a") as f:
+        f.write(textwrap.dedent(code))
+
+    if not has_rand:
+        # end here if we don't have rand. I put it in a `not has_rand` block
+        # to the rand_code can be at the right indentation level below
+        return
+
+    rand_code = """\
+    {rfun} = _rmath_ffi.lib.{rfun}
+
+    @jit(nopython=True)
+    def {rand}({p_args}):
+        return {rfun}({p_args})
+
+        """.format(**locals())
+    with open("rmath_univ_class.py", "a") as f:
+        f.write(textwrap.dedent(rand_code))
+
+
+
+
+def _write_class(rname, pyname, glob_code, *pargs):
+    """
+    # call top level @vectorized evaluation methods
+    """
+   
+    # construct distribution specific function names
+    pdf = "{}_pdf".format(pyname)
+    cdf = "{}_cdf".format(pyname)
+    ccdf = "{}_ccdf".format(pyname)
+
+    logpdf = "{}_logpdf".format(pyname)
+    logcdf = "{}_logcdf".format(pyname)
+    logccdf = "{}_logccdf".format(pyname)
+
+    invcdf = "{}_invcdf".format(pyname)
+    invccdf = "{}_invccdf".format(pyname)
+    invlogcdf = "{}_invlogcdf".format(pyname)
+    invlogccdf = "{}_invlogccdf".format(pyname)
+
+    rand = "{}_rand".format(pyname)
+
     # make sure all names are available
     has_rand = True
     if rname == "nbeta" or rname == "nf" or rname == "nt":
@@ -437,75 +580,57 @@ def _import_rmath(rname, glob_code, *pargs):
     # append 'self.' at the beginning of each parameter
     p_args = ", ".join(["".join(("self.", par)) for par in pargs])
 
+    
     # append code for class to main file
     with open("rmath_univ_class.py", "a") as f:
         f.write(textwrap.dedent(glob_code))
 
     loc_code = """\
 
-    @vectorize(nopython=True)
     def pdf(self, x):
         \"""The pdf value(s) evaluated at x.\"""
-        return _rmath_ffi.lib.{dfun}(x, {p_args}, 0)
-
-
-    @vectorize(nopython=True)
+        return {pdf}(x, {p_args}, 0)
+    
     def logpdf(self, x):
         \"""The logarithm of the pdf value(s) evaluated at x.\"""
-        return _rmath_ffi.lib.{dfun}(x, {p_args}, 1)
+        return {logpdf}(x, {p_args}, 1)
 
     def loglikelihood(self, x):
         \"""The log-likelihood of the Normal distribution w.r.t. all
         samples contained in array x.\"""
-        return sum(self.logpdf({p_args}, x))
-
-    @vectorize(nopython=True)
+        return sum({logpdf}({p_args}, x))
+    
     def cdf(self, x):
         \"""The cdf value(s) evaluated at x.\"""
-        return _rmath_ffi.lib.{pfun}(x, {p_args}, 1, 0)
-
-
-    @vectorize(nopython=True)
+        return {cdf}(x, {p_args}, 1, 0)
+    
     def ccdf(self, x):
-        \"""The complementary cdf evaluated at x, i.e. 1- cdf(x).\"""
-        return _rmath_ffi.lib.{pfun}(x, {p_args}, 0, 0)
-
-
-    @vectorize(nopython=True)
+        \"""The complementary cdf evaluated at x, i.e. 1 - cdf(x).\"""
+        return {ccdf}(x, {p_args}, 0, 0)
+    
     def logcdf(self, x):
         \"""The logarithm of the cdf value(s) evaluated at x.\"""
-        return _rmath_ffi.lib.{pfun}(x, {p_args}, 1, 1)
-
-
-    @vectorize(nopython=True)
+        return {logcdf}(x, {p_args}, 1, 1)
+    
     def logccdf(self, x):
         \"""The logarithm of the complementary cdf evaluated at x.\"""
-        return _rmath_ffi.lib.{pfun}(x, {p_args}, 0, 1)
-
-
-    @vectorize(nopython=True)
+        return {logccdf}(x, {p_args}, 0, 1)
+    
     def quantile(self, q):
         \"""The quantile value evaluated at q.\"""
-        return _rmath_ffi.lib.{qfun}(q, {p_args}, 1, 0)
-
-
-    @vectorize(nopython=True)
+        return {invcdf}(q, {p_args}, 1, 0)
+    
     def cquantile(self, q):
         \"""The complementary quantile value evaluated at q.\"""
-        return _rmath_ffi.lib.{qfun}(q, {p_args}, 0, 0)
-
-
-    @vectorize(nopython=True)
+        return {invccdf}(q, {p_args}, 0, 0)
+    
     def invlogcdf(self, lq):
         \"""The inverse function of logcdf.\"""
-        return _rmath_ffi.lib.{qfun}(lq, {p_args}, 1, 1)
-
-
-    @vectorize(nopython=True)
+        return {invlogcdf}(lq, {p_args}, 1, 1)
+    
     def invlogccdf(self, lq):
         \"""The inverse function of logccdf.\"""
-        return _rmath_ffi.lib.{qfun}(lq, {p_args}, 0, 1)
-
+        return {invlogccdf}(lq, {p_args}, 0, 1)
     """.format(**locals())
 
     # append code for class to main file
@@ -522,18 +647,17 @@ def _import_rmath(rname, glob_code, *pargs):
     # ========
     # Sampling
     # ========
-
-    @jit(nopython=True)
+    
     def rand(self, *n):
         \"""Generates a random draw from the distribution.\"""
         if len(n) == 0:
             n = (1,)
-
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
-            out[i] = _rmath_ffi.lib.{rfun}({p_args})
-
+            out[i] = {rand}({p_args})
         return out
+
+# ==================================== END OF CLASS =======================================
     """.format(**locals())
     with open("rmath_univ_class.py", "a") as f:
         f.write(rand_code)
@@ -542,12 +666,14 @@ def _import_rmath(rname, glob_code, *pargs):
 if __name__ == '__main__':
     # ffi.compile(verbose=True)
     _initiate_classes()
-    _import_rmath("norm", Normal, "mu", "sigma")
+    _import_rmath("norm", "norm", "mu", "sigma")
+    _write_class("norm",  "norm", Normal, "mu", "sigma")
     # _import_rmath("unif", "uniform", "a", "b")
     # _import_rmath("gamma", "gamma", "alpha", "beta")
     # _import_rmath("beta", "beta", "alpha", "beta")
     # _import_rmath("lnorm", "lognormal", "mu", "sigma")
-    _import_rmath("chisq", Chisq, "v")
+    _import_rmath("chisq", "chisq", "v")
+    _write_class("chisq",  "chisq", Chisq, "v")
     # _import_rmath("f", "fdist", "v1", "v2")
     # _import_rmath("t", "tdist", "v")
     # _import_rmath("binom", "n", "p")
@@ -559,3 +685,28 @@ if __name__ == '__main__':
     # _import_rmath("pois", "pois", "lambda")
     # _import_rmath("weibull", "weibull", "alpha", "theta")
     # _import_rmath("logis", "logis", "mu", "theta")
+
+
+
+
+# might be good for class wrapping
+# p_args = ", ".join(["".join(("self.", par)) for par in pargs])
+# def loglikelihood({p_args}, x):
+#        \"""The log-likelihood of the Normal distribution w.r.t. all
+#        samples contained in array x.\"""
+#        return sum(self.logpdf({p_args}, x))
+# ========
+# Sampling
+# ========
+
+# @jit(nopython=True)
+# def rand({p_args}, *n):
+#     \"""Generates a random draw from the distribution.\"""
+#    if len(n) == 0:
+#         n = (1,)
+
+#     out = np.empty(n)
+#    for i, _ in np.ndenumerate(out):
+#         out[i] = {rfun}({p_args})
+
+#     return out
