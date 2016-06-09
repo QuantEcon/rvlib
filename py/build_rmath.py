@@ -556,45 +556,6 @@ def _write_class_rmath(rname, pyname, *pargs):
     with open("univariate.py", "a") as f:
         f.write(rand_code)
 
-
-_metadata_normal = {
-                    "name": "Normal",
-                    "spec": "('mu', float32), ('sigma', float32)",
-                    "pyname": "norm",
-                    "loc": "self.mu",
-                    "scale": "self.sigma",
-                    "shape": "None",
-                    "mean": "self.mu",
-                    "median": "self.quantile(.5)",
-                    "mode": "self.mu",
-                    "var": "self.sigma ** 2",
-                    "std": "self.sigma",
-                    "skewness": "0.0",
-                    "kurtosis": "0.0",
-                    "entropy": "0.5 * (np.log(2*np.pi) + 1.0) + np.log(self.sigma)",
-                    "mgf": "np.exp(x * mu + 0.5 * sigma**2 * x**2)",
-                    "cf": "np.exp(1j * x * mu - 0.5 * sigma**2 * x**2)",
-                    "insupport": "-inf < x < inf"}
-
-_metadata_chisq = {
-                    "name": "Chisq",
-                    "spec": "('v', int32)",
-                    "pyname": "chisq",
-                    "loc": "None",
-                    "scale": "None",
-                    "shape": "self.v",
-                    "mean": "self.v",
-                    "median": "self.quantile(.5)",
-                    "mode": "max(self.v - 2, 0)",
-                    "var": "self.v * 2.0",
-                    "std": "np.sqrt(self.v * 2.0)",
-                    "skewness": "np.sqrt(8.0 / self.v)",
-                    "kurtosis": "12.0 / self.v",
-                    "entropy": ".5 * self.v +  np.log(2.0) + lgamma(.5 * self.v) + (1.0 - .5 * self.v) * digamma(.5 * self.v)",
-                    "mgf": "(1.0 - 2.0 * x)**(-v * 0.5)",
-                    "cf": "(1.0 - 2.0 * 1j * x)**(-v * 0.5)",
-                    "insupport": "0 <= x < inf"}
-
 with open("metadata.yml", 'r') as ymlfile:
     mtdt = yaml.load(ymlfile)
 
