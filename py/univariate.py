@@ -3,12 +3,17 @@ from numba import int32, float32
 
 import numpy as np
 from math import inf, lgamma
-from scipy.special import digamma
+# from scipy.special import digamma
+from digamma import digamma
 
 import _rmath_ffi
 from numba import cffi_support
 
 cffi_support.register_module(_rmath_ffi)
+
+# shut down divide by zero warnings for now
+import warnings
+warnings.filterwarnings("ignore")
 
 # ============================= NEW DISTRIBUTION =================================
 dnorm = _rmath_ffi.lib.dnorm
@@ -79,11 +84,15 @@ def norm_mgf(mu, sigma, x):
 def norm_cf(mu, sigma, x):
     return np.exp(1j * x * mu - 0.5 * sigma**2 * x**2)
 
-
 #  ------
 #  Normal
 #  ------
 
+spec = [
+    ('mu', float32), ('sigma', float32)
+]
+
+@jitclass(spec)
 class Normal():
     """
     add doc later
@@ -114,7 +123,7 @@ class Normal():
     @property
     def shape(self):
         """Returns shape parameter if exists."""
-        return "None"
+        return None
 
     # ==========
     # Statistics
@@ -181,7 +190,7 @@ class Normal():
 
     def cf(self, x):
         """Evaluate characteristic function at x."""
-        return norm_cf(self.mu, self.sigma, self.sigma, x)
+        return norm_cf(self.mu, self.sigma, x)
 
     # ==========
     # Evaluation
@@ -242,10 +251,8 @@ class Normal():
     # Sampling
     # ========
     
-    def rand(self, *n):
+    def rand(self, n):
         """Generates a random draw from the distribution."""
-        if len(n) == 0:
-            n = (1,)
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = norm_rand(self.mu, self.sigma)
@@ -321,11 +328,15 @@ def chisq_mgf(v, x):
 def chisq_cf(v, x):
     return (1.0 - 2.0 * 1j * x)**(-v * 0.5)
 
-
 #  ------
 #  Chisq
 #  ------
 
+spec = [
+    ('v', int32)
+]
+
+@jitclass(spec)
 class Chisq():
     """
     add doc later
@@ -346,12 +357,12 @@ class Chisq():
     @property
     def location(self):
         """Returns lcoation parameter if exists."""
-        return "None"
+        return None
 
     @property
     def scale(self):
         """Returns scale parameter if exists."""
-        return "None"
+        return None
 
     @property
     def shape(self):
@@ -423,7 +434,7 @@ class Chisq():
 
     def cf(self, x):
         """Evaluate characteristic function at x."""
-        return chisq_cf(self.v, self.sigma, x)
+        return chisq_cf(self.v, x)
 
     # ==========
     # Evaluation
@@ -484,10 +495,8 @@ class Chisq():
     # Sampling
     # ========
     
-    def rand(self, *n):
+    def rand(self, n):
         """Generates a random draw from the distribution."""
-        if len(n) == 0:
-            n = (1,)
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = chisq_rand(self.v)

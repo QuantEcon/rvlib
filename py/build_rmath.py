@@ -1,7 +1,8 @@
 import glob
 import os
 import textwrap
-# import platform
+
+import yaml
 
 from cffi import FFI
 
@@ -161,12 +162,17 @@ def _initiate_univariate():
 
     import numpy as np
     from math import inf, lgamma
-    from scipy.special import digamma
+    # from scipy.special import digamma
+    from digamma import digamma
 
     import _rmath_ffi
     from numba import cffi_support
 
     cffi_support.register_module(_rmath_ffi)
+
+    # shut down divide by zero warnings for now
+    import warnings
+    warnings.filterwarnings("ignore")
     """
     with open("univariate.py", "w") as f:
         f.write(textwrap.dedent(pre_code))
@@ -322,11 +328,15 @@ def _write_class_specific(metadata, *pargs):
     def {pyname}_cf({p_args}, x):
         return {cf}
 
-
     #  ------
     #  {name}
     #  ------
 
+    spec = [
+        {spec}
+    ]
+
+    @jitclass(spec)
     class {name}():
         \"""
         add doc later
@@ -424,7 +434,7 @@ def _write_class_specific(metadata, *pargs):
 
         def cf(self, x):
             \"""Evaluate characteristic function at x.\"""
-            return {pyname}_cf({p_args_self}, self.sigma, x)
+            return {pyname}_cf({p_args_self}, x)
 
         # ==========
         # Evaluation
@@ -535,10 +545,8 @@ def _write_class_rmath(rname, pyname, *pargs):
     # Sampling
     # ========
     
-    def rand(self, *n):
+    def rand(self, n):
         \"""Generates a random draw from the distribution.\"""
-        if len(n) == 0:
-            n = (1,)
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = {rand}({p_args})
@@ -551,10 +559,11 @@ def _write_class_rmath(rname, pyname, *pargs):
 
 _metadata_normal = {
                     "name": "Normal",
+                    "spec": "('mu', float32), ('sigma', float32)",
                     "pyname": "norm",
                     "loc": "self.mu",
                     "scale": "self.sigma",
-                    "shape": "\"None\"",
+                    "shape": "None",
                     "mean": "self.mu",
                     "median": "self.quantile(.5)",
                     "mode": "self.mu",
@@ -569,9 +578,10 @@ _metadata_normal = {
 
 _metadata_chisq = {
                     "name": "Chisq",
+                    "spec": "('v', int32)",
                     "pyname": "chisq",
-                    "loc": "\"None\"",
-                    "scale": "\"None\"",
+                    "loc": "None",
+                    "scale": "None",
                     "shape": "self.v",
                     "mean": "self.v",
                     "median": "self.quantile(.5)",
@@ -585,6 +595,8 @@ _metadata_chisq = {
                     "cf": "(1.0 - 2.0 * 1j * x)**(-v * 0.5)",
                     "insupport": "0 <= x < inf"}
 
+with open("metadata.yml", 'r') as ymlfile:
+    mtdt = yaml.load(ymlfile)
 
 
 
@@ -592,14 +604,14 @@ if __name__ == '__main__':
     # ffi.compile(verbose=True)
     _initiate_univariate()
     _import_rmath("norm", "norm", "mu", "sigma")
-    _write_class_specific(_metadata_normal, "mu", "sigma")
+    _write_class_specific(mtdt['normal'], "mu", "sigma")
     _write_class_rmath("norm",  "norm", "mu", "sigma")
     # _import_rmath("unif", "uniform", "a", "b")
     # _import_rmath("gamma", "gamma", "alpha", "beta")
     # _import_rmath("beta", "beta", "alpha", "beta")
     # _import_rmath("lnorm", "lognormal", "mu", "sigma")
     _import_rmath("chisq", "chisq", "v")
-    _write_class_specific(_metadata_chisq, "v")
+    _write_class_specific(mtdt['chisq'], "v")
     _write_class_rmath("chisq",  "chisq", "v")
     # _import_rmath("f", "fdist", "v1", "v2")
     # _import_rmath("t", "tdist", "v")
