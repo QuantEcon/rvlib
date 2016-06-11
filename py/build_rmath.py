@@ -162,8 +162,8 @@ def _initiate_univariate():
 
     import numpy as np
     from math import inf, lgamma
-    # from scipy.special import digamma
-    from digamma import digamma
+    
+    from specials import digamma
 
     import _rmath_ffi
     from numba import cffi_support
