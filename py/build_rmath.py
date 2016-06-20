@@ -162,7 +162,7 @@ def _initiate_univariate():
 
     import numpy as np
     from math import inf, lgamma
-    
+
     from specials import digamma
 
     import _rmath_ffi
@@ -173,6 +173,97 @@ def _initiate_univariate():
     # shut down divide by zero warnings for now
     import warnings
     warnings.filterwarnings("ignore")
+
+    import yaml
+    with open("metadata.yml", 'r') as ymlfile:
+        mtdt = yaml.load(ymlfile)
+
+    # --------------------------------------------------
+    # docstring following Spencer Lyon's distcan package
+    # https://github.com/spencerlyon2/distcan.git
+    # --------------------------------------------------
+
+    univariate_class_docstr = r\"""
+    Construct a distribution representing {name_doc} random variables. The pdf
+    of the distribution is given by
+
+    .. math::
+
+        {pdf_tex}
+
+    Parameters
+    ----------
+    {param_list}
+
+    Attributes
+    ----------
+    {param_attributes}
+    location: scalar(float)
+        lcoation of the distribution
+    scale: scalar(float)
+        scale of the distribution 
+    shape: scalar(float)
+        shape of the distribution
+    mean :  scalar(float)
+        mean of the distribution
+    median: scalar(float)
+        median of the distribution
+    mode :  scalar(float)
+        mode of the distribution
+    var :  scalar(float)
+        var of the distribution
+    std :  scalar(float)
+        std of the distribution
+    skewness :  scalar(float)
+        skewness of the distribution
+    kurtosis :  scalar(float)
+        kurtosis of the distribution
+    isplatykurtic :  Boolean
+        boolean indicating if d.kurtosis > 0
+    isleptokurtic :  bool
+        boolean indicating if d.kurtosis < 0
+    ismesokurtic :  bool
+        boolean indicating if d.kurtosis == 0
+    entropy :  scalar(float)
+        entropy value of the distribution
+    \"""
+
+    param_str = "{name_doc} : {kind}\\n    {descr}"
+
+
+    def _create_param_list_str(names, descrs, kinds="scalar(float)"):
+
+        names = (names, ) if isinstance(names, str) else names
+        names = (names, ) if isinstance(names, str) else names
+
+        if isinstance(kinds, (list, tuple)):
+            if len(names) != len(kinds):
+                raise ValueError("Must have same number of names and kinds")
+
+        if isinstance(kinds, str):
+            kinds = [kinds for i in range(len(names))]
+
+        if len(descrs) != len(names):
+            raise ValueError("Must have same number of names and descrs")
+
+
+        params = []
+        for i in range(len(names)):
+            n, k, d = names[i], kinds[i], descrs[i]
+            params.append(param_str.format(name_doc=n, kind=k, descr=d))
+
+        return str.join("\\n", params)
+
+
+    def _create_class_docstr(name_doc, param_names, param_descrs,
+                             param_kinds="scalar(float)",
+                             pdf_tex=r"\\text{not given}", **kwargs):
+        param_list = _create_param_list_str(param_names, param_descrs,
+                                            param_kinds)
+
+        param_attributes = str.join(", ", param_names) + " : See Parameters"
+
+        return univariate_class_docstr.format(**locals())
     """
     with open("univariate.py", "w") as f:
         f.write(textwrap.dedent(pre_code))
@@ -338,12 +429,18 @@ def _write_class_specific(metadata, *pargs):
 
     @jitclass(spec)
     class {name}():
-        \"""
-        add doc later
-        \"""
+
+        # set docstring
+        __doc__ = _create_class_docstr(**mtdt['{name}'])
 
         def __init__(self, {p_args}):
             {p_args_self} = {p_args}
+
+        def __str__(self):
+            return "{string}" %(self.params)
+
+        def __repr__(self):
+            return self.__str__()
 
         # ===================
         # Parameter retrieval
@@ -565,14 +662,14 @@ if __name__ == '__main__':
     # ffi.compile(verbose=True)
     _initiate_univariate()
     _import_rmath("norm", "norm", "mu", "sigma")
-    _write_class_specific(mtdt['normal'], "mu", "sigma")
+    _write_class_specific(mtdt['Normal'], "mu", "sigma")
     _write_class_rmath("norm",  "norm", "mu", "sigma")
     # _import_rmath("unif", "uniform", "a", "b")
     # _import_rmath("gamma", "gamma", "alpha", "beta")
     # _import_rmath("beta", "beta", "alpha", "beta")
     # _import_rmath("lnorm", "lognormal", "mu", "sigma")
     _import_rmath("chisq", "chisq", "v")
-    _write_class_specific(mtdt['chisq'], "v")
+    _write_class_specific(mtdt['Chisq'], "v")
     _write_class_rmath("chisq",  "chisq", "v")
     # _import_rmath("f", "fdist", "v1", "v2")
     # _import_rmath("t", "tdist", "v")

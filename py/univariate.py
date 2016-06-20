@@ -3,8 +3,8 @@ from numba import int32, float32
 
 import numpy as np
 from math import inf, lgamma
-# from scipy.special import digamma
-from digamma import digamma
+
+from specials import digamma
 
 import _rmath_ffi
 from numba import cffi_support
@@ -14,6 +14,97 @@ cffi_support.register_module(_rmath_ffi)
 # shut down divide by zero warnings for now
 import warnings
 warnings.filterwarnings("ignore")
+
+import yaml
+with open("metadata.yml", 'r') as ymlfile:
+    mtdt = yaml.load(ymlfile)
+
+# --------------------------------------------------
+# docstring following Spencer Lyon's distcan package
+# https://github.com/spencerlyon2/distcan.git
+# --------------------------------------------------
+
+univariate_class_docstr = r"""
+Construct a distribution representing {name_doc} random variables. The pdf
+of the distribution is given by
+
+.. math::
+
+    {pdf_tex}
+
+Parameters
+----------
+{param_list}
+
+Attributes
+----------
+{param_attributes}
+location: scalar(float)
+    lcoation of the distribution
+scale: scalar(float)
+    scale of the distribution 
+shape: scalar(float)
+    shape of the distribution
+mean :  scalar(float)
+    mean of the distribution
+median: scalar(float)
+    median of the distribution
+mode :  scalar(float)
+    mode of the distribution
+var :  scalar(float)
+    var of the distribution
+std :  scalar(float)
+    std of the distribution
+skewness :  scalar(float)
+    skewness of the distribution
+kurtosis :  scalar(float)
+    kurtosis of the distribution
+isplatykurtic :  Boolean
+    boolean indicating if d.kurtosis > 0
+isleptokurtic :  bool
+    boolean indicating if d.kurtosis < 0
+ismesokurtic :  bool
+    boolean indicating if d.kurtosis == 0
+entropy :  scalar(float)
+    entropy value of the distribution
+"""
+
+param_str = "{name_doc} : {kind}\n    {descr}"
+
+
+def _create_param_list_str(names, descrs, kinds="scalar(float)"):
+
+    names = (names, ) if isinstance(names, str) else names
+    names = (names, ) if isinstance(names, str) else names
+
+    if isinstance(kinds, (list, tuple)):
+        if len(names) != len(kinds):
+            raise ValueError("Must have same number of names and kinds")
+
+    if isinstance(kinds, str):
+        kinds = [kinds for i in range(len(names))]
+
+    if len(descrs) != len(names):
+        raise ValueError("Must have same number of names and descrs")
+
+
+    params = []
+    for i in range(len(names)):
+        n, k, d = names[i], kinds[i], descrs[i]
+        params.append(param_str.format(name_doc=n, kind=k, descr=d))
+
+    return str.join("\n", params)
+
+
+def _create_class_docstr(name_doc, param_names, param_descrs,
+                         param_kinds="scalar(float)",
+                         pdf_tex=r"\text{not given}", **kwargs):
+    param_list = _create_param_list_str(param_names, param_descrs,
+                                        param_kinds)
+
+    param_attributes = str.join(", ", param_names) + " : See Parameters"
+
+    return univariate_class_docstr.format(**locals())
 
 # ============================= NEW DISTRIBUTION =================================
 dnorm = _rmath_ffi.lib.dnorm
@@ -94,12 +185,18 @@ spec = [
 
 @jitclass(spec)
 class Normal():
-    """
-    add doc later
-    """
+
+    # set docstring
+    __doc__ = _create_class_docstr(**mtdt['Normal'])
 
     def __init__(self, mu, sigma):
         self.mu, self.sigma = mu, sigma
+
+    def __str__(self):
+        return "Normal(mu=%.5f, sigma=%.5f)" %(self.params)
+
+    def __repr__(self):
+        return self.__str__()
 
     # ===================
     # Parameter retrieval
@@ -338,12 +435,18 @@ spec = [
 
 @jitclass(spec)
 class Chisq():
-    """
-    add doc later
-    """
+
+    # set docstring
+    __doc__ = _create_class_docstr(**mtdt['Chisq'])
 
     def __init__(self, v):
         self.v = v
+
+    def __str__(self):
+        return "ChiSquared(k=%.5f)" %(self.params)
+
+    def __repr__(self):
+        return self.__str__()
 
     # ===================
     # Parameter retrieval

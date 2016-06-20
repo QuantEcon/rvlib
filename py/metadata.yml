@@ -1,4 +1,4 @@
-normal:
+Normal:
      name: Normal
      spec: ('mu', float32), ('sigma', float32)
      pyname: norm
@@ -16,8 +16,14 @@ normal:
      mgf: np.exp(x * mu + 0.5 * sigma**2 * x**2)
      cf: np.exp(1j * x * mu - 0.5 * sigma**2 * x**2)
      insupport: -inf < x < inf
+     name_doc: Normal
+     pdf_tex: p(x;\mu,\sigma)=\frac{1}{\sigma \sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+     param_names: ["mu", "sigma"]
+     param_descrs: ["mean of the distribution",
+                    "Standard deviation of the distribution"]
+     string: Normal(mu=%.5f, sigma=%.5f)
 
-chisq:
+Chisq:
      name: Chisq
      spec: ('v', int32)
      pyname: chisq
@@ -35,3 +41,8 @@ chisq:
      mgf: (1.0 - 2.0 * x)**(-v * 0.5)
      cf: (1.0 - 2.0 * 1j * x)**(-v * 0.5)
      insupport: 0 <= x < inf
+     name_doc: Chi squared
+     pdf_tex: p(x; k)= \frac{x^{k/2 - 1} e^{-x/2}}{2^{k/2} \Gamma(k/2)}, x > 0
+     param_names: ["k"]
+     param_descrs: ["Degrees of Freedom"]
+     string: ChiSquared(k=%.5f)
