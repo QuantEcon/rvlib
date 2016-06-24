@@ -46,3 +46,52 @@ Chisq:
      param_names: ["k"]
      param_descrs: ["Degrees of Freedom"]
      string: ChiSquared(k=%.5f)
+
+
+Uniform:
+     name: Uniform
+     spec: ('a', float32), ('b', float32)
+     pyname: unif
+     loc: self.a
+     scale: self.b - self.a
+     shape: None
+     mean: .5 * (self.a + self.b)
+     median: .5 * (self.a + self.b)
+     mode: None
+     var: (self.b - self.a)**2/12
+     std: (self.b - self.a)/np.sqrt(12)
+     skewness: 0
+     kurtosis: -1.2
+     entropy: np.log(self.b - self.a)
+     mgf: (np.exp(x * b) - np.exp(x * a))/(x * (b - a)) if x != 0 else 1
+     cf: (np.exp(1j * x * b) - np.exp(1j * x * a))/(1j * x * (b - a))
+     insupport: a <= x < b
+     name_doc: Uniform
+     pdf_tex: p(x; a, b) = \frac{1}{b-a}; a \leq x \leq b
+     param_names: ["a", "b"]
+     param_descrs: ["Lower Bound", "Upper Bound"]
+     string: Uniform(a=%.5f, b=%.5f)
+
+T:
+     name: T
+     spec: ('v', int32)
+     pyname: tdist
+     loc: None
+     scale: None
+     shape: self.v
+     mean: 0
+     median: 0
+     mode: 0
+     var: self.v/(self.v - 2) if self.v > 2 else inf
+     std: np.sqrt(self.v/(self.v - 2)) if self.v > 2 else inf
+     skewness: 0 if slef.v > 3 else None
+     kurtosis: 6/(self.v - 4) if self.v > 4 else inf
+     entropy: None
+     mgf: None
+     cf: None
+     insupport: -inf <= x < inf
+     name_doc: T 
+     pdf_tex: p(x;df)= \frac{G \left(\frac{df+1}{2}\right)}{\sqrt{df\pi} G\left(\frac{df}{2} \right)}   \left(1 + \frac{x^2}{df} \right)^{- \frac{df+1}{2}} \n where :math:`G(\cdot)` is the Gamma function
+     param_names: ["df"]
+     param_descrs: ["Degrees of freedom (real, >0)"]
+     string: T(df=%.5f)

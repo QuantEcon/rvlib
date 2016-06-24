@@ -209,7 +209,7 @@ class Normal():
 
     @property
     def location(self):
-        """Returns lcoation parameter if exists."""
+        """Returns location parameter if exists."""
         return self.mu
 
     @property
@@ -308,7 +308,7 @@ class Normal():
         return norm_logpdf(self.mu, self.sigma, x)
 
     def loglikelihood(self, x):
-        """The log-likelihood of the Normal distribution w.r.t. all
+        """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(norm_logpdf(self.mu, self.sigma, x))
     
@@ -459,7 +459,7 @@ class Chisq():
 
     @property
     def location(self):
-        """Returns lcoation parameter if exists."""
+        """Returns location parameter if exists."""
         return None
 
     @property
@@ -558,7 +558,7 @@ class Chisq():
         return chisq_logpdf(self.v, x)
 
     def loglikelihood(self, x):
-        """The log-likelihood of the Normal distribution w.r.t. all
+        """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(chisq_logpdf(self.v, x))
     
@@ -603,6 +603,506 @@ class Chisq():
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = chisq_rand(self.v)
+        return out
+
+    
+# ============================= NEW DISTRIBUTION =================================
+dunif = _rmath_ffi.lib.dunif
+punif = _rmath_ffi.lib.punif
+qunif = _rmath_ffi.lib.qunif
+
+@vectorize(nopython=True)
+def unif_pdf(a, b, x):
+    return dunif(x, a, b, 0)
+
+
+@vectorize(nopython=True)
+def unif_logpdf(a, b, x):
+    return dunif(x, a, b, 1)
+
+
+@vectorize(nopython=True)
+def unif_cdf(a, b, x):
+    return punif(x, a, b, 1, 0)
+
+
+@vectorize(nopython=True)
+def unif_ccdf(a, b, x):
+    return punif(x, a, b, 0, 0)
+
+
+@vectorize(nopython=True)
+def unif_logcdf(a, b, x):
+    return punif(x, a, b, 1, 1)
+
+
+@vectorize(nopython=True)
+def unif_logccdf(a, b, x):
+    return punif(x, a, b, 0, 1)
+
+
+@vectorize(nopython=True)
+def unif_invcdf(a, b, q):
+    return qunif(q, a, b, 1, 0)
+
+
+@vectorize(nopython=True)
+def unif_invccdf(a, b, q):
+    return qunif(q, a, b, 0, 0)
+
+
+@vectorize(nopython=True)
+def unif_invlogcdf(a, b, lq):
+    return qunif(lq, a, b, 1, 1)
+
+
+@vectorize(nopython=True)
+def unif_invlogccdf(a, b, lq):
+    return qunif(lq, a, b, 0, 1)
+
+runif = _rmath_ffi.lib.runif
+
+@jit(nopython=True)
+def unif_rand(a, b):
+    return runif(a, b)
+
+
+@vectorize(nopython=True)
+def unif_mgf(a, b, x):
+    return (np.exp(x * b) - np.exp(x * a))/(x * (b - a)) if x != 0 else 1
+
+@vectorize(nopython=True)
+def unif_cf(a, b, x):
+    return (np.exp(1j * x * b) - np.exp(1j * x * a))/(1j * x * (b - a))
+
+#  ------
+#  Uniform
+#  ------
+
+spec = [
+    ('a', float32), ('b', float32)
+]
+
+@jitclass(spec)
+class Uniform():
+
+    # set docstring
+    __doc__ = _create_class_docstr(**mtdt['Uniform'])
+
+    def __init__(self, a, b):
+        self.a, self.b = a, b
+
+    def __str__(self):
+        return "Uniform(a=%.5f, b=%.5f)" %(self.params)
+
+    def __repr__(self):
+        return self.__str__()
+
+    # ===================
+    # Parameter retrieval
+    # ===================
+
+    @property
+    def params(self):
+        """Returns parameters."""
+        return (self.a, self.b)
+
+    @property
+    def location(self):
+        """Returns location parameter if exists."""
+        return self.a
+
+    @property
+    def scale(self):
+        """Returns scale parameter if exists."""
+        return self.b - self.a
+
+    @property
+    def shape(self):
+        """Returns shape parameter if exists."""
+        return None
+
+    # ==========
+    # Statistics
+    # ==========
+
+    @property
+    def mean(self):
+        """Returns mean."""
+        return .5 * (self.a + self.b)
+
+    @property
+    def median(self):
+        """Returns median."""
+        return .5 * (self.a + self.b)
+
+    @property
+    def mode(self):
+        """Returns mode."""
+        return None
+
+    @property
+    def var(self):
+        """Returns variance."""
+        return (self.b - self.a)**2/12
+
+    @property
+    def std(self):
+        """Returns standard deviation."""
+        return (self.b - self.a)/np.sqrt(12)
+
+    @property
+    def skewness(self):
+        """Returns skewness."""
+        return 0
+
+    @property
+    def kurtosis(self):
+        """Returns kurtosis."""
+        return -1.2
+
+    @property
+    def isplatykurtic(self):
+        """Kurtosis being greater than zero."""
+        return self.kurtosis > 0
+
+    @property
+    def isleptokurtic(self):
+        """Kurtosis being smaller than zero."""
+        return self.kurtosis < 0
+
+    @property
+    def ismesokurtic(self):
+        """Kurtosis being equal to zero."""
+        return self.kurtosis == 0.0
+
+    @property
+    def entropy(self):
+        """Returns entropy."""
+        return np.log(self.b - self.a)
+
+    def mgf(self, x):
+        """Evaluate moment generating function at x."""
+        return unif_mgf(self.a, self.b, x)
+
+    def cf(self, x):
+        """Evaluate characteristic function at x."""
+        return unif_cf(self.a, self.b, x)
+
+    # ==========
+    # Evaluation
+    # ==========
+
+    def insupport(self, x):
+        """When x is a scalar, it returns whether x is within
+        the support of the distribution. When x is an array,
+        it returns whether every element."""
+        return a <= x < b
+
+    def pdf(self, x):
+        """The pdf value(s) evaluated at x."""
+        return unif_pdf(self.a, self.b, x)
+    
+    def logpdf(self, x):
+        """The logarithm of the pdf value(s) evaluated at x."""
+        return unif_logpdf(self.a, self.b, x)
+
+    def loglikelihood(self, x):
+        """The log-likelihood of the distribution w.r.t. all
+        samples contained in array x."""
+        return sum(unif_logpdf(self.a, self.b, x))
+    
+    def cdf(self, x):
+        """The cdf value(s) evaluated at x."""
+        return unif_cdf(self.a, self.b, x)
+    
+    def ccdf(self, x):
+        """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
+        return unif_ccdf(self.a, self.b, x)
+    
+    def logcdf(self, x):
+        """The logarithm of the cdf value(s) evaluated at x."""
+        return unif_logcdf(self.a, self.b, x)
+    
+    def logccdf(self, x):
+        """The logarithm of the complementary cdf evaluated at x."""
+        return unif_logccdf(self.a, self.b, x)
+    
+    def quantile(self, q):
+        """The quantile value evaluated at q."""
+        return unif_invcdf(self.a, self.b, q)
+    
+    def cquantile(self, q):
+        """The complementary quantile value evaluated at q."""
+        return unif_invccdf(self.a, self.b, q)
+    
+    def invlogcdf(self, lq):
+        """The inverse function of logcdf."""
+        return unif_invlogcdf(self.a, self.b, lq)
+    
+    def invlogccdf(self, lq):
+        """The inverse function of logccdf."""
+        return unif_invlogccdf(self.a, self.b, lq)
+    
+    # ========
+    # Sampling
+    # ========
+    
+    def rand(self, n):
+        """Generates a random draw from the distribution."""
+        out = np.empty(n)
+        for i, _ in np.ndenumerate(out):
+            out[i] = unif_rand(self.a, self.b)
+        return out
+
+    
+# ============================= NEW DISTRIBUTION =================================
+dt = _rmath_ffi.lib.dt
+pt = _rmath_ffi.lib.pt
+qt = _rmath_ffi.lib.qt
+
+@vectorize(nopython=True)
+def tdist_pdf(v, x):
+    return dt(x, v, 0)
+
+
+@vectorize(nopython=True)
+def tdist_logpdf(v, x):
+    return dt(x, v, 1)
+
+
+@vectorize(nopython=True)
+def tdist_cdf(v, x):
+    return pt(x, v, 1, 0)
+
+
+@vectorize(nopython=True)
+def tdist_ccdf(v, x):
+    return pt(x, v, 0, 0)
+
+
+@vectorize(nopython=True)
+def tdist_logcdf(v, x):
+    return pt(x, v, 1, 1)
+
+
+@vectorize(nopython=True)
+def tdist_logccdf(v, x):
+    return pt(x, v, 0, 1)
+
+
+@vectorize(nopython=True)
+def tdist_invcdf(v, q):
+    return qt(q, v, 1, 0)
+
+
+@vectorize(nopython=True)
+def tdist_invccdf(v, q):
+    return qt(q, v, 0, 0)
+
+
+@vectorize(nopython=True)
+def tdist_invlogcdf(v, lq):
+    return qt(lq, v, 1, 1)
+
+
+@vectorize(nopython=True)
+def tdist_invlogccdf(v, lq):
+    return qt(lq, v, 0, 1)
+
+rt = _rmath_ffi.lib.rt
+
+@jit(nopython=True)
+def tdist_rand(v):
+    return rt(v)
+
+
+@vectorize(nopython=True)
+def tdist_mgf(v, x):
+    return None
+
+@vectorize(nopython=True)
+def tdist_cf(v, x):
+    return None
+
+#  ------
+#  T
+#  ------
+
+spec = [
+    ('v', int32)
+]
+
+@jitclass(spec)
+class T():
+
+    # set docstring
+    __doc__ = _create_class_docstr(**mtdt['T'])
+
+    def __init__(self, v):
+        self.v = v
+
+    def __str__(self):
+        return "T(df=%.5f)" %(self.params)
+
+    def __repr__(self):
+        return self.__str__()
+
+    # ===================
+    # Parameter retrieval
+    # ===================
+
+    @property
+    def params(self):
+        """Returns parameters."""
+        return (self.v)
+
+    @property
+    def location(self):
+        """Returns location parameter if exists."""
+        return None
+
+    @property
+    def scale(self):
+        """Returns scale parameter if exists."""
+        return None
+
+    @property
+    def shape(self):
+        """Returns shape parameter if exists."""
+        return self.v
+
+    # ==========
+    # Statistics
+    # ==========
+
+    @property
+    def mean(self):
+        """Returns mean."""
+        return 0
+
+    @property
+    def median(self):
+        """Returns median."""
+        return 0
+
+    @property
+    def mode(self):
+        """Returns mode."""
+        return 0
+
+    @property
+    def var(self):
+        """Returns variance."""
+        return self.v/(self.v - 2) if self.v > 2 else inf
+
+    @property
+    def std(self):
+        """Returns standard deviation."""
+        return np.sqrt(self.v/(self.v - 2)) if self.v > 2 else inf
+
+    @property
+    def skewness(self):
+        """Returns skewness."""
+        return 0 if slef.v > 3 else None
+
+    @property
+    def kurtosis(self):
+        """Returns kurtosis."""
+        return 6/(self.v - 4) if self.v > 4 else inf
+
+    @property
+    def isplatykurtic(self):
+        """Kurtosis being greater than zero."""
+        return self.kurtosis > 0
+
+    @property
+    def isleptokurtic(self):
+        """Kurtosis being smaller than zero."""
+        return self.kurtosis < 0
+
+    @property
+    def ismesokurtic(self):
+        """Kurtosis being equal to zero."""
+        return self.kurtosis == 0.0
+
+    @property
+    def entropy(self):
+        """Returns entropy."""
+        return None
+
+    def mgf(self, x):
+        """Evaluate moment generating function at x."""
+        return tdist_mgf(self.v, x)
+
+    def cf(self, x):
+        """Evaluate characteristic function at x."""
+        return tdist_cf(self.v, x)
+
+    # ==========
+    # Evaluation
+    # ==========
+
+    def insupport(self, x):
+        """When x is a scalar, it returns whether x is within
+        the support of the distribution. When x is an array,
+        it returns whether every element."""
+        return -inf <= x < inf
+
+    def pdf(self, x):
+        """The pdf value(s) evaluated at x."""
+        return tdist_pdf(self.v, x)
+    
+    def logpdf(self, x):
+        """The logarithm of the pdf value(s) evaluated at x."""
+        return tdist_logpdf(self.v, x)
+
+    def loglikelihood(self, x):
+        """The log-likelihood of the distribution w.r.t. all
+        samples contained in array x."""
+        return sum(tdist_logpdf(self.v, x))
+    
+    def cdf(self, x):
+        """The cdf value(s) evaluated at x."""
+        return tdist_cdf(self.v, x)
+    
+    def ccdf(self, x):
+        """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
+        return tdist_ccdf(self.v, x)
+    
+    def logcdf(self, x):
+        """The logarithm of the cdf value(s) evaluated at x."""
+        return tdist_logcdf(self.v, x)
+    
+    def logccdf(self, x):
+        """The logarithm of the complementary cdf evaluated at x."""
+        return tdist_logccdf(self.v, x)
+    
+    def quantile(self, q):
+        """The quantile value evaluated at q."""
+        return tdist_invcdf(self.v, q)
+    
+    def cquantile(self, q):
+        """The complementary quantile value evaluated at q."""
+        return tdist_invccdf(self.v, q)
+    
+    def invlogcdf(self, lq):
+        """The inverse function of logcdf."""
+        return tdist_invlogcdf(self.v, lq)
+    
+    def invlogccdf(self, lq):
+        """The inverse function of logccdf."""
+        return tdist_invlogccdf(self.v, lq)
+    
+    # ========
+    # Sampling
+    # ========
+    
+    def rand(self, n):
+        """Generates a random draw from the distribution."""
+        out = np.empty(n)
+        for i, _ in np.ndenumerate(out):
+            out[i] = tdist_rand(self.v)
         return out
 
     

@@ -453,7 +453,7 @@ def _write_class_specific(metadata, *pargs):
 
         @property
         def location(self):
-            \"""Returns lcoation parameter if exists.\"""
+            \"""Returns location parameter if exists.\"""
             return {loc}
 
         @property
@@ -590,7 +590,7 @@ def _write_class_rmath(rname, pyname, *pargs):
         return {logpdf}({p_args}, x)
 
     def loglikelihood(self, x):
-        \"""The log-likelihood of the Normal distribution w.r.t. all
+        \"""The log-likelihood of the distribution w.r.t. all
         samples contained in array x.\"""
         return sum({logpdf}({p_args}, x))
     
@@ -660,17 +660,35 @@ with open("metadata.yml", 'r') as ymlfile:
 
 if __name__ == '__main__':
     # ffi.compile(verbose=True)
+    
+    # Preamble
     _initiate_univariate()
+    
+    # Normal
     _import_rmath("norm", "norm", "mu", "sigma")
-    _write_class_specific(mtdt['Normal'], "mu", "sigma")
+    _write_class_specific(mtdt["Normal"], "mu", "sigma")
     _write_class_rmath("norm",  "norm", "mu", "sigma")
-    # _import_rmath("unif", "uniform", "a", "b")
+
+    # Chisq
+    _import_rmath("chisq", "chisq", "v")
+    _write_class_specific(mtdt["Chisq"], "v")
+    _write_class_rmath("chisq",  "chisq", "v")
+
+    # Uniform
+    _import_rmath("unif", "unif", "a", "b")
+    _write_class_specific(mtdt["Uniform"], "a", "b")
+    _write_class_rmath("unif",  "unif", "a", "b")
+
+    # T
+    _import_rmath("t", "tdist", "v")
+    _write_class_specific(mtdt["T"], "v")
+    _write_class_rmath("t", "tdist", "v")
+
+
     # _import_rmath("gamma", "gamma", "alpha", "beta")
     # _import_rmath("beta", "beta", "alpha", "beta")
     # _import_rmath("lnorm", "lognormal", "mu", "sigma")
-    _import_rmath("chisq", "chisq", "v")
-    _write_class_specific(mtdt['Chisq'], "v")
-    _write_class_rmath("chisq",  "chisq", "v")
+    
     # _import_rmath("f", "fdist", "v1", "v2")
     # _import_rmath("t", "tdist", "v")
     # _import_rmath("binom", "n", "p")
