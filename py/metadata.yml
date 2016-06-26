@@ -17,7 +17,8 @@ Normal:
      cf: np.exp(1j * x * mu - 0.5 * sigma**2 * x**2)
      insupport: -inf < x < inf
      name_doc: Normal
-     pdf_tex: p(x;\mu,\sigma)=\frac{1}{\sigma \sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+     pdf_tex: p(x;\mu,\sigma)=\frac{1}{\sigma \sqrt{2\pi}}
+               e^{-\frac{(x-\mu)^2}{2\sigma^2}}
      param_names: ["mu", "sigma"]
      param_descrs: ["mean of the distribution",
                     "Standard deviation of the distribution"]
@@ -37,12 +38,14 @@ Chisq:
      std: np.sqrt(self.v * 2.0)
      skewness: np.sqrt(8.0 / self.v)
      kurtosis: 12.0 / self.v
-     entropy: .5 * self.v +  np.log(2.0) + lgamma(.5 * self.v) + (1.0 - .5 * self.v) * digamma(.5 * self.v)
+     entropy: .5 * self.v +  np.log(2.0) + lgamma(.5 * self.v) + 
+               (1.0 - .5 * self.v) * digamma(.5 * self.v)
      mgf: (1.0 - 2.0 * x)**(-v * 0.5)
      cf: (1.0 - 2.0 * 1j * x)**(-v * 0.5)
      insupport: 0 <= x < inf
      name_doc: Chi squared
-     pdf_tex: p(x; k)= \frac{x^{k/2 - 1} e^{-x/2}}{2^{k/2} \Gamma(k/2)}, x > 0
+     pdf_tex: p(x; k)= \frac{x^{k/2 - 1} e^{-x/2}}{2^{k/2} 
+               \Gamma(k/2)}, x > 0
      param_names: ["k"]
      param_descrs: ["Degrees of Freedom"]
      string: ChiSquared(k=%.5f)
@@ -84,14 +87,46 @@ T:
      mode: 0
      var: self.v/(self.v - 2) if self.v > 2 else inf
      std: np.sqrt(self.v/(self.v - 2)) if self.v > 2 else inf
-     skewness: 0 if slef.v > 3 else None
+     skewness: 0 if self.v > 3 else None
      kurtosis: 6/(self.v - 4) if self.v > 4 else inf
-     entropy: None
+     entropy: .5*(self.v + 1)*(digamma(.5*(self.v + 1)) - 
+               digamma(.5*self.v)) + np.log(np.sqrt(self.v) * 
+               beta(.5*self.v, .5))
      mgf: None
      cf: None
      insupport: -inf <= x < inf
      name_doc: T 
-     pdf_tex: p(x;df)= \frac{G \left(\frac{df+1}{2}\right)}{\sqrt{df\pi} G\left(\frac{df}{2} \right)}   \left(1 + \frac{x^2}{df} \right)^{- \frac{df+1}{2}} \n where :math:`G(\cdot)` is the Gamma function
+     pdf_tex: p(x;df)= \frac{G \left(\frac{df+1}{2}\right)}{\sqrt{df\pi}
+                G\left(\frac{df}{2} \right)}   
+                \left(1 + \frac{x^2}{df} \right)^{- \frac{df+1}{2}} 
+                \n where :math:`G(\cdot)` is the Gamma function
      param_names: ["df"]
      param_descrs: ["Degrees of freedom (real, >0)"]
      string: T(df=%.5f)
+
+LogNormal:
+     name: LogNormal
+     spec: ('mu', float32), ('sigma', float32)
+     pyname: lnorm
+     loc: self.mu
+     scale: self.sigma
+     shape: None
+     mean: np.exp(self.mu + .5* self.sigma**2)
+     median: np.exp(self.mu)
+     mode: np.exp(self.mu - self.sigma**2)
+     var: (np.exp(self.sigma**2) - 1) * np.exp(2*self.mu + self.sigma**2)
+     std: np.sqrt(self.var)
+     skewness: (np.exp(self.sigma**2) + 2) * np.sqrt(np.exp(self.sigma**2) - 1)
+     kurtosis: np.exp(4*self.sigma**2) + 2*np.exp(3*self.sigma**2)
+               + 3*np.exp(2*self.sigma**2) - 6
+     entropy: np.log(self.sigma*np.exp(self.mu + .5)*np.sqrt(2*np.pi))
+     mgf: None
+     cf: None
+     insupport: 0 < x < inf
+     name_doc: Log-normal 
+     pdf_tex: p(x; \mu, \sigma) = \frac{1}{x \sqrt{2 \pi \sigma^2}}
+               \exp \left( - \frac{(\log(x) - \mu)^2}{2 \sigma^2}\right)
+     param_names: ["mu", "sigma"]
+     param_descrs: ["Log-scale (mean of log of RV)",
+                    "Shape parameter (must be >0, std. of log of RV)"]
+     string: LogNormal(mu=%.5f, sigma=%.5f)

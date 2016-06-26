@@ -2,8 +2,8 @@ from numba import vectorize, jit, jitclass
 from numba import int32, float32
 
 import numpy as np
-from math import inf, lgamma
-
+from math import inf, gamma, lgamma
+from numpy.random import beta
 from specials import digamma
 
 import _rmath_ffi
@@ -1004,7 +1004,7 @@ class T():
     @property
     def skewness(self):
         """Returns skewness."""
-        return 0 if slef.v > 3 else None
+        return 0 if self.v > 3 else None
 
     @property
     def kurtosis(self):
@@ -1029,7 +1029,7 @@ class T():
     @property
     def entropy(self):
         """Returns entropy."""
-        return None
+        return .5*(self.v + 1)*(digamma(.5*(self.v + 1)) - digamma(.5*self.v)) + np.log(np.sqrt(self.v) * beta(.5*self.v, .5))
 
     def mgf(self, x):
         """Evaluate moment generating function at x."""
@@ -1103,6 +1103,256 @@ class T():
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = tdist_rand(self.v)
+        return out
+
+    
+# ============================= NEW DISTRIBUTION =================================
+dlnorm = _rmath_ffi.lib.dlnorm
+plnorm = _rmath_ffi.lib.plnorm
+qlnorm = _rmath_ffi.lib.qlnorm
+
+@vectorize(nopython=True)
+def lognormal_pdf(mu, sigma, x):
+    return dlnorm(x, mu, sigma, 0)
+
+
+@vectorize(nopython=True)
+def lognormal_logpdf(mu, sigma, x):
+    return dlnorm(x, mu, sigma, 1)
+
+
+@vectorize(nopython=True)
+def lognormal_cdf(mu, sigma, x):
+    return plnorm(x, mu, sigma, 1, 0)
+
+
+@vectorize(nopython=True)
+def lognormal_ccdf(mu, sigma, x):
+    return plnorm(x, mu, sigma, 0, 0)
+
+
+@vectorize(nopython=True)
+def lognormal_logcdf(mu, sigma, x):
+    return plnorm(x, mu, sigma, 1, 1)
+
+
+@vectorize(nopython=True)
+def lognormal_logccdf(mu, sigma, x):
+    return plnorm(x, mu, sigma, 0, 1)
+
+
+@vectorize(nopython=True)
+def lognormal_invcdf(mu, sigma, q):
+    return qlnorm(q, mu, sigma, 1, 0)
+
+
+@vectorize(nopython=True)
+def lognormal_invccdf(mu, sigma, q):
+    return qlnorm(q, mu, sigma, 0, 0)
+
+
+@vectorize(nopython=True)
+def lognormal_invlogcdf(mu, sigma, lq):
+    return qlnorm(lq, mu, sigma, 1, 1)
+
+
+@vectorize(nopython=True)
+def lognormal_invlogccdf(mu, sigma, lq):
+    return qlnorm(lq, mu, sigma, 0, 1)
+
+rlnorm = _rmath_ffi.lib.rlnorm
+
+@jit(nopython=True)
+def lognormal_rand(mu, sigma):
+    return rlnorm(mu, sigma)
+
+
+@vectorize(nopython=True)
+def lnorm_mgf(mu, sigma, x):
+    return None
+
+@vectorize(nopython=True)
+def lnorm_cf(mu, sigma, x):
+    return None
+
+#  ------
+#  LogNormal
+#  ------
+
+spec = [
+    ('mu', float32), ('sigma', float32)
+]
+
+@jitclass(spec)
+class LogNormal():
+
+    # set docstring
+    __doc__ = _create_class_docstr(**mtdt['LogNormal'])
+
+    def __init__(self, mu, sigma):
+        self.mu, self.sigma = mu, sigma
+
+    def __str__(self):
+        return "LogNormal(mu=%.5f, sigma=%.5f)" %(self.params)
+
+    def __repr__(self):
+        return self.__str__()
+
+    # ===================
+    # Parameter retrieval
+    # ===================
+
+    @property
+    def params(self):
+        """Returns parameters."""
+        return (self.mu, self.sigma)
+
+    @property
+    def location(self):
+        """Returns location parameter if exists."""
+        return self.mu
+
+    @property
+    def scale(self):
+        """Returns scale parameter if exists."""
+        return self.sigma
+
+    @property
+    def shape(self):
+        """Returns shape parameter if exists."""
+        return None
+
+    # ==========
+    # Statistics
+    # ==========
+
+    @property
+    def mean(self):
+        """Returns mean."""
+        return np.exp(self.mu + .5* self.sigma**2)
+
+    @property
+    def median(self):
+        """Returns median."""
+        return np.exp(self.mu)
+
+    @property
+    def mode(self):
+        """Returns mode."""
+        return np.exp(self.mu - self.sigma**2)
+
+    @property
+    def var(self):
+        """Returns variance."""
+        return (np.exp(self.sigma**2) - 1) * np.exp(2*self.mu + self.sigma**2)
+
+    @property
+    def std(self):
+        """Returns standard deviation."""
+        return np.sqrt(self.var)
+
+    @property
+    def skewness(self):
+        """Returns skewness."""
+        return (np.exp(self.sigma**2) + 2) * np.sqrt(np.exp(self.sigma**2) - 1)
+
+    @property
+    def kurtosis(self):
+        """Returns kurtosis."""
+        return np.exp(4*self.sigma**2) + 2*np.exp(3*self.sigma**2) + 3*np.exp(2*self.sigma**2) - 6
+
+    @property
+    def isplatykurtic(self):
+        """Kurtosis being greater than zero."""
+        return self.kurtosis > 0
+
+    @property
+    def isleptokurtic(self):
+        """Kurtosis being smaller than zero."""
+        return self.kurtosis < 0
+
+    @property
+    def ismesokurtic(self):
+        """Kurtosis being equal to zero."""
+        return self.kurtosis == 0.0
+
+    @property
+    def entropy(self):
+        """Returns entropy."""
+        return np.log(self.sigma*np.exp(self.mu + .5)*np.sqrt(2*np.pi))
+
+    def mgf(self, x):
+        """Evaluate moment generating function at x."""
+        return lnorm_mgf(self.mu, self.sigma, x)
+
+    def cf(self, x):
+        """Evaluate characteristic function at x."""
+        return lnorm_cf(self.mu, self.sigma, x)
+
+    # ==========
+    # Evaluation
+    # ==========
+
+    def insupport(self, x):
+        """When x is a scalar, it returns whether x is within
+        the support of the distribution. When x is an array,
+        it returns whether every element."""
+        return 0 < x < inf
+
+    def pdf(self, x):
+        """The pdf value(s) evaluated at x."""
+        return lognormal_pdf(self.mu, self.sigma, x)
+    
+    def logpdf(self, x):
+        """The logarithm of the pdf value(s) evaluated at x."""
+        return lognormal_logpdf(self.mu, self.sigma, x)
+
+    def loglikelihood(self, x):
+        """The log-likelihood of the distribution w.r.t. all
+        samples contained in array x."""
+        return sum(lognormal_logpdf(self.mu, self.sigma, x))
+    
+    def cdf(self, x):
+        """The cdf value(s) evaluated at x."""
+        return lognormal_cdf(self.mu, self.sigma, x)
+    
+    def ccdf(self, x):
+        """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
+        return lognormal_ccdf(self.mu, self.sigma, x)
+    
+    def logcdf(self, x):
+        """The logarithm of the cdf value(s) evaluated at x."""
+        return lognormal_logcdf(self.mu, self.sigma, x)
+    
+    def logccdf(self, x):
+        """The logarithm of the complementary cdf evaluated at x."""
+        return lognormal_logccdf(self.mu, self.sigma, x)
+    
+    def quantile(self, q):
+        """The quantile value evaluated at q."""
+        return lognormal_invcdf(self.mu, self.sigma, q)
+    
+    def cquantile(self, q):
+        """The complementary quantile value evaluated at q."""
+        return lognormal_invccdf(self.mu, self.sigma, q)
+    
+    def invlogcdf(self, lq):
+        """The inverse function of logcdf."""
+        return lognormal_invlogcdf(self.mu, self.sigma, lq)
+    
+    def invlogccdf(self, lq):
+        """The inverse function of logccdf."""
+        return lognormal_invlogccdf(self.mu, self.sigma, lq)
+    
+    # ========
+    # Sampling
+    # ========
+    
+    def rand(self, n):
+        """Generates a random draw from the distribution."""
+        out = np.empty(n)
+        for i, _ in np.ndenumerate(out):
+            out[i] = lognormal_rand(self.mu, self.sigma)
         return out
 
     

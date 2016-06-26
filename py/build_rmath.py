@@ -161,8 +161,8 @@ def _initiate_univariate():
     from numba import int32, float32
 
     import numpy as np
-    from math import inf, lgamma
-
+    from math import inf, gamma, lgamma
+    from numpy.random import beta
     from specials import digamma
 
     import _rmath_ffi
@@ -684,10 +684,14 @@ if __name__ == '__main__':
     _write_class_specific(mtdt["T"], "v")
     _write_class_rmath("t", "tdist", "v")
 
+    # LogNormal
+    _import_rmath("lnorm", "lognormal", "mu", "sigma")
+    _write_class_specific(mtdt["LogNormal"], "mu", "sigma")
+    _write_class_rmath("lnorm", "lognormal", "mu", "sigma")
 
     # _import_rmath("gamma", "gamma", "alpha", "beta")
     # _import_rmath("beta", "beta", "alpha", "beta")
-    # _import_rmath("lnorm", "lognormal", "mu", "sigma")
+    
     
     # _import_rmath("f", "fdist", "v1", "v2")
     # _import_rmath("t", "tdist", "v")
