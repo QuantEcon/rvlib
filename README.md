@@ -21,6 +21,7 @@ Univariate continuous:
 * Chisq
 * Uniform
 * T
+* Log-normal
 
 Multivariate continuous:
 
