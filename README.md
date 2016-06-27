@@ -7,11 +7,11 @@ A Python library that mimics
 
 Following the API of the `Distributions.jl` package as closely as possible create a python package that has better performance than `scipy.stats`. 
 
-For this end [`numba`](http://numba.pydata.org/) is used to speed up all the attributes of the distribution specific classes. 
+To achieve better performance the attributes are speeded up using [`numba`](http://numba.pydata.org/).
 
-All the classes are marked for optimization using the `@jitclass` decorator. As such, instances of different distributions can be called within user specific routines or passed as arguments in `nopython` mode using `numba`.
+All the classes are marked for optimization using the `@jitclass` decorator. As a result, instances of different distributions can be called within user specific routines or passed as arguments in `nopython` mode using `numba`.
 
-The evaluation and sampling methods are built on the `Rmath` C library -- also used by the `julia` package.
+The evaluation and sampling methods are built on the `Rmath` C library -- also used by the `Distributions.jl` package.
 
 ### Distributions currently implemented
 
@@ -22,6 +22,7 @@ Univariate continuous:
 * Uniform
 * T
 * Log-normal
+* F
 
 Multivariate continuous:
 
