@@ -1356,3 +1356,253 @@ class LogNormal():
         return out
 
     
+# ============================= NEW DISTRIBUTION =================================
+df = _rmath_ffi.lib.df
+pf = _rmath_ffi.lib.pf
+qf = _rmath_ffi.lib.qf
+
+@vectorize(nopython=True)
+def fdist_pdf(v1, v2, x):
+    return df(x, v1, v2, 0)
+
+
+@vectorize(nopython=True)
+def fdist_logpdf(v1, v2, x):
+    return df(x, v1, v2, 1)
+
+
+@vectorize(nopython=True)
+def fdist_cdf(v1, v2, x):
+    return pf(x, v1, v2, 1, 0)
+
+
+@vectorize(nopython=True)
+def fdist_ccdf(v1, v2, x):
+    return pf(x, v1, v2, 0, 0)
+
+
+@vectorize(nopython=True)
+def fdist_logcdf(v1, v2, x):
+    return pf(x, v1, v2, 1, 1)
+
+
+@vectorize(nopython=True)
+def fdist_logccdf(v1, v2, x):
+    return pf(x, v1, v2, 0, 1)
+
+
+@vectorize(nopython=True)
+def fdist_invcdf(v1, v2, q):
+    return qf(q, v1, v2, 1, 0)
+
+
+@vectorize(nopython=True)
+def fdist_invccdf(v1, v2, q):
+    return qf(q, v1, v2, 0, 0)
+
+
+@vectorize(nopython=True)
+def fdist_invlogcdf(v1, v2, lq):
+    return qf(lq, v1, v2, 1, 1)
+
+
+@vectorize(nopython=True)
+def fdist_invlogccdf(v1, v2, lq):
+    return qf(lq, v1, v2, 0, 1)
+
+rf = _rmath_ffi.lib.rf
+
+@jit(nopython=True)
+def fdist_rand(v1, v2):
+    return rf(v1, v2)
+
+
+@vectorize(nopython=True)
+def fdist_mgf(v1, v2, x):
+    return None
+
+@vectorize(nopython=True)
+def fdist_cf(v1, v2, x):
+    return None
+
+#  ------
+#  F
+#  ------
+
+spec = [
+    ('v1', float32), ('v2', float32)
+]
+
+@jitclass(spec)
+class F():
+
+    # set docstring
+    __doc__ = _create_class_docstr(**mtdt['F'])
+
+    def __init__(self, v1, v2):
+        self.v1, self.v2 = v1, v2
+
+    def __str__(self):
+        return "F(d1=%.5f, d2=%.5f)" %(self.params)
+
+    def __repr__(self):
+        return self.__str__()
+
+    # ===================
+    # Parameter retrieval
+    # ===================
+
+    @property
+    def params(self):
+        """Returns parameters."""
+        return (self.v1, self.v2)
+
+    @property
+    def location(self):
+        """Returns location parameter if exists."""
+        return None
+
+    @property
+    def scale(self):
+        """Returns scale parameter if exists."""
+        return None
+
+    @property
+    def shape(self):
+        """Returns shape parameter if exists."""
+        return (self.v1, self.v2)
+
+    # ==========
+    # Statistics
+    # ==========
+
+    @property
+    def mean(self):
+        """Returns mean."""
+        return self.v2/(self.v2 - 2) if self.v2 > 2 else inf
+
+    @property
+    def median(self):
+        """Returns median."""
+        return None
+
+    @property
+    def mode(self):
+        """Returns mode."""
+        return (self.v1 - 2)/self.v1 * self.v2/(self.v2 + 2) if self.v1 > 2 else inf
+
+    @property
+    def var(self):
+        """Returns variance."""
+        return 2*self.v2**2*(self.v1 + self.v2 - 2)/ (self.v1*(self.v2 - 2)**2*(self.v2 - 4)) if self.v2 > 4 else inf
+
+    @property
+    def std(self):
+        """Returns standard deviation."""
+        return np.sqrt(self.var)
+
+    @property
+    def skewness(self):
+        """Returns skewness."""
+        return (2*self.v1 + self.v2 - 2)*np.sqrt(8*(self.v2 - 4))/ ((self.v2 - 6)*np.sqrt(self.v1*(self.v1+self.v2-2))) if self.v2 > 6 else inf
+
+    @property
+    def kurtosis(self):
+        """Returns kurtosis."""
+        return 3 + 12*(self.v1*(5*self.v2 - 22)*(self.v1+self.v2-2) + (self.v2 - 4)*(self.v2 - 2)**2)/ (self.v1*(self.v2-6)*(self.v2-8)*(self.v1+self.v2-2))
+
+    @property
+    def isplatykurtic(self):
+        """Kurtosis being greater than zero."""
+        return self.kurtosis > 0
+
+    @property
+    def isleptokurtic(self):
+        """Kurtosis being smaller than zero."""
+        return self.kurtosis < 0
+
+    @property
+    def ismesokurtic(self):
+        """Kurtosis being equal to zero."""
+        return self.kurtosis == 0.0
+
+    @property
+    def entropy(self):
+        """Returns entropy."""
+        return None
+
+    def mgf(self, x):
+        """Evaluate moment generating function at x."""
+        return fdist_mgf(self.v1, self.v2, x)
+
+    def cf(self, x):
+        """Evaluate characteristic function at x."""
+        return fdist_cf(self.v1, self.v2, x)
+
+    # ==========
+    # Evaluation
+    # ==========
+
+    def insupport(self, x):
+        """When x is a scalar, it returns whether x is within
+        the support of the distribution. When x is an array,
+        it returns whether every element."""
+        return 0 <= x < inf
+
+    def pdf(self, x):
+        """The pdf value(s) evaluated at x."""
+        return fdist_pdf(self.v1, self.v2, x)
+    
+    def logpdf(self, x):
+        """The logarithm of the pdf value(s) evaluated at x."""
+        return fdist_logpdf(self.v1, self.v2, x)
+
+    def loglikelihood(self, x):
+        """The log-likelihood of the distribution w.r.t. all
+        samples contained in array x."""
+        return sum(fdist_logpdf(self.v1, self.v2, x))
+    
+    def cdf(self, x):
+        """The cdf value(s) evaluated at x."""
+        return fdist_cdf(self.v1, self.v2, x)
+    
+    def ccdf(self, x):
+        """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
+        return fdist_ccdf(self.v1, self.v2, x)
+    
+    def logcdf(self, x):
+        """The logarithm of the cdf value(s) evaluated at x."""
+        return fdist_logcdf(self.v1, self.v2, x)
+    
+    def logccdf(self, x):
+        """The logarithm of the complementary cdf evaluated at x."""
+        return fdist_logccdf(self.v1, self.v2, x)
+    
+    def quantile(self, q):
+        """The quantile value evaluated at q."""
+        return fdist_invcdf(self.v1, self.v2, q)
+    
+    def cquantile(self, q):
+        """The complementary quantile value evaluated at q."""
+        return fdist_invccdf(self.v1, self.v2, q)
+    
+    def invlogcdf(self, lq):
+        """The inverse function of logcdf."""
+        return fdist_invlogcdf(self.v1, self.v2, lq)
+    
+    def invlogccdf(self, lq):
+        """The inverse function of logccdf."""
+        return fdist_invlogccdf(self.v1, self.v2, lq)
+    
+    # ========
+    # Sampling
+    # ========
+    
+    def rand(self, n):
+        """Generates a random draw from the distribution."""
+        out = np.empty(n)
+        for i, _ in np.ndenumerate(out):
+            out[i] = fdist_rand(self.v1, self.v2)
+        return out
+
+    

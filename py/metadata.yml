@@ -130,3 +130,35 @@ LogNormal:
      param_descrs: ["Log-scale (mean of log of RV)",
                     "Shape parameter (must be >0, std. of log of RV)"]
      string: LogNormal(mu=%.5f, sigma=%.5f)
+
+F:
+     name: F
+     spec: ('v1', float32), ('v2', float32)
+     pyname: fdist
+     loc: None
+     scale: None
+     shape: (self.v1, self.v2)
+     mean: self.v2/(self.v2 - 2) if self.v2 > 2 else inf
+     median: None
+     mode: (self.v1 - 2)/self.v1 * self.v2/(self.v2 + 2) if self.v1 > 2 else inf
+     var: 2*self.v2**2*(self.v1 + self.v2 - 2)/
+          (self.v1*(self.v2 - 2)**2*(self.v2 - 4)) if self.v2 > 4 else inf
+     std: np.sqrt(self.var)
+     skewness: (2*self.v1 + self.v2 - 2)*np.sqrt(8*(self.v2 - 4))/
+               ((self.v2 - 6)*np.sqrt(self.v1*(self.v1+self.v2-2))) 
+               if self.v2 > 6 else inf
+     kurtosis: 3 + 12*(self.v1*(5*self.v2 - 22)*(self.v1+self.v2-2) + 
+               (self.v2 - 4)*(self.v2 - 2)**2)/
+               (self.v1*(self.v2-6)*(self.v2-8)*(self.v1+self.v2-2))
+     entropy: None
+     mgf: None
+     cf: None
+     insupport: 0 <= x < inf
+     name_doc: F
+     pdf_tex: p(x; d_1, d_2) = \frac{1}{x B(d_1/2, d_2/2)}
+               \sqrt{\frac{(d_1 x)^{d_1} \cdot 
+               d_2^{d_2}}{(d_1 x + d_2)^{d_1 + d_2}}}
+     param_names: ["d1", "d2"]
+     param_descrs: ["Numerator degrees of freedom (must be >0)",
+                    "Denominator degrees of freedom (must be >0)"]
+     string: F(d1=%.5f, d2=%.5f)

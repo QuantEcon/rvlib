@@ -689,11 +689,16 @@ if __name__ == '__main__':
     _write_class_specific(mtdt["LogNormal"], "mu", "sigma")
     _write_class_rmath("lnorm", "lognormal", "mu", "sigma")
 
+    # F
+    _import_rmath("f", "fdist", "v1", "v2")
+    _write_class_specific(mtdt["F"], "v1", "v2")
+    _write_class_rmath("f", "fdist", "v1", "v2")
+
     # _import_rmath("gamma", "gamma", "alpha", "beta")
     # _import_rmath("beta", "beta", "alpha", "beta")
     
     
-    # _import_rmath("f", "fdist", "v1", "v2")
+    
     # _import_rmath("t", "tdist", "v")
     # _import_rmath("binom", "n", "p")
     # _import_rmath("cauchy", "cauchy", "mu", "sigma")
