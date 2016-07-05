@@ -1,13 +1,25 @@
 ## `Distributions.py`
 
-A Python library that mimics
-[`Distributions.jl`](https://github.com/JuliaStats/Distributions.jl)
+Anyone who has used [`Distributions.jl`](https://github.com/JuliaStats/Distributions.jl) will tell
+you how nice the interface is relative to the "exotic" (the most polite word
+we can think of) interface to distributions exposed by
+[scipy.stats](http://docs.scipy.org/doc/scipy-0.17.1/reference/stats.html).
+`Distributions.jl` also brings better performace, particularly when its
+methods are used inside loops.
+
+For these reason we've put together `Distributions.py`, which mimics the
+interface of [`Distributions.jl`](https://github.com/JuliaStats/Distributions.jl).  In addition,
+ we attain similar performance to the Julia
+library by exploiting [`numba`](http://numba.pydata.org/).
+
 
 ### Objectives
 
-Following the API of the `Distributions.jl` package as closely as possible create a python package that has better performance than `scipy.stats`. 
+* Follow the API of the `Distributions.jl` package as closely as possible 
 
-To achieve better performance the attributes are speeded up using [`numba`](http://numba.pydata.org/).
+* Create a python package that has better performance than `scipy.stats`. 
+
+### Methodology
 
 All the classes are marked for optimization using the `@jitclass` decorator. As a result, instances of different distributions can be called within user specific routines or passed as arguments in `nopython` mode using `numba`.
 
