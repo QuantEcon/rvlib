@@ -63,7 +63,57 @@ The following methods can be called for all distributions:
 * `invlogccdf`: evaluate the inverse function of the logccdf
 * `rand`: generate array of independent random draws
 
----
+
+### Use and Performance
+
+Preliminary comparison with the `scipy.stats` pacakage.
+
+```python
+from univariate import Normal
+from scipy.stats import norm
+import numpy as np
+import timeit
+
+N = Normal(0,1) # Distributions.py version
+N_scipy = norm(0,1) # scipy.stats version
+
+x = np.linspace(0,100,100)
+```
+
+
+```python
+%timeit N.pdf(x)
+%timeit N_scipy.pdf(x)
+```
+
+    The slowest run took 19117.74 times longer than the fastest. This could mean that an intermediate result is being cached.
+    1 loop, best of 3: 12.3 µs per loop
+    10000 loops, best of 3: 150 µs per loop
+
+
+
+```python
+%timeit N.cdf(x)
+%timeit N_scipy.cdf(x)
+```
+
+    The slowest run took 20325.82 times longer than the fastest. This could mean that an intermediate result is being cached.
+    100000 loops, best of 3: 8.08 µs per loop
+    The slowest run took 190.64 times longer than the fastest. This could mean that an intermediate result is being cached.
+    10000 loops, best of 3: 126 µs per loop
+
+
+```python
+%timeit N.rand(1000)
+%timeit N_scipy.rvs(1000)
+```
+
+    The slowest run took 2166.80 times longer than the fastest. This could mean that an intermediate result is being cached.
+    10000 loops, best of 3: 85.8 µs per loop
+    10000 loops, best of 3: 119 µs per loop
+
+
+--
 
 This is a fork of the [Rmath-julia](https://github.com/JuliaLang/Rmath-julia)
 library, with Python support added.
