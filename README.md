@@ -48,23 +48,22 @@ The following properties are shared by all the distributions:
 
 The following methods can be called for all distributions:
 
-
 * `mgf`: evaluate the moment generating function
 * `cf`: evaluate the characteristic function
 * `pdf`: evaluate the probability density function
 * `logpdf`: evaluate the log of the pdf
-* `loglikelihood`: the loglikelihood of the distribution with respect to all samples contained in array x
+* `loglikelihood`: evaluate the loglikelihood of the distribution with respect to all samples contained in array x
 * `cdf`: evaluate the cumulative density function
 * `ccdf`: evaluate the complementary cdf, i.e. (1 - cdf)
 * `logcdf`: evaluate the log of the cdf
-* `logccdf`: compute the log of the complementary cumulative density function
-* `quantile`: compute the quantile at critical value
+* `logccdf`: evaluate the log of the complementary cumulative density function
+* `quantile`: evaluate the quantile at critical value
 * `cquantile`: evaluate the complementary quantile function
-* `invlogcdf`: evaluate inverse function of the logcdf
-* `invlogccdf`: evaluate inverse function of the logccdf
+* `invlogcdf`: evaluate the inverse function of the logcdf
+* `invlogccdf`: evaluate the inverse function of the logccdf
 * `rand`: generate array of independent random draws
 
---
+---
 
 This is a fork of the [Rmath-julia](https://github.com/JuliaLang/Rmath-julia)
 library, with Python support added.
