@@ -8,9 +8,8 @@ we can think of) interface to distributions exposed by
 methods are used inside loops.
 
 For these reason we've put together `Distributions.py`, which mimics the
-interface of [`Distributions.jl`](https://github.com/JuliaStats/Distributions.jl).  In addition,
- we attain similar performance to the Julia
-library by exploiting [`numba`](http://numba.pydata.org/).
+interface of [`Distributions.jl`](https://github.com/JuliaStats/Distributions.jl), while at the same
+time attaining similar performance by exploiting [`numba`](http://numba.pydata.org/).
 
 
 ### Objectives
