@@ -83,35 +83,32 @@ x = np.linspace(0,100,100)
 
 ```python
 In [1]: %timeit N.pdf(x)
-Out [1]: 
-    The slowest run took 19117.74 times longer than the fastest. This could mean that an intermediate result is being cached.
+Out[1]: The slowest run took 19117.74 times longer than the fastest. This could mean that an intermediate result is being cached.
     1 loop, best of 3: 12.3 µs per loop
     
 In [2]: %timeit N_scipy.pdf(x)
-Out [2]: 
-    10000 loops, best of 3: 150 µs per loop
+Out[2]: 10000 loops, best of 3: 150 µs per loop
 ```
 
 ```python
-%timeit N.cdf(x)
-%timeit N_scipy.cdf(x)
-```
-
-    The slowest run took 20325.82 times longer than the fastest. This could mean that an intermediate result is being cached.
+In [3]: %timeit N.cdf(x)
+Out[3]: The slowest run took 20325.82 times longer than the fastest. This could mean that an intermediate result is being cached.
     100000 loops, best of 3: 8.08 µs per loop
-    The slowest run took 190.64 times longer than the fastest. This could mean that an intermediate result is being cached.
+
+In [4]: %timeit N_scipy.cdf(x)
+Out[4]:The slowest run took 190.64 times longer than the fastest. This could mean that an intermediate result is being cached.
     10000 loops, best of 3: 126 µs per loop
+```
 
 
 ```python
-%timeit N.rand(1000)
-%timeit N_scipy.rvs(1000)
-```
-
-    The slowest run took 2166.80 times longer than the fastest. This could mean that an intermediate result is being cached.
+In [5]: %timeit N.rand(1000)
+Out[5]: The slowest run took 2166.80 times longer than the fastest. This could mean that an intermediate result is being cached.
     10000 loops, best of 3: 85.8 µs per loop
-    10000 loops, best of 3: 119 µs per loop
-
+    
+In [6]: %timeit N_scipy.rvs(1000)
+Out[6]: 10000 loops, best of 3: 119 µs per loop
+```
 
 --
 
