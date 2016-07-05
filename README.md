@@ -83,8 +83,8 @@ x = np.linspace(0,100,100)
 
 ```python
 In [1]: %timeit N.pdf(x)
-Out[1]: The slowest run took 19117.74 times longer than the fastest. This could mean that an intermediate result is being cached.
-    1 loop, best of 3: 12.3 µs per loop
+Out[1]: The slowest run took 8.85 times longer than the fastest. This could mean that an intermediate result is being cached.
+    100000 loops, best of 3: 9.69 µs per loop
     
 In [2]: %timeit N_scipy.pdf(x)
 Out[2]: 10000 loops, best of 3: 150 µs per loop
