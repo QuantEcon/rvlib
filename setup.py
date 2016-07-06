@@ -9,8 +9,7 @@ VERSION = "0.0.1"
 
 def write_version_py(filename=None):
         doc = ("\"\"\"\n" +
-               "This is a VERSION file and should NOT be manually
-                altered"
+               "This is a VERSION file and should NOT be manually altered"
                + "\n\"\"\"")
         doc += "\nversion = \"%s\"" % VERSION
 
