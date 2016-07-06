@@ -163,7 +163,7 @@ def _initiate_univariate():
     import numpy as np
     from math import inf, gamma, lgamma
     from numpy.random import beta
-    from specials import digamma
+    from .specials import digamma
 
     import _rmath_ffi
     from numba import cffi_support
