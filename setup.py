@@ -1,4 +1,4 @@
-from disutils.core import setup
+from distutils.core import setup
 import os
 
 rootdir = os.path.abspath(os.path.dirname(__file__))
