@@ -28,7 +28,7 @@ write_version_py()
 # Setup
 
 setup(name="Distributions.py",
-      packages=["py"],
+      packages=["Distributions.py"],
       version=VERSION,
       description="Probability distributions mimicking Distrbutions.jl",
       author="dc",
