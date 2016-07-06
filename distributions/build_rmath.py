@@ -165,7 +165,7 @@ def _initiate_univariate():
     from numpy.random import beta
     from .specials import digamma
 
-    import _rmath_ffi
+    import ._rmath_ffi
     from numba import cffi_support
 
     cffi_support.register_module(_rmath_ffi)
