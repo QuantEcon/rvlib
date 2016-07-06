@@ -31,7 +31,7 @@ write_version_py()
 setup(name="Distributions.py",
       packages=["py"],
       version=VERSION,
-      description="Probability distributions mimicing Distrbutions.jl",
+      description="Probability distributions mimicking Distrbutions.jl",
       author="dc",
       author_email="dc",
       url="https://github.com/QuantEcon/Distributions.py", # URL to the github repo
