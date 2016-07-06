@@ -6,10 +6,10 @@ from math import inf, gamma, lgamma
 from numpy.random import beta
 from .specials import digamma
 
-import ._rmath_ffi
+import .rmath_ffi
 from numba import cffi_support
 
-cffi_support.register_module(_rmath_ffi)
+cffi_support.register_module(rmath_ffi)
 
 # shut down divide by zero warnings for now
 import warnings
@@ -107,9 +107,9 @@ def _create_class_docstr(name_doc, param_names, param_descrs,
     return univariate_class_docstr.format(**locals())
 
 # ============================= NEW DISTRIBUTION =================================
-dnorm = _rmath_ffi.lib.dnorm
-pnorm = _rmath_ffi.lib.pnorm
-qnorm = _rmath_ffi.lib.qnorm
+dnorm = rmath_ffi.lib.dnorm
+pnorm = rmath_ffi.lib.pnorm
+qnorm = rmath_ffi.lib.qnorm
 
 @vectorize(nopython=True)
 def norm_pdf(mu, sigma, x):
@@ -357,9 +357,9 @@ class Normal():
 
     
 # ============================= NEW DISTRIBUTION =================================
-dchisq = _rmath_ffi.lib.dchisq
-pchisq = _rmath_ffi.lib.pchisq
-qchisq = _rmath_ffi.lib.qchisq
+dchisq = rmath_ffi.lib.dchisq
+pchisq = rmath_ffi.lib.pchisq
+qchisq = rmath_ffi.lib.qchisq
 
 @vectorize(nopython=True)
 def chisq_pdf(v, x):
@@ -607,9 +607,9 @@ class Chisq():
 
     
 # ============================= NEW DISTRIBUTION =================================
-dunif = _rmath_ffi.lib.dunif
-punif = _rmath_ffi.lib.punif
-qunif = _rmath_ffi.lib.qunif
+dunif = rmath_ffi.lib.dunif
+punif = rmath_ffi.lib.punif
+qunif = rmath_ffi.lib.qunif
 
 @vectorize(nopython=True)
 def unif_pdf(a, b, x):
@@ -857,9 +857,9 @@ class Uniform():
 
     
 # ============================= NEW DISTRIBUTION =================================
-dt = _rmath_ffi.lib.dt
-pt = _rmath_ffi.lib.pt
-qt = _rmath_ffi.lib.qt
+dt = rmath_ffi.lib.dt
+pt = rmath_ffi.lib.pt
+qt = rmath_ffi.lib.qt
 
 @vectorize(nopython=True)
 def tdist_pdf(v, x):
@@ -1107,9 +1107,9 @@ class T():
 
     
 # ============================= NEW DISTRIBUTION =================================
-dlnorm = _rmath_ffi.lib.dlnorm
-plnorm = _rmath_ffi.lib.plnorm
-qlnorm = _rmath_ffi.lib.qlnorm
+dlnorm = rmath_ffi.lib.dlnorm
+plnorm = rmath_ffi.lib.plnorm
+qlnorm = rmath_ffi.lib.qlnorm
 
 @vectorize(nopython=True)
 def lognormal_pdf(mu, sigma, x):
@@ -1357,9 +1357,9 @@ class LogNormal():
 
     
 # ============================= NEW DISTRIBUTION =================================
-df = _rmath_ffi.lib.df
-pf = _rmath_ffi.lib.pf
-qf = _rmath_ffi.lib.qf
+df = rmath_ffi.lib.df
+pf = rmath_ffi.lib.pf
+qf = rmath_ffi.lib.qf
 
 @vectorize(nopython=True)
 def fdist_pdf(v1, v2, x):
