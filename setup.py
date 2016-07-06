@@ -15,7 +15,7 @@ def write_version_py(filename=None):
 
     if not filename:
         filename = os.path.join(
-                os.path.dirname(__file__), "Distributions.py", "version.py")
+                os.path.dirname(__file__), "distributions", "version.py")
 
     f = open(filename, "w")
     try:
@@ -28,7 +28,7 @@ write_version_py()
 # Setup
 
 setup(name="Distributions.py",
-      packages=["Distributions.py"],
+      packages=["distributions"],
       version=VERSION,
       description="Probability distributions mimicking Distrbutions.jl",
       author="dc",
