@@ -9,3 +9,4 @@ attaining similar performance exploiting numba<http://numba.pydata.org/>.
 __version__ = 0.1
 
 from .univariate import *
+from .specials import *
