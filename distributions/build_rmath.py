@@ -18,7 +18,7 @@ extra_compile_args = ['-DMATHLIB_STANDALONE']
 extra_compile_args.append('-std=c99')
 
 ffi = FFI()
-ffi.set_source('_rmath_ffi', '#include <Rmath.h>',
+ffi.set_source('rmath_ffi', '#include <Rmath.h>',
                include_dirs=include_dirs,
                sources=rmath_src,
                libraries=[],
