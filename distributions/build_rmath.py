@@ -18,7 +18,7 @@ extra_compile_args = ['-DMATHLIB_STANDALONE']
 extra_compile_args.append('-std=c99')
 
 ffi = FFI()
-ffi.set_source('rmath_ffi', '#include <Rmath.h>',
+ffi.set_source('_rmath_ffi', '#include <Rmath.h>',
                include_dirs=include_dirs,
                sources=rmath_src,
                libraries=[],
@@ -165,10 +165,10 @@ def _initiate_univariate():
     from numpy.random import beta
     from .specials import digamma
 
-    import .rmath_ffi
+    import _rmath_ffi
     from numba import cffi_support
 
-    cffi_support.register_module(rmath_ffi)
+    cffi_support.register_module(_rmath_ffi)
 
     # shut down divide by zero warnings for now
     import warnings
@@ -316,9 +316,9 @@ def _import_rmath(rname, pyname, *pargs):
     code = """\
 
     # ============================= NEW DISTRIBUTION =================================
-    {dfun} = rmath_ffi.lib.{dfun}
-    {pfun} = rmath_ffi.lib.{pfun}
-    {qfun} = rmath_ffi.lib.{qfun}
+    {dfun} = _rmath_ffi.lib.{dfun}
+    {pfun} = _rmath_ffi.lib.{pfun}
+    {qfun} = _rmath_ffi.lib.{qfun}
 
     @vectorize(nopython=True)
     def {pdf}({p_args}, x):
