@@ -34,6 +34,8 @@ Univariate continuous:
 * T
 * Log-normal
 * F
+* Beta
+* Gamma
 
 Multivariate continuous:
 
