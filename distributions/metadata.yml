@@ -162,3 +162,64 @@ F:
      param_descrs: ["Numerator degrees of freedom (must be >0)",
                     "Denominator degrees of freedom (must be >0)"]
      string: F(d1=%.5f, d2=%.5f)
+
+Gamma:
+     name: Gamma
+     spec: ('alpha', float32), ('beta', float32)
+     pyname: gamma
+     loc: None
+     scale: 1/self.beta
+     shape: self.alpha
+     mean: self.alpha/self.beta
+     median: None
+     mode: (self.alpha - 1)/self.beta if self.alpha >= 1 else None
+     var: self.alpha/(self.beta**2)
+     std: np.sqrt(self.var)
+     skewness: 2/(np.sqrt(self.apha))
+     kurtosis: 3 + 6/self.alpha
+     entropy: self.alpha - np.log(self.beta) + np.log(gamma(self.alpha))
+               + (1 - self.alpha)*digamma(self.alpha)
+     mgf: (1 - x/beta)**(-alpha) if x < beta else None
+     cf: (1 - (1j * x)/beta)**(-alpha)
+     insupport: 0 < x < inf
+     name_doc: Gamma
+     pdf_tex: p(x;\alpha,\beta)=\frac{x^{\alpha-1}e^{-x/\beta}}
+               {\Gamma(\alpha)\beta^{\alpha}}
+     param_names: ["alpha", "beta"]
+     param_descrs: ["Shape parameter", "Rate parameter"]
+     string: Gamma(alpha=%.5f, beta=%.5f)
+
+Beta:
+     name: Beta
+     spec: ('alpha', float32), ('beta', float32)
+     pyname: beta
+     loc: None
+     scale: None
+     shape: (self.alpha, self.beta)
+     mean: self.alpha/(self.alpha + self.beta)
+     median: (self.alpha - 1/3)/(self.alpha + self.beta - 2/3)
+                if self.alpha >=1 and self.beta >= 1 else None
+     mode: (self.alpha - 1)/(self.alpha + self.beta - 2)
+                if self.alpha > 1 and self.beta > 1 else None
+     var: (self.alpha * self.beta)/
+               ((self.alpha + self.beta)**2 * (self.alpha + self.beta + 1))
+     std: np.sqrt(self.var)
+     skewness: 2 * (self.beta - self.alpha) * np.sqrt(self.alpha + self.beta + 1)/
+               ((self.alpha + self.beta + 2) * np.sqrt(self.apha * self.beta))
+     kurtosis: 3 + 6 * ((self.alpha - self.beta)**2*(self.alpha + self.beta + 1) -
+                self.alpha * self.beta * (self.alpha + self.beta + 2) )/
+               (self.alpha * self.beta * (self.alpha + self.beta + 2) * 
+               (self.alpha + self.beta + 3))
+     entropy: np.log(beta(self.alpha, self.beta)) - (self.alpha - 1)*
+               digamma(self.alpha) - (self.beta - 1)*digamma(self.beta) + 
+               (self.alpha + self.beta - 2)*digamma(self.alpha + self.beta)
+     mgf: None
+     cf: None
+     insupport: 0 < x < 1
+     name_doc: Beta
+     pdf_tex: p(x; \alpha, \beta) = \frac{1}{B(\alpha, \beta)}
+               x^{\alpha - 1} (1 - x)^{\beta - 1}, \quad x \in (0, 1)
+     param_names: ["alpha", "beta"]
+     param_descrs: ["First shape parameter (must be >0)",
+                    "Second shape parameter (must be >0)"]
+     string: Beta(alpha=%.5f, beta=%.5f)

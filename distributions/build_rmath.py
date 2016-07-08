@@ -694,12 +694,17 @@ if __name__ == '__main__':
     _write_class_specific(mtdt["F"], "v1", "v2")
     _write_class_rmath("f", "fdist", "v1", "v2")
 
-    # _import_rmath("gamma", "gamma", "alpha", "beta")
-    # _import_rmath("beta", "beta", "alpha", "beta")
+    # Gamma
+    _import_rmath("gamma", "gamma", "alpha", "beta")
+    _write_class_specific(mtdt["Gamma"], "alpha", "beta")
+    _write_class_rmath("gamma", "gamma", "alpha", "beta")
+
+    # Beta
+    _import_rmath("beta", "beta", "alpha", "beta")
+    _write_class_specific(mtdt["Beta"], "alpha", "beta")
+    _write_class_rmath("beta", "beta", "alpha", "beta")
     
     
-    
-    # _import_rmath("t", "tdist", "v")
     # _import_rmath("binom", "n", "p")
     # _import_rmath("cauchy", "cauchy", "mu", "sigma")
     # _import_rmath("exp", "exp", "theta")

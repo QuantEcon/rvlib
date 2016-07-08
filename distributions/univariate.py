@@ -1606,3 +1606,503 @@ class F():
         return out
 
     
+# ============================= NEW DISTRIBUTION =================================
+dgamma = _rmath_ffi.lib.dgamma
+pgamma = _rmath_ffi.lib.pgamma
+qgamma = _rmath_ffi.lib.qgamma
+
+@vectorize(nopython=True)
+def gamma_pdf(alpha, beta, x):
+    return dgamma(x, alpha, beta, 0)
+
+
+@vectorize(nopython=True)
+def gamma_logpdf(alpha, beta, x):
+    return dgamma(x, alpha, beta, 1)
+
+
+@vectorize(nopython=True)
+def gamma_cdf(alpha, beta, x):
+    return pgamma(x, alpha, beta, 1, 0)
+
+
+@vectorize(nopython=True)
+def gamma_ccdf(alpha, beta, x):
+    return pgamma(x, alpha, beta, 0, 0)
+
+
+@vectorize(nopython=True)
+def gamma_logcdf(alpha, beta, x):
+    return pgamma(x, alpha, beta, 1, 1)
+
+
+@vectorize(nopython=True)
+def gamma_logccdf(alpha, beta, x):
+    return pgamma(x, alpha, beta, 0, 1)
+
+
+@vectorize(nopython=True)
+def gamma_invcdf(alpha, beta, q):
+    return qgamma(q, alpha, beta, 1, 0)
+
+
+@vectorize(nopython=True)
+def gamma_invccdf(alpha, beta, q):
+    return qgamma(q, alpha, beta, 0, 0)
+
+
+@vectorize(nopython=True)
+def gamma_invlogcdf(alpha, beta, lq):
+    return qgamma(lq, alpha, beta, 1, 1)
+
+
+@vectorize(nopython=True)
+def gamma_invlogccdf(alpha, beta, lq):
+    return qgamma(lq, alpha, beta, 0, 1)
+
+rgamma = _rmath_ffi.lib.rgamma
+
+@jit(nopython=True)
+def gamma_rand(alpha, beta):
+    return rgamma(alpha, beta)
+
+
+@vectorize(nopython=True)
+def gamma_mgf(alpha, beta, x):
+    return (1 - x/beta)**(-alpha) if x < beta else None
+
+@vectorize(nopython=True)
+def gamma_cf(alpha, beta, x):
+    return (1 - (1j * x)/beta)**(-alpha)
+
+#  ------
+#  Gamma
+#  ------
+
+spec = [
+    ('alpha', float32), ('beta', float32)
+]
+
+@jitclass(spec)
+class Gamma():
+
+    # set docstring
+    __doc__ = _create_class_docstr(**mtdt['Gamma'])
+
+    def __init__(self, alpha, beta):
+        self.alpha, self.beta = alpha, beta
+
+    def __str__(self):
+        return "Gamma(alpha=%.5f, beta=%.5f)" %(self.params)
+
+    def __repr__(self):
+        return self.__str__()
+
+    # ===================
+    # Parameter retrieval
+    # ===================
+
+    @property
+    def params(self):
+        """Returns parameters."""
+        return (self.alpha, self.beta)
+
+    @property
+    def location(self):
+        """Returns location parameter if exists."""
+        return None
+
+    @property
+    def scale(self):
+        """Returns scale parameter if exists."""
+        return 1/self.beta
+
+    @property
+    def shape(self):
+        """Returns shape parameter if exists."""
+        return self.alpha
+
+    # ==========
+    # Statistics
+    # ==========
+
+    @property
+    def mean(self):
+        """Returns mean."""
+        return self.alpha/self.beta
+
+    @property
+    def median(self):
+        """Returns median."""
+        return None
+
+    @property
+    def mode(self):
+        """Returns mode."""
+        return (self.alpha - 1)/self.beta if self.alpha >= 1 else None
+
+    @property
+    def var(self):
+        """Returns variance."""
+        return self.alpha/(self.beta**2)
+
+    @property
+    def std(self):
+        """Returns standard deviation."""
+        return np.sqrt(self.var)
+
+    @property
+    def skewness(self):
+        """Returns skewness."""
+        return 2/(np.sqrt(self.apha))
+
+    @property
+    def kurtosis(self):
+        """Returns kurtosis."""
+        return 3 + 6/self.alpha
+
+    @property
+    def isplatykurtic(self):
+        """Kurtosis being greater than zero."""
+        return self.kurtosis > 0
+
+    @property
+    def isleptokurtic(self):
+        """Kurtosis being smaller than zero."""
+        return self.kurtosis < 0
+
+    @property
+    def ismesokurtic(self):
+        """Kurtosis being equal to zero."""
+        return self.kurtosis == 0.0
+
+    @property
+    def entropy(self):
+        """Returns entropy."""
+        return self.alpha - np.log(self.beta) + np.log(gamma(self.alpha)) + (1 - self.alpha)*digamma(self.alpha)
+
+    def mgf(self, x):
+        """Evaluate moment generating function at x."""
+        return gamma_mgf(self.alpha, self.beta, x)
+
+    def cf(self, x):
+        """Evaluate characteristic function at x."""
+        return gamma_cf(self.alpha, self.beta, x)
+
+    # ==========
+    # Evaluation
+    # ==========
+
+    def insupport(self, x):
+        """When x is a scalar, it returns whether x is within
+        the support of the distribution. When x is an array,
+        it returns whether every element."""
+        return 0 < x < inf
+
+    def pdf(self, x):
+        """The pdf value(s) evaluated at x."""
+        return gamma_pdf(self.alpha, self.beta, x)
+    
+    def logpdf(self, x):
+        """The logarithm of the pdf value(s) evaluated at x."""
+        return gamma_logpdf(self.alpha, self.beta, x)
+
+    def loglikelihood(self, x):
+        """The log-likelihood of the distribution w.r.t. all
+        samples contained in array x."""
+        return sum(gamma_logpdf(self.alpha, self.beta, x))
+    
+    def cdf(self, x):
+        """The cdf value(s) evaluated at x."""
+        return gamma_cdf(self.alpha, self.beta, x)
+    
+    def ccdf(self, x):
+        """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
+        return gamma_ccdf(self.alpha, self.beta, x)
+    
+    def logcdf(self, x):
+        """The logarithm of the cdf value(s) evaluated at x."""
+        return gamma_logcdf(self.alpha, self.beta, x)
+    
+    def logccdf(self, x):
+        """The logarithm of the complementary cdf evaluated at x."""
+        return gamma_logccdf(self.alpha, self.beta, x)
+    
+    def quantile(self, q):
+        """The quantile value evaluated at q."""
+        return gamma_invcdf(self.alpha, self.beta, q)
+    
+    def cquantile(self, q):
+        """The complementary quantile value evaluated at q."""
+        return gamma_invccdf(self.alpha, self.beta, q)
+    
+    def invlogcdf(self, lq):
+        """The inverse function of logcdf."""
+        return gamma_invlogcdf(self.alpha, self.beta, lq)
+    
+    def invlogccdf(self, lq):
+        """The inverse function of logccdf."""
+        return gamma_invlogccdf(self.alpha, self.beta, lq)
+    
+    # ========
+    # Sampling
+    # ========
+    
+    def rand(self, n):
+        """Generates a random draw from the distribution."""
+        out = np.empty(n)
+        for i, _ in np.ndenumerate(out):
+            out[i] = gamma_rand(self.alpha, self.beta)
+        return out
+
+    
+# ============================= NEW DISTRIBUTION =================================
+dbeta = _rmath_ffi.lib.dbeta
+pbeta = _rmath_ffi.lib.pbeta
+qbeta = _rmath_ffi.lib.qbeta
+
+@vectorize(nopython=True)
+def beta_pdf(alpha, beta, x):
+    return dbeta(x, alpha, beta, 0)
+
+
+@vectorize(nopython=True)
+def beta_logpdf(alpha, beta, x):
+    return dbeta(x, alpha, beta, 1)
+
+
+@vectorize(nopython=True)
+def beta_cdf(alpha, beta, x):
+    return pbeta(x, alpha, beta, 1, 0)
+
+
+@vectorize(nopython=True)
+def beta_ccdf(alpha, beta, x):
+    return pbeta(x, alpha, beta, 0, 0)
+
+
+@vectorize(nopython=True)
+def beta_logcdf(alpha, beta, x):
+    return pbeta(x, alpha, beta, 1, 1)
+
+
+@vectorize(nopython=True)
+def beta_logccdf(alpha, beta, x):
+    return pbeta(x, alpha, beta, 0, 1)
+
+
+@vectorize(nopython=True)
+def beta_invcdf(alpha, beta, q):
+    return qbeta(q, alpha, beta, 1, 0)
+
+
+@vectorize(nopython=True)
+def beta_invccdf(alpha, beta, q):
+    return qbeta(q, alpha, beta, 0, 0)
+
+
+@vectorize(nopython=True)
+def beta_invlogcdf(alpha, beta, lq):
+    return qbeta(lq, alpha, beta, 1, 1)
+
+
+@vectorize(nopython=True)
+def beta_invlogccdf(alpha, beta, lq):
+    return qbeta(lq, alpha, beta, 0, 1)
+
+rbeta = _rmath_ffi.lib.rbeta
+
+@jit(nopython=True)
+def beta_rand(alpha, beta):
+    return rbeta(alpha, beta)
+
+
+@vectorize(nopython=True)
+def beta_mgf(alpha, beta, x):
+    return None
+
+@vectorize(nopython=True)
+def beta_cf(alpha, beta, x):
+    return None
+
+#  ------
+#  Beta
+#  ------
+
+spec = [
+    ('alpha', float32), ('beta', float32)
+]
+
+@jitclass(spec)
+class Beta():
+
+    # set docstring
+    __doc__ = _create_class_docstr(**mtdt['Beta'])
+
+    def __init__(self, alpha, beta):
+        self.alpha, self.beta = alpha, beta
+
+    def __str__(self):
+        return "Beta(alpha=%.5f, beta=%.5f)" %(self.params)
+
+    def __repr__(self):
+        return self.__str__()
+
+    # ===================
+    # Parameter retrieval
+    # ===================
+
+    @property
+    def params(self):
+        """Returns parameters."""
+        return (self.alpha, self.beta)
+
+    @property
+    def location(self):
+        """Returns location parameter if exists."""
+        return None
+
+    @property
+    def scale(self):
+        """Returns scale parameter if exists."""
+        return None
+
+    @property
+    def shape(self):
+        """Returns shape parameter if exists."""
+        return (self.alpha, self.beta)
+
+    # ==========
+    # Statistics
+    # ==========
+
+    @property
+    def mean(self):
+        """Returns mean."""
+        return self.alpha/(self.alpha + self.beta)
+
+    @property
+    def median(self):
+        """Returns median."""
+        return (self.alpha - 1/3)/(self.alpha + self.beta - 2/3) if self.alpha >=1 and self.beta >= 1 else None
+
+    @property
+    def mode(self):
+        """Returns mode."""
+        return (self.alpha - 1)/(self.alpha + self.beta - 2) if self.alpha > 1 and self.beta > 1 else None
+
+    @property
+    def var(self):
+        """Returns variance."""
+        return (self.alpha * self.beta)/ ((self.alpha + self.beta)**2 * (self.alpha + self.beta + 1))
+
+    @property
+    def std(self):
+        """Returns standard deviation."""
+        return np.sqrt(self.var)
+
+    @property
+    def skewness(self):
+        """Returns skewness."""
+        return 2 * (self.beta - self.alpha) * np.sqrt(self.alpha + self.beta + 1)/ ((self.alpha + self.beta + 2) * np.sqrt(self.apha * self.beta))
+
+    @property
+    def kurtosis(self):
+        """Returns kurtosis."""
+        return 3 + 6 * ((self.alpha - self.beta)**2*(self.alpha + self.beta + 1) - self.alpha * self.beta * (self.alpha + self.beta + 2) )/ (self.alpha * self.beta * (self.alpha + self.beta + 2) * (self.alpha + self.beta + 3))
+
+    @property
+    def isplatykurtic(self):
+        """Kurtosis being greater than zero."""
+        return self.kurtosis > 0
+
+    @property
+    def isleptokurtic(self):
+        """Kurtosis being smaller than zero."""
+        return self.kurtosis < 0
+
+    @property
+    def ismesokurtic(self):
+        """Kurtosis being equal to zero."""
+        return self.kurtosis == 0.0
+
+    @property
+    def entropy(self):
+        """Returns entropy."""
+        return np.log(beta(self.alpha, self.beta)) - (self.alpha - 1)* digamma(self.alpha) - (self.beta - 1)*digamma(self.beta) + (self.alpha + self.beta - 2)*digamma(self.alpha + self.beta)
+
+    def mgf(self, x):
+        """Evaluate moment generating function at x."""
+        return beta_mgf(self.alpha, self.beta, x)
+
+    def cf(self, x):
+        """Evaluate characteristic function at x."""
+        return beta_cf(self.alpha, self.beta, x)
+
+    # ==========
+    # Evaluation
+    # ==========
+
+    def insupport(self, x):
+        """When x is a scalar, it returns whether x is within
+        the support of the distribution. When x is an array,
+        it returns whether every element."""
+        return 0 < x < 1
+
+    def pdf(self, x):
+        """The pdf value(s) evaluated at x."""
+        return beta_pdf(self.alpha, self.beta, x)
+    
+    def logpdf(self, x):
+        """The logarithm of the pdf value(s) evaluated at x."""
+        return beta_logpdf(self.alpha, self.beta, x)
+
+    def loglikelihood(self, x):
+        """The log-likelihood of the distribution w.r.t. all
+        samples contained in array x."""
+        return sum(beta_logpdf(self.alpha, self.beta, x))
+    
+    def cdf(self, x):
+        """The cdf value(s) evaluated at x."""
+        return beta_cdf(self.alpha, self.beta, x)
+    
+    def ccdf(self, x):
+        """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
+        return beta_ccdf(self.alpha, self.beta, x)
+    
+    def logcdf(self, x):
+        """The logarithm of the cdf value(s) evaluated at x."""
+        return beta_logcdf(self.alpha, self.beta, x)
+    
+    def logccdf(self, x):
+        """The logarithm of the complementary cdf evaluated at x."""
+        return beta_logccdf(self.alpha, self.beta, x)
+    
+    def quantile(self, q):
+        """The quantile value evaluated at q."""
+        return beta_invcdf(self.alpha, self.beta, q)
+    
+    def cquantile(self, q):
+        """The complementary quantile value evaluated at q."""
+        return beta_invccdf(self.alpha, self.beta, q)
+    
+    def invlogcdf(self, lq):
+        """The inverse function of logcdf."""
+        return beta_invlogcdf(self.alpha, self.beta, lq)
+    
+    def invlogccdf(self, lq):
+        """The inverse function of logccdf."""
+        return beta_invlogccdf(self.alpha, self.beta, lq)
+    
+    # ========
+    # Sampling
+    # ========
+    
+    def rand(self, n):
+        """Generates a random draw from the distribution."""
+        out = np.empty(n)
+        for i, _ in np.ndenumerate(out):
+            out[i] = beta_rand(self.alpha, self.beta)
+        return out
+
+    
