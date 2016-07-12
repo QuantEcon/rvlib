@@ -223,3 +223,77 @@ Beta:
      param_descrs: ["First shape parameter (must be >0)",
                     "Second shape parameter (must be >0)"]
      string: Beta(alpha=%.5f, beta=%.5f)
+
+Exp:
+     name: Exponential
+     spec: ('theta', float32)
+     pyname: exp
+     loc: None
+     scale: 1/self.theta
+     shape: None
+     mean: 1/self.theta
+     median: 1/self.theta * np.log(2)
+     mode: 0
+     var: self.theta**(-2)
+     std: np.sqrt(self.var)
+     skewness: 2
+     kurtosis: 9
+     entropy: 1 - np.log(self.theta)
+     mgf: theta/(theta - x) if x < theta else None
+     cf: theta/(theta - 1j*x)
+     insupport: 0 <= x < inf
+     name_doc: Exponential
+     pdf_tex: p(x; \theta) = \theta e^{-\theta x}
+     param_names: ["theta"]
+     param_descrs: ["Rate parameter"]
+     string: Exponential(theta=%.5f)
+
+Cauchy:
+     name: Cauchy
+     spec: ('mu', float32), ('sigma', float32)
+     pyname: cauchy
+     loc: self.mu
+     scale: self.sigma
+     shape: None
+     mean: None
+     median: self.mu
+     mode: self.mu
+     var: None
+     std: None
+     skewness: None
+     kurtosis: None
+     entropy: np.log(self.sigma) + np.log(4*np.pi)
+     mgf: None
+     cf: np.exp(mu*1j*x - sigma*np.abs(x))
+     insupport: -inf < x < inf
+     name_doc: Cauchy
+     pdf_tex: p(x; \mu, \sigma) = \frac{1}{\pi \sigma (1 + 
+               (\frac{x - \mu}{\sigma})^2)}
+     param_names: ["mu", "sigma"]
+     param_descrs: ["Location parameter", "Scale parameter"]
+     string: Cauchy(mu=%.5f, sigma=%.5f)
+
+Poisson:
+     name: Poisson
+     spec: ('lambda', float32)
+     pyname: pois
+     loc: None
+     scale: None
+     shape: self.lambda
+     mean: self.lambda
+     median: floor(self.lambda + 1/3 - 0.02/self.lambda)
+     mode: (ceil(self.lambda) - 1, floor(self.lambda))
+     var: self.lambda
+     std: np.sqrt(self.var)
+     skewness: self.lambda**(.5)
+     kurtosis: 1/self.lambda
+     entropy: .5*np.log(2*np.pi*np.e*self.lambda) - 1/(12*self.lambda) - 
+               1/(24*self.lambda**2) - 19/(360*self.lambda**3)
+     mgf: np.exp(lamba(np.exp(x) - 1))
+     cf: np.exp(lamba(np.exp(1j*x) - 1))
+     insupport: isinstance(x, int)
+     name_doc: Poisson
+     pdf_tex: p(x; \lambda) = e^{-\lambda} * \frac{\lambda^k}{k!}
+     param_names: ["lambda"]
+     param_descrs: ["Shape parameter"]
+     string: Poisson(lambda=%.5f)

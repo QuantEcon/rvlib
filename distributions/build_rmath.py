@@ -161,7 +161,7 @@ def _initiate_univariate():
     from numba import int32, float32
 
     import numpy as np
-    from math import inf, gamma, lgamma
+    from math import inf, gamma, lgamma, ceil, floor
     from numpy.random import beta
     from .specials import digamma
 
@@ -704,13 +704,24 @@ if __name__ == '__main__':
     _write_class_specific(mtdt["Beta"], "alpha", "beta")
     _write_class_rmath("beta", "beta", "alpha", "beta")
     
-    
+    # Exponential
+    _import_rmath("exp", "exp", "theta")
+    _write_class_specific(mtdt["Exp"], "theta")
+    _write_class_rmath("exp", "exp", "theta")
+
+    # Cauchy
+    _import_rmath("cauchy", "cauchy", "mu", "sigma")
+    _write_class_specific(mtdt["Cauchy"], "mu", "sigma")
+    _write_class_rmath("cauchy", "cauchy", "mu", "sigma")   
+
+    # Poisson
+    _import_rmath("pois", "pois", "lambda")
+    _write_class_specific(mtdt["Poisson"], "lambda")
+    _write_class_rmath("pois", "pois", "lambda")
+
     # _import_rmath("binom", "n", "p")
-    # _import_rmath("cauchy", "cauchy", "mu", "sigma")
-    # _import_rmath("exp", "exp", "theta")
     # _import_rmath("geom", "geom", "p")
     # _import_rmath("hyper", "hyper", "s", "f", "n")
     # _import_rmath("nbinom", "nbinom", "r", "p")
-    # _import_rmath("pois", "pois", "lambda")
     # _import_rmath("weibull", "weibull", "alpha", "theta")
     # _import_rmath("logis", "logis", "mu", "theta")

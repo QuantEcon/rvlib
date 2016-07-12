@@ -2,7 +2,7 @@ from numba import vectorize, jit, jitclass
 from numba import int32, float32
 
 import numpy as np
-from math import inf, gamma, lgamma
+from math import inf, gamma, lgamma, ceil, floor
 from numpy.random import beta
 from .specials import digamma
 
@@ -2103,6 +2103,756 @@ class Beta():
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = beta_rand(self.alpha, self.beta)
+        return out
+
+    
+# ============================= NEW DISTRIBUTION =================================
+dexp = _rmath_ffi.lib.dexp
+pexp = _rmath_ffi.lib.pexp
+qexp = _rmath_ffi.lib.qexp
+
+@vectorize(nopython=True)
+def exp_pdf(theta, x):
+    return dexp(x, theta, 0)
+
+
+@vectorize(nopython=True)
+def exp_logpdf(theta, x):
+    return dexp(x, theta, 1)
+
+
+@vectorize(nopython=True)
+def exp_cdf(theta, x):
+    return pexp(x, theta, 1, 0)
+
+
+@vectorize(nopython=True)
+def exp_ccdf(theta, x):
+    return pexp(x, theta, 0, 0)
+
+
+@vectorize(nopython=True)
+def exp_logcdf(theta, x):
+    return pexp(x, theta, 1, 1)
+
+
+@vectorize(nopython=True)
+def exp_logccdf(theta, x):
+    return pexp(x, theta, 0, 1)
+
+
+@vectorize(nopython=True)
+def exp_invcdf(theta, q):
+    return qexp(q, theta, 1, 0)
+
+
+@vectorize(nopython=True)
+def exp_invccdf(theta, q):
+    return qexp(q, theta, 0, 0)
+
+
+@vectorize(nopython=True)
+def exp_invlogcdf(theta, lq):
+    return qexp(lq, theta, 1, 1)
+
+
+@vectorize(nopython=True)
+def exp_invlogccdf(theta, lq):
+    return qexp(lq, theta, 0, 1)
+
+rexp = _rmath_ffi.lib.rexp
+
+@jit(nopython=True)
+def exp_rand(theta):
+    return rexp(theta)
+
+
+@vectorize(nopython=True)
+def exp_mgf(theta, x):
+    return theta/(theta - x) if x < theta else None
+
+@vectorize(nopython=True)
+def exp_cf(theta, x):
+    return theta/(theta - 1j*x)
+
+#  ------
+#  Exponential
+#  ------
+
+spec = [
+    ('theta', float32)
+]
+
+@jitclass(spec)
+class Exponential():
+
+    # set docstring
+    __doc__ = _create_class_docstr(**mtdt['Exponential'])
+
+    def __init__(self, theta):
+        self.theta = theta
+
+    def __str__(self):
+        return "Exponential(theta=%.5f)" %(self.params)
+
+    def __repr__(self):
+        return self.__str__()
+
+    # ===================
+    # Parameter retrieval
+    # ===================
+
+    @property
+    def params(self):
+        """Returns parameters."""
+        return (self.theta)
+
+    @property
+    def location(self):
+        """Returns location parameter if exists."""
+        return None
+
+    @property
+    def scale(self):
+        """Returns scale parameter if exists."""
+        return 1/self.theta
+
+    @property
+    def shape(self):
+        """Returns shape parameter if exists."""
+        return None
+
+    # ==========
+    # Statistics
+    # ==========
+
+    @property
+    def mean(self):
+        """Returns mean."""
+        return 1/self.theta
+
+    @property
+    def median(self):
+        """Returns median."""
+        return 1/self.theta * np.log(2)
+
+    @property
+    def mode(self):
+        """Returns mode."""
+        return 0
+
+    @property
+    def var(self):
+        """Returns variance."""
+        return self.theta**(-2)
+
+    @property
+    def std(self):
+        """Returns standard deviation."""
+        return np.sqrt(self.var)
+
+    @property
+    def skewness(self):
+        """Returns skewness."""
+        return 2
+
+    @property
+    def kurtosis(self):
+        """Returns kurtosis."""
+        return 9
+
+    @property
+    def isplatykurtic(self):
+        """Kurtosis being greater than zero."""
+        return self.kurtosis > 0
+
+    @property
+    def isleptokurtic(self):
+        """Kurtosis being smaller than zero."""
+        return self.kurtosis < 0
+
+    @property
+    def ismesokurtic(self):
+        """Kurtosis being equal to zero."""
+        return self.kurtosis == 0.0
+
+    @property
+    def entropy(self):
+        """Returns entropy."""
+        return 1 - np.log(self.theta)
+
+    def mgf(self, x):
+        """Evaluate moment generating function at x."""
+        return exp_mgf(self.theta, x)
+
+    def cf(self, x):
+        """Evaluate characteristic function at x."""
+        return exp_cf(self.theta, x)
+
+    # ==========
+    # Evaluation
+    # ==========
+
+    def insupport(self, x):
+        """When x is a scalar, it returns whether x is within
+        the support of the distribution. When x is an array,
+        it returns whether every element."""
+        return 0 <= x < inf
+
+    def pdf(self, x):
+        """The pdf value(s) evaluated at x."""
+        return exp_pdf(self.theta, x)
+    
+    def logpdf(self, x):
+        """The logarithm of the pdf value(s) evaluated at x."""
+        return exp_logpdf(self.theta, x)
+
+    def loglikelihood(self, x):
+        """The log-likelihood of the distribution w.r.t. all
+        samples contained in array x."""
+        return sum(exp_logpdf(self.theta, x))
+    
+    def cdf(self, x):
+        """The cdf value(s) evaluated at x."""
+        return exp_cdf(self.theta, x)
+    
+    def ccdf(self, x):
+        """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
+        return exp_ccdf(self.theta, x)
+    
+    def logcdf(self, x):
+        """The logarithm of the cdf value(s) evaluated at x."""
+        return exp_logcdf(self.theta, x)
+    
+    def logccdf(self, x):
+        """The logarithm of the complementary cdf evaluated at x."""
+        return exp_logccdf(self.theta, x)
+    
+    def quantile(self, q):
+        """The quantile value evaluated at q."""
+        return exp_invcdf(self.theta, q)
+    
+    def cquantile(self, q):
+        """The complementary quantile value evaluated at q."""
+        return exp_invccdf(self.theta, q)
+    
+    def invlogcdf(self, lq):
+        """The inverse function of logcdf."""
+        return exp_invlogcdf(self.theta, lq)
+    
+    def invlogccdf(self, lq):
+        """The inverse function of logccdf."""
+        return exp_invlogccdf(self.theta, lq)
+    
+    # ========
+    # Sampling
+    # ========
+    
+    def rand(self, n):
+        """Generates a random draw from the distribution."""
+        out = np.empty(n)
+        for i, _ in np.ndenumerate(out):
+            out[i] = exp_rand(self.theta)
+        return out
+
+    
+# ============================= NEW DISTRIBUTION =================================
+dcauchy = _rmath_ffi.lib.dcauchy
+pcauchy = _rmath_ffi.lib.pcauchy
+qcauchy = _rmath_ffi.lib.qcauchy
+
+@vectorize(nopython=True)
+def cauchy_pdf(mu, sigma, x):
+    return dcauchy(x, mu, sigma, 0)
+
+
+@vectorize(nopython=True)
+def cauchy_logpdf(mu, sigma, x):
+    return dcauchy(x, mu, sigma, 1)
+
+
+@vectorize(nopython=True)
+def cauchy_cdf(mu, sigma, x):
+    return pcauchy(x, mu, sigma, 1, 0)
+
+
+@vectorize(nopython=True)
+def cauchy_ccdf(mu, sigma, x):
+    return pcauchy(x, mu, sigma, 0, 0)
+
+
+@vectorize(nopython=True)
+def cauchy_logcdf(mu, sigma, x):
+    return pcauchy(x, mu, sigma, 1, 1)
+
+
+@vectorize(nopython=True)
+def cauchy_logccdf(mu, sigma, x):
+    return pcauchy(x, mu, sigma, 0, 1)
+
+
+@vectorize(nopython=True)
+def cauchy_invcdf(mu, sigma, q):
+    return qcauchy(q, mu, sigma, 1, 0)
+
+
+@vectorize(nopython=True)
+def cauchy_invccdf(mu, sigma, q):
+    return qcauchy(q, mu, sigma, 0, 0)
+
+
+@vectorize(nopython=True)
+def cauchy_invlogcdf(mu, sigma, lq):
+    return qcauchy(lq, mu, sigma, 1, 1)
+
+
+@vectorize(nopython=True)
+def cauchy_invlogccdf(mu, sigma, lq):
+    return qcauchy(lq, mu, sigma, 0, 1)
+
+rcauchy = _rmath_ffi.lib.rcauchy
+
+@jit(nopython=True)
+def cauchy_rand(mu, sigma):
+    return rcauchy(mu, sigma)
+
+
+@vectorize(nopython=True)
+def cauchy_mgf(mu, sigma, x):
+    return None
+
+@vectorize(nopython=True)
+def cauchy_cf(mu, sigma, x):
+    return np.exp(mu*1j*x - sigma*np.abs(x))
+
+#  ------
+#  Cauchy
+#  ------
+
+spec = [
+    ('mu', float32), ('sigma', float32)
+]
+
+@jitclass(spec)
+class Cauchy():
+
+    # set docstring
+    __doc__ = _create_class_docstr(**mtdt['Cauchy'])
+
+    def __init__(self, mu, sigma):
+        self.mu, self.sigma = mu, sigma
+
+    def __str__(self):
+        return "Cauchy(mu=%.5f, sigma=%.5f)" %(self.params)
+
+    def __repr__(self):
+        return self.__str__()
+
+    # ===================
+    # Parameter retrieval
+    # ===================
+
+    @property
+    def params(self):
+        """Returns parameters."""
+        return (self.mu, self.sigma)
+
+    @property
+    def location(self):
+        """Returns location parameter if exists."""
+        return self.mu
+
+    @property
+    def scale(self):
+        """Returns scale parameter if exists."""
+        return self.sigma
+
+    @property
+    def shape(self):
+        """Returns shape parameter if exists."""
+        return None
+
+    # ==========
+    # Statistics
+    # ==========
+
+    @property
+    def mean(self):
+        """Returns mean."""
+        return None
+
+    @property
+    def median(self):
+        """Returns median."""
+        return self.mu
+
+    @property
+    def mode(self):
+        """Returns mode."""
+        return self.mu
+
+    @property
+    def var(self):
+        """Returns variance."""
+        return None
+
+    @property
+    def std(self):
+        """Returns standard deviation."""
+        return None
+
+    @property
+    def skewness(self):
+        """Returns skewness."""
+        return None
+
+    @property
+    def kurtosis(self):
+        """Returns kurtosis."""
+        return None
+
+    @property
+    def isplatykurtic(self):
+        """Kurtosis being greater than zero."""
+        return self.kurtosis > 0
+
+    @property
+    def isleptokurtic(self):
+        """Kurtosis being smaller than zero."""
+        return self.kurtosis < 0
+
+    @property
+    def ismesokurtic(self):
+        """Kurtosis being equal to zero."""
+        return self.kurtosis == 0.0
+
+    @property
+    def entropy(self):
+        """Returns entropy."""
+        return np.log(self.sigma) + np.log(4*np.pi)
+
+    def mgf(self, x):
+        """Evaluate moment generating function at x."""
+        return cauchy_mgf(self.mu, self.sigma, x)
+
+    def cf(self, x):
+        """Evaluate characteristic function at x."""
+        return cauchy_cf(self.mu, self.sigma, x)
+
+    # ==========
+    # Evaluation
+    # ==========
+
+    def insupport(self, x):
+        """When x is a scalar, it returns whether x is within
+        the support of the distribution. When x is an array,
+        it returns whether every element."""
+        return -inf < x < inf
+
+    def pdf(self, x):
+        """The pdf value(s) evaluated at x."""
+        return cauchy_pdf(self.mu, self.sigma, x)
+    
+    def logpdf(self, x):
+        """The logarithm of the pdf value(s) evaluated at x."""
+        return cauchy_logpdf(self.mu, self.sigma, x)
+
+    def loglikelihood(self, x):
+        """The log-likelihood of the distribution w.r.t. all
+        samples contained in array x."""
+        return sum(cauchy_logpdf(self.mu, self.sigma, x))
+    
+    def cdf(self, x):
+        """The cdf value(s) evaluated at x."""
+        return cauchy_cdf(self.mu, self.sigma, x)
+    
+    def ccdf(self, x):
+        """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
+        return cauchy_ccdf(self.mu, self.sigma, x)
+    
+    def logcdf(self, x):
+        """The logarithm of the cdf value(s) evaluated at x."""
+        return cauchy_logcdf(self.mu, self.sigma, x)
+    
+    def logccdf(self, x):
+        """The logarithm of the complementary cdf evaluated at x."""
+        return cauchy_logccdf(self.mu, self.sigma, x)
+    
+    def quantile(self, q):
+        """The quantile value evaluated at q."""
+        return cauchy_invcdf(self.mu, self.sigma, q)
+    
+    def cquantile(self, q):
+        """The complementary quantile value evaluated at q."""
+        return cauchy_invccdf(self.mu, self.sigma, q)
+    
+    def invlogcdf(self, lq):
+        """The inverse function of logcdf."""
+        return cauchy_invlogcdf(self.mu, self.sigma, lq)
+    
+    def invlogccdf(self, lq):
+        """The inverse function of logccdf."""
+        return cauchy_invlogccdf(self.mu, self.sigma, lq)
+    
+    # ========
+    # Sampling
+    # ========
+    
+    def rand(self, n):
+        """Generates a random draw from the distribution."""
+        out = np.empty(n)
+        for i, _ in np.ndenumerate(out):
+            out[i] = cauchy_rand(self.mu, self.sigma)
+        return out
+
+    
+# ============================= NEW DISTRIBUTION =================================
+dpois = _rmath_ffi.lib.dpois
+ppois = _rmath_ffi.lib.ppois
+qpois = _rmath_ffi.lib.qpois
+
+@vectorize(nopython=True)
+def pois_pdf(lambda, x):
+    return dpois(x, lambda, 0)
+
+
+@vectorize(nopython=True)
+def pois_logpdf(lambda, x):
+    return dpois(x, lambda, 1)
+
+
+@vectorize(nopython=True)
+def pois_cdf(lambda, x):
+    return ppois(x, lambda, 1, 0)
+
+
+@vectorize(nopython=True)
+def pois_ccdf(lambda, x):
+    return ppois(x, lambda, 0, 0)
+
+
+@vectorize(nopython=True)
+def pois_logcdf(lambda, x):
+    return ppois(x, lambda, 1, 1)
+
+
+@vectorize(nopython=True)
+def pois_logccdf(lambda, x):
+    return ppois(x, lambda, 0, 1)
+
+
+@vectorize(nopython=True)
+def pois_invcdf(lambda, q):
+    return qpois(q, lambda, 1, 0)
+
+
+@vectorize(nopython=True)
+def pois_invccdf(lambda, q):
+    return qpois(q, lambda, 0, 0)
+
+
+@vectorize(nopython=True)
+def pois_invlogcdf(lambda, lq):
+    return qpois(lq, lambda, 1, 1)
+
+
+@vectorize(nopython=True)
+def pois_invlogccdf(lambda, lq):
+    return qpois(lq, lambda, 0, 1)
+
+rpois = _rmath_ffi.lib.rpois
+
+@jit(nopython=True)
+def pois_rand(lambda):
+    return rpois(lambda)
+
+
+@vectorize(nopython=True)
+def pois_mgf(lambda, x):
+    return np.exp(lamba(np.exp(x) - 1))
+
+@vectorize(nopython=True)
+def pois_cf(lambda, x):
+    return np.exp(lamba(np.exp(1j*x) - 1))
+
+#  ------
+#  Poisson
+#  ------
+
+spec = [
+    ('lambda', float32)
+]
+
+@jitclass(spec)
+class Poisson():
+
+    # set docstring
+    __doc__ = _create_class_docstr(**mtdt['Poisson'])
+
+    def __init__(self, lambda):
+        self.lambda = lambda
+
+    def __str__(self):
+        return "Poisson(lambda=%.5f)" %(self.params)
+
+    def __repr__(self):
+        return self.__str__()
+
+    # ===================
+    # Parameter retrieval
+    # ===================
+
+    @property
+    def params(self):
+        """Returns parameters."""
+        return (self.lambda)
+
+    @property
+    def location(self):
+        """Returns location parameter if exists."""
+        return None
+
+    @property
+    def scale(self):
+        """Returns scale parameter if exists."""
+        return None
+
+    @property
+    def shape(self):
+        """Returns shape parameter if exists."""
+        return self.lambda
+
+    # ==========
+    # Statistics
+    # ==========
+
+    @property
+    def mean(self):
+        """Returns mean."""
+        return self.lambda
+
+    @property
+    def median(self):
+        """Returns median."""
+        return floor(self.lambda + 1/3 - 0.02/self.lambda)
+
+    @property
+    def mode(self):
+        """Returns mode."""
+        return (ceil(self.lambda) - 1, floor(self.lambda))
+
+    @property
+    def var(self):
+        """Returns variance."""
+        return self.lambda
+
+    @property
+    def std(self):
+        """Returns standard deviation."""
+        return np.sqrt(self.var)
+
+    @property
+    def skewness(self):
+        """Returns skewness."""
+        return self.lambda**(.5)
+
+    @property
+    def kurtosis(self):
+        """Returns kurtosis."""
+        return 1/self.lambda
+
+    @property
+    def isplatykurtic(self):
+        """Kurtosis being greater than zero."""
+        return self.kurtosis > 0
+
+    @property
+    def isleptokurtic(self):
+        """Kurtosis being smaller than zero."""
+        return self.kurtosis < 0
+
+    @property
+    def ismesokurtic(self):
+        """Kurtosis being equal to zero."""
+        return self.kurtosis == 0.0
+
+    @property
+    def entropy(self):
+        """Returns entropy."""
+        return .5*np.log(2*np.pi*np.e*self.lambda) - 1/(12*self.lambda) - 1/(24*self.lambda**2) - 19/(360*self.lambda**3)
+
+    def mgf(self, x):
+        """Evaluate moment generating function at x."""
+        return pois_mgf(self.lambda, x)
+
+    def cf(self, x):
+        """Evaluate characteristic function at x."""
+        return pois_cf(self.lambda, x)
+
+    # ==========
+    # Evaluation
+    # ==========
+
+    def insupport(self, x):
+        """When x is a scalar, it returns whether x is within
+        the support of the distribution. When x is an array,
+        it returns whether every element."""
+        return isinstance(x, int)
+
+    def pdf(self, x):
+        """The pdf value(s) evaluated at x."""
+        return pois_pdf(self.lambda, x)
+    
+    def logpdf(self, x):
+        """The logarithm of the pdf value(s) evaluated at x."""
+        return pois_logpdf(self.lambda, x)
+
+    def loglikelihood(self, x):
+        """The log-likelihood of the distribution w.r.t. all
+        samples contained in array x."""
+        return sum(pois_logpdf(self.lambda, x))
+    
+    def cdf(self, x):
+        """The cdf value(s) evaluated at x."""
+        return pois_cdf(self.lambda, x)
+    
+    def ccdf(self, x):
+        """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
+        return pois_ccdf(self.lambda, x)
+    
+    def logcdf(self, x):
+        """The logarithm of the cdf value(s) evaluated at x."""
+        return pois_logcdf(self.lambda, x)
+    
+    def logccdf(self, x):
+        """The logarithm of the complementary cdf evaluated at x."""
+        return pois_logccdf(self.lambda, x)
+    
+    def quantile(self, q):
+        """The quantile value evaluated at q."""
+        return pois_invcdf(self.lambda, q)
+    
+    def cquantile(self, q):
+        """The complementary quantile value evaluated at q."""
+        return pois_invccdf(self.lambda, q)
+    
+    def invlogcdf(self, lq):
+        """The inverse function of logcdf."""
+        return pois_invlogcdf(self.lambda, lq)
+    
+    def invlogccdf(self, lq):
+        """The inverse function of logccdf."""
+        return pois_invlogccdf(self.lambda, lq)
+    
+    # ========
+    # Sampling
+    # ========
+    
+    def rand(self, n):
+        """Generates a random draw from the distribution."""
+        out = np.empty(n)
+        for i, _ in np.ndenumerate(out):
+            out[i] = pois_rand(self.lambda)
         return out
 
     
