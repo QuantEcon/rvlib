@@ -715,9 +715,9 @@ if __name__ == '__main__':
     _write_class_rmath("cauchy", "cauchy", "mu", "sigma")   
 
     # Poisson
-    _import_rmath("pois", "pois", "lambda")
-    _write_class_specific(mtdt["Poisson"], "lambda")
-    _write_class_rmath("pois", "pois", "lambda")
+    _import_rmath("pois", "pois", "mu")
+    _write_class_specific(mtdt["Poisson"], "mu")
+    _write_class_rmath("pois", "pois", "mu")
 
     # _import_rmath("binom", "n", "p")
     # _import_rmath("geom", "geom", "p")

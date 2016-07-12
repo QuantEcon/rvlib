@@ -2612,75 +2612,75 @@ ppois = _rmath_ffi.lib.ppois
 qpois = _rmath_ffi.lib.qpois
 
 @vectorize(nopython=True)
-def pois_pdf(lambda, x):
-    return dpois(x, lambda, 0)
+def pois_pdf(mu, x):
+    return dpois(x, mu, 0)
 
 
 @vectorize(nopython=True)
-def pois_logpdf(lambda, x):
-    return dpois(x, lambda, 1)
+def pois_logpdf(mu, x):
+    return dpois(x, mu, 1)
 
 
 @vectorize(nopython=True)
-def pois_cdf(lambda, x):
-    return ppois(x, lambda, 1, 0)
+def pois_cdf(mu, x):
+    return ppois(x, mu, 1, 0)
 
 
 @vectorize(nopython=True)
-def pois_ccdf(lambda, x):
-    return ppois(x, lambda, 0, 0)
+def pois_ccdf(mu, x):
+    return ppois(x, mu, 0, 0)
 
 
 @vectorize(nopython=True)
-def pois_logcdf(lambda, x):
-    return ppois(x, lambda, 1, 1)
+def pois_logcdf(mu, x):
+    return ppois(x, mu, 1, 1)
 
 
 @vectorize(nopython=True)
-def pois_logccdf(lambda, x):
-    return ppois(x, lambda, 0, 1)
+def pois_logccdf(mu, x):
+    return ppois(x, mu, 0, 1)
 
 
 @vectorize(nopython=True)
-def pois_invcdf(lambda, q):
-    return qpois(q, lambda, 1, 0)
+def pois_invcdf(mu, q):
+    return qpois(q, mu, 1, 0)
 
 
 @vectorize(nopython=True)
-def pois_invccdf(lambda, q):
-    return qpois(q, lambda, 0, 0)
+def pois_invccdf(mu, q):
+    return qpois(q, mu, 0, 0)
 
 
 @vectorize(nopython=True)
-def pois_invlogcdf(lambda, lq):
-    return qpois(lq, lambda, 1, 1)
+def pois_invlogcdf(mu, lq):
+    return qpois(lq, mu, 1, 1)
 
 
 @vectorize(nopython=True)
-def pois_invlogccdf(lambda, lq):
-    return qpois(lq, lambda, 0, 1)
+def pois_invlogccdf(mu, lq):
+    return qpois(lq, mu, 0, 1)
 
 rpois = _rmath_ffi.lib.rpois
 
 @jit(nopython=True)
-def pois_rand(lambda):
-    return rpois(lambda)
+def pois_rand(mu):
+    return rpois(mu)
 
 
 @vectorize(nopython=True)
-def pois_mgf(lambda, x):
-    return np.exp(lamba(np.exp(x) - 1))
+def pois_mgf(mu, x):
+    return np.exp(mua(np.exp(x) - 1))
 
 @vectorize(nopython=True)
-def pois_cf(lambda, x):
-    return np.exp(lamba(np.exp(1j*x) - 1))
+def pois_cf(mu, x):
+    return np.exp(mua(np.exp(1j*x) - 1))
 
 #  ------
 #  Poisson
 #  ------
 
 spec = [
-    ('lambda', float32)
+    ('mu', float32)
 ]
 
 @jitclass(spec)
@@ -2689,11 +2689,11 @@ class Poisson():
     # set docstring
     __doc__ = _create_class_docstr(**mtdt['Poisson'])
 
-    def __init__(self, lambda):
-        self.lambda = lambda
+    def __init__(self, mu):
+        self.mu = mu
 
     def __str__(self):
-        return "Poisson(lambda=%.5f)" %(self.params)
+        return "Poisson(mu=%.5f)" %(self.params)
 
     def __repr__(self):
         return self.__str__()
@@ -2705,7 +2705,7 @@ class Poisson():
     @property
     def params(self):
         """Returns parameters."""
-        return (self.lambda)
+        return (self.mu)
 
     @property
     def location(self):
@@ -2720,7 +2720,7 @@ class Poisson():
     @property
     def shape(self):
         """Returns shape parameter if exists."""
-        return self.lambda
+        return self.mu
 
     # ==========
     # Statistics
@@ -2729,22 +2729,22 @@ class Poisson():
     @property
     def mean(self):
         """Returns mean."""
-        return self.lambda
+        return self.mu
 
     @property
     def median(self):
         """Returns median."""
-        return floor(self.lambda + 1/3 - 0.02/self.lambda)
+        return floor(self.mu + 1/3 - 0.02/self.mu)
 
     @property
     def mode(self):
         """Returns mode."""
-        return (ceil(self.lambda) - 1, floor(self.lambda))
+        return (ceil(self.mu) - 1, floor(self.mu))
 
     @property
     def var(self):
         """Returns variance."""
-        return self.lambda
+        return self.mu
 
     @property
     def std(self):
@@ -2754,12 +2754,12 @@ class Poisson():
     @property
     def skewness(self):
         """Returns skewness."""
-        return self.lambda**(.5)
+        return self.mu**(.5)
 
     @property
     def kurtosis(self):
         """Returns kurtosis."""
-        return 1/self.lambda
+        return 1/self.mu
 
     @property
     def isplatykurtic(self):
@@ -2779,15 +2779,15 @@ class Poisson():
     @property
     def entropy(self):
         """Returns entropy."""
-        return .5*np.log(2*np.pi*np.e*self.lambda) - 1/(12*self.lambda) - 1/(24*self.lambda**2) - 19/(360*self.lambda**3)
+        return .5*np.log(2*np.pi*np.e*self.mu) - 1/(12*self.mu) - 1/(24*self.mu**2) - 19/(360*self.mu**3)
 
     def mgf(self, x):
         """Evaluate moment generating function at x."""
-        return pois_mgf(self.lambda, x)
+        return pois_mgf(self.mu, x)
 
     def cf(self, x):
         """Evaluate characteristic function at x."""
-        return pois_cf(self.lambda, x)
+        return pois_cf(self.mu, x)
 
     # ==========
     # Evaluation
@@ -2801,48 +2801,48 @@ class Poisson():
 
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
-        return pois_pdf(self.lambda, x)
+        return pois_pdf(self.mu, x)
     
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
-        return pois_logpdf(self.lambda, x)
+        return pois_logpdf(self.mu, x)
 
     def loglikelihood(self, x):
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
-        return sum(pois_logpdf(self.lambda, x))
+        return sum(pois_logpdf(self.mu, x))
     
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
-        return pois_cdf(self.lambda, x)
+        return pois_cdf(self.mu, x)
     
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
-        return pois_ccdf(self.lambda, x)
+        return pois_ccdf(self.mu, x)
     
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
-        return pois_logcdf(self.lambda, x)
+        return pois_logcdf(self.mu, x)
     
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
-        return pois_logccdf(self.lambda, x)
+        return pois_logccdf(self.mu, x)
     
     def quantile(self, q):
         """The quantile value evaluated at q."""
-        return pois_invcdf(self.lambda, q)
+        return pois_invcdf(self.mu, q)
     
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
-        return pois_invccdf(self.lambda, q)
+        return pois_invccdf(self.mu, q)
     
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
-        return pois_invlogcdf(self.lambda, lq)
+        return pois_invlogcdf(self.mu, lq)
     
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
-        return pois_invlogccdf(self.lambda, lq)
+        return pois_invlogccdf(self.mu, lq)
     
     # ========
     # Sampling
@@ -2852,7 +2852,7 @@ class Poisson():
         """Generates a random draw from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
-            out[i] = pois_rand(self.lambda)
+            out[i] = pois_rand(self.mu)
         return out
 
     
