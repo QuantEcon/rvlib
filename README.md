@@ -39,6 +39,11 @@ Univariate continuous:
 * Exponential
 * Cauchy
 
+
+Univariate discrete:
+
+* Poisson
+
 Multivariate continuous:
 
 ### Functionality

@@ -2509,7 +2509,7 @@ class Cauchy():
     @property
     def kurtosis(self):
         """Returns kurtosis."""
-        return None
+        return 0
 
     @property
     def isplatykurtic(self):
@@ -2669,11 +2669,11 @@ def pois_rand(mu):
 
 @vectorize(nopython=True)
 def pois_mgf(mu, x):
-    return np.exp(mua(np.exp(x) - 1))
+    return np.exp(mu*(np.exp(x) - 1))
 
 @vectorize(nopython=True)
 def pois_cf(mu, x):
-    return np.exp(mua(np.exp(1j*x) - 1))
+    return np.exp(mu*(np.exp(1j*x) - 1))
 
 #  ------
 #  Poisson

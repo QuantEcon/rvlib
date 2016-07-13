@@ -261,7 +261,7 @@ Cauchy:
      var: None
      std: None
      skewness: None
-     kurtosis: None
+     kurtosis: 0
      entropy: np.log(self.sigma) + np.log(4*np.pi)
      mgf: None
      cf: np.exp(mu*1j*x - sigma*np.abs(x))
@@ -289,8 +289,8 @@ Poisson:
      kurtosis: 1/self.mu
      entropy: .5*np.log(2*np.pi*np.e*self.mu) - 1/(12*self.mu) - 
                1/(24*self.mu**2) - 19/(360*self.mu**3)
-     mgf: np.exp(mua(np.exp(x) - 1))
-     cf: np.exp(mua(np.exp(1j*x) - 1))
+     mgf: np.exp(mu*(np.exp(x) - 1))
+     cf: np.exp(mu*(np.exp(1j*x) - 1))
      insupport: isinstance(x, int)
      name_doc: Poisson
      pdf_tex: p(x; \mu) = e^{-\mu} * \frac{\mu^k}{k!}
