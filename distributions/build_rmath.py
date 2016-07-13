@@ -706,7 +706,7 @@ if __name__ == '__main__':
     
     # Exponential
     _import_rmath("exp", "exp", "theta")
-    _write_class_specific(mtdt["Exp"], "theta")
+    _write_class_specific(mtdt["Exponential"], "theta")
     _write_class_rmath("exp", "exp", "theta")
 
     # Cauchy

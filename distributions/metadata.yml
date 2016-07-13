@@ -224,7 +224,7 @@ Beta:
                     "Second shape parameter (must be >0)"]
      string: Beta(alpha=%.5f, beta=%.5f)
 
-Exp:
+Exponential:
      name: Exponential
      spec: ('theta', float32)
      pyname: exp

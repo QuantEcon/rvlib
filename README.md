@@ -36,6 +36,8 @@ Univariate continuous:
 * F
 * Beta
 * Gamma
+* Exponential
+* Cauchy
 
 Multivariate continuous:
 
@@ -79,15 +81,15 @@ The following methods can be called for all distributions:
 
 ### Use and Performance
 
-Preliminary comparison with the `scipy.stats` pacakage.
+Preliminary comparison with the `scipy.stats` package.
 
 ```python
-from univariate import Normal
+from distributions import Normal
 from scipy.stats import norm
 import numpy as np
 import timeit
 
-N = Normal(0,1) # Distributions.py version
+N_dist = Normal(0,1) # Distributions.py version
 N_scipy = norm(0,1) # scipy.stats version
 
 x = np.linspace(0,100,100)
@@ -95,7 +97,7 @@ x = np.linspace(0,100,100)
 
 
 ```python
-In [1]: %timeit N.pdf(x)
+In [1]: %timeit N_dist.pdf(x)
 Out[1]: The slowest run took 8.85 times longer than the fastest. This could mean that an intermediate result is being cached.
     100000 loops, best of 3: 9.69 µs per loop
     
@@ -104,7 +106,7 @@ Out[2]: 10000 loops, best of 3: 150 µs per loop
 ```
 
 ```python
-In [3]: %timeit N.cdf(x)
+In [3]: %timeit N_dist.cdf(x)
 Out[3]: The slowest run took 20325.82 times longer than the fastest. This could mean that an intermediate result is being cached.
     100000 loops, best of 3: 8.08 µs per loop
 
@@ -115,7 +117,7 @@ Out[4]:The slowest run took 190.64 times longer than the fastest. This could mea
 
 
 ```python
-In [5]: %timeit N.rand(1000)
+In [5]: %timeit N_dist.rand(1000)
 Out[5]: The slowest run took 2166.80 times longer than the fastest. This could mean that an intermediate result is being cached.
     10000 loops, best of 3: 85.8 µs per loop
     
@@ -123,7 +125,7 @@ In [6]: %timeit N_scipy.rvs(1000)
 Out[6]: 10000 loops, best of 3: 119 µs per loop
 ```
 
---
+---
 
 This is a fork of the [Rmath-julia](https://github.com/JuliaLang/Rmath-julia)
 library, with Python support added.
