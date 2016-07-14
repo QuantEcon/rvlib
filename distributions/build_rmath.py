@@ -659,7 +659,7 @@ with open("metadata.yml", 'r') as ymlfile:
 
 
 if __name__ == '__main__':
-    # ffi.compile(verbose=True)
+    ffi.compile(verbose=True)
     
     # Preamble
     _initiate_univariate()
