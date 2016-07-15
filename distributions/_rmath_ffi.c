@@ -477,6 +477,97 @@ static void *_cffi_types[] = {
 /* 50 */ _CFFI_OP(_CFFI_OP_FUNCTION_END, 0),
 };
 
+static double _cffi_d_bessel_k(double x0, double x1, double x2)
+{
+  return bessel_k(x0, x1, x2);
+}
+#ifndef PYPY_VERSION
+static PyObject *
+_cffi_f_bessel_k(PyObject *self, PyObject *args)
+{
+  double x0;
+  double x1;
+  double x2;
+  double result;
+  PyObject *arg0;
+  PyObject *arg1;
+  PyObject *arg2;
+  PyObject **aa;
+
+  aa = _cffi_unpack_args(args, 3, "bessel_k");
+  if (aa == NULL)
+    return NULL;
+  arg0 = aa[0];
+  arg1 = aa[1];
+  arg2 = aa[2];
+
+  x0 = (double)_cffi_to_c_double(arg0);
+  if (x0 == (double)-1 && PyErr_Occurred())
+    return NULL;
+
+  x1 = (double)_cffi_to_c_double(arg1);
+  if (x1 == (double)-1 && PyErr_Occurred())
+    return NULL;
+
+  x2 = (double)_cffi_to_c_double(arg2);
+  if (x2 == (double)-1 && PyErr_Occurred())
+    return NULL;
+
+  Py_BEGIN_ALLOW_THREADS
+  _cffi_restore_errno();
+  { result = bessel_k(x0, x1, x2); }
+  _cffi_save_errno();
+  Py_END_ALLOW_THREADS
+
+  (void)self; /* unused */
+  return _cffi_from_c_double(result);
+}
+#else
+#  define _cffi_f_bessel_k _cffi_d_bessel_k
+#endif
+
+static double _cffi_d_beta(double x0, double x1)
+{
+  return beta(x0, x1);
+}
+#ifndef PYPY_VERSION
+static PyObject *
+_cffi_f_beta(PyObject *self, PyObject *args)
+{
+  double x0;
+  double x1;
+  double result;
+  PyObject *arg0;
+  PyObject *arg1;
+  PyObject **aa;
+
+  aa = _cffi_unpack_args(args, 2, "beta");
+  if (aa == NULL)
+    return NULL;
+  arg0 = aa[0];
+  arg1 = aa[1];
+
+  x0 = (double)_cffi_to_c_double(arg0);
+  if (x0 == (double)-1 && PyErr_Occurred())
+    return NULL;
+
+  x1 = (double)_cffi_to_c_double(arg1);
+  if (x1 == (double)-1 && PyErr_Occurred())
+    return NULL;
+
+  Py_BEGIN_ALLOW_THREADS
+  _cffi_restore_errno();
+  { result = beta(x0, x1); }
+  _cffi_save_errno();
+  Py_END_ALLOW_THREADS
+
+  (void)self; /* unused */
+  return _cffi_from_c_double(result);
+}
+#else
+#  define _cffi_f_beta _cffi_d_beta
+#endif
+
 static double _cffi_d_dbeta(double x0, double x1, double x2, int x3)
 {
   return dbeta(x0, x1, x2, x3);
@@ -967,6 +1058,34 @@ _cffi_f_dhyper(PyObject *self, PyObject *args)
 #  define _cffi_f_dhyper _cffi_d_dhyper
 #endif
 
+static double _cffi_d_digamma(double x0)
+{
+  return digamma(x0);
+}
+#ifndef PYPY_VERSION
+static PyObject *
+_cffi_f_digamma(PyObject *self, PyObject *arg0)
+{
+  double x0;
+  double result;
+
+  x0 = (double)_cffi_to_c_double(arg0);
+  if (x0 == (double)-1 && PyErr_Occurred())
+    return NULL;
+
+  Py_BEGIN_ALLOW_THREADS
+  _cffi_restore_errno();
+  { result = digamma(x0); }
+  _cffi_save_errno();
+  Py_END_ALLOW_THREADS
+
+  (void)self; /* unused */
+  return _cffi_from_c_double(result);
+}
+#else
+#  define _cffi_f_digamma _cffi_d_digamma
+#endif
+
 static double _cffi_d_dlnorm(double x0, double x1, double x2, int x3)
 {
   return dlnorm(x0, x1, x2, x3);
@@ -1399,6 +1518,62 @@ _cffi_f_dweibull(PyObject *self, PyObject *args)
 }
 #else
 #  define _cffi_f_dweibull _cffi_d_dweibull
+#endif
+
+static double _cffi_d_gammafn(double x0)
+{
+  return gammafn(x0);
+}
+#ifndef PYPY_VERSION
+static PyObject *
+_cffi_f_gammafn(PyObject *self, PyObject *arg0)
+{
+  double x0;
+  double result;
+
+  x0 = (double)_cffi_to_c_double(arg0);
+  if (x0 == (double)-1 && PyErr_Occurred())
+    return NULL;
+
+  Py_BEGIN_ALLOW_THREADS
+  _cffi_restore_errno();
+  { result = gammafn(x0); }
+  _cffi_save_errno();
+  Py_END_ALLOW_THREADS
+
+  (void)self; /* unused */
+  return _cffi_from_c_double(result);
+}
+#else
+#  define _cffi_f_gammafn _cffi_d_gammafn
+#endif
+
+static double _cffi_d_lgammafn(double x0)
+{
+  return lgammafn(x0);
+}
+#ifndef PYPY_VERSION
+static PyObject *
+_cffi_f_lgammafn(PyObject *self, PyObject *arg0)
+{
+  double x0;
+  double result;
+
+  x0 = (double)_cffi_to_c_double(arg0);
+  if (x0 == (double)-1 && PyErr_Occurred())
+    return NULL;
+
+  Py_BEGIN_ALLOW_THREADS
+  _cffi_restore_errno();
+  { result = lgammafn(x0); }
+  _cffi_save_errno();
+  Py_END_ALLOW_THREADS
+
+  (void)self; /* unused */
+  return _cffi_from_c_double(result);
+}
+#else
+#  define _cffi_f_lgammafn _cffi_d_lgammafn
 #endif
 
 static double _cffi_d_pbeta(double x0, double x1, double x2, int x3, int x4)
@@ -4139,6 +4314,8 @@ _cffi_f_rweibull(PyObject *self, PyObject *args)
 #endif
 
 static const struct _cffi_global_s _cffi_globals[] = {
+  { "bessel_k", (void *)_cffi_f_bessel_k, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 7), (void *)_cffi_d_bessel_k },
+  { "beta", (void *)_cffi_f_beta, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 3), (void *)_cffi_d_beta },
   { "dbeta", (void *)_cffi_f_dbeta, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 27), (void *)_cffi_d_dbeta },
   { "dbinom", (void *)_cffi_f_dbinom, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 27), (void *)_cffi_d_dbinom },
   { "dcauchy", (void *)_cffi_f_dcauchy, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 27), (void *)_cffi_d_dcauchy },
@@ -4148,6 +4325,7 @@ static const struct _cffi_global_s _cffi_globals[] = {
   { "dgamma", (void *)_cffi_f_dgamma, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 27), (void *)_cffi_d_dgamma },
   { "dgeom", (void *)_cffi_f_dgeom, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 40), (void *)_cffi_d_dgeom },
   { "dhyper", (void *)_cffi_f_dhyper, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 12), (void *)_cffi_d_dhyper },
+  { "digamma", (void *)_cffi_f_digamma, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_O, 0), (void *)_cffi_d_digamma },
   { "dlnorm", (void *)_cffi_f_dlnorm, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 27), (void *)_cffi_d_dlnorm },
   { "dlogis", (void *)_cffi_f_dlogis, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 27), (void *)_cffi_d_dlogis },
   { "dnbinom", (void *)_cffi_f_dnbinom, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 27), (void *)_cffi_d_dnbinom },
@@ -4156,6 +4334,8 @@ static const struct _cffi_global_s _cffi_globals[] = {
   { "dt", (void *)_cffi_f_dt, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 40), (void *)_cffi_d_dt },
   { "dunif", (void *)_cffi_f_dunif, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 27), (void *)_cffi_d_dunif },
   { "dweibull", (void *)_cffi_f_dweibull, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 27), (void *)_cffi_d_dweibull },
+  { "gammafn", (void *)_cffi_f_gammafn, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_O, 0), (void *)_cffi_d_gammafn },
+  { "lgammafn", (void *)_cffi_f_lgammafn, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_O, 0), (void *)_cffi_d_lgammafn },
   { "pbeta", (void *)_cffi_f_pbeta, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 33), (void *)_cffi_d_pbeta },
   { "pbinom", (void *)_cffi_f_pbinom, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 33), (void *)_cffi_d_pbinom },
   { "pcauchy", (void *)_cffi_f_pcauchy, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 33), (void *)_cffi_d_pcauchy },
@@ -4216,7 +4396,7 @@ static const struct _cffi_type_context_s _cffi_type_context = {
   NULL,  /* no struct_unions */
   NULL,  /* no enums */
   NULL,  /* no typenames */
-  68,  /* num_globals */
+  73,  /* num_globals */
   0,  /* num_struct_unions */
   0,  /* num_enums */
   0,  /* num_typenames */
