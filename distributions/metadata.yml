@@ -93,7 +93,8 @@ T:
                digamma(.5*self.v)) + np.log(np.sqrt(self.v) * 
                beta(.5*self.v, .5))
      mgf: None
-     cf: None
+     cf: bessel_k(v/2, np.sqrt(v)*abs(x))*(np.sqrt(v)*abs(x))**(v/2)/
+          (gamma(v/2)*2**(v/2 - 1))
      insupport: -inf <= x < inf
      name_doc: T 
      pdf_tex: p(x;df)= \frac{G \left(\frac{df+1}{2}\right)}{\sqrt{df\pi}

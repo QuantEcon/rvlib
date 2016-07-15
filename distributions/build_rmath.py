@@ -25,9 +25,19 @@ ffi.set_source('_rmath_ffi', '#include <Rmath.h>',
                extra_compile_args=extra_compile_args)
 
 # This is an incomplete list of the available functions in Rmath
-# but these are sufficient for our example purposes and gives a sense of
-# the types of functions we can get
+# add new one with extensions of implemented distributions
+
 ffi.cdef('''\
+
+// Special functions
+double  gammafn(double);
+double  lgammafn(double);
+double  digamma(double);
+double  beta(double, double);
+double  bessel_k(double, double, double);
+
+// Distributions
+
 // Normal Distribution
 double dnorm(double, double, double, int);
 double pnorm(double, double, double, int, int);
@@ -46,12 +56,6 @@ double	pgamma(double, double, double, int, int);
 double	qgamma(double, double, double, int, int);
 double	rgamma(double, double);
 
-// Not sure what we are going to use these for
-//double  log1pmx(double);
-//double  lgamma1p(double);
-//double  logspace_add(double, double);
-//double  logspace_sub(double, double);
-
 // Beta Distribution
 double	dbeta(double, double, double, int);
 double	pbeta(double, double, double, int, int);
@@ -69,12 +73,6 @@ double	dchisq(double, double, int);
 double	pchisq(double, double, int, int);
 double	qchisq(double, double, int, int);
 double	rchisq(double);
-
-// Non-central Chi-squared Distribution -- leave it out for now
-// double	dnchisq(double, double, double, int);
-// double	pnchisq(double, double, double, int, int);
-// double	qnchisq(double, double, double, int, int);
-// double	rnchisq(double, double);
 
 // F Distibution
 double	df(double, double, double, int);
@@ -124,12 +122,6 @@ double	pnbinom(double, double, double, int, int);
 double	qnbinom(double, double, double, int, int);
 double	rnbinom(double, double);
 
-// leave these out for now
-// double	dnbinom_mu(double, double, double, int);
-// double	pnbinom_mu(double, double, double, int, int);
-// double	qnbinom_mu(double, double, double, int, int);
-// double	rnbinom_mu(double, double);
-
 // Poisson Distribution
 double	dpois(double, double, int);
 double	ppois(double, double, int, int);
@@ -149,7 +141,84 @@ double	qlogis(double, double, double, int, int);
 double	rlogis(double, double);
 ''')
 
-# write out preamble for whole file
+
+# =========================================
+# write out preamble for special functions
+# =========================================
+
+def _initiate_sepcials():
+    '''
+    Initiate python file for special functions which are present in the Rmath.h file
+    '''
+
+    # Define code which appears irrespective of specific functions
+    pre_code = """\
+    import _rmath_ffi
+    from numba import vectorize, jit
+    from numba import cffi_support
+
+    cffi_support.register_module(_rmath_ffi)
+
+    # -------
+    # gamma
+    # -------
+
+    gammafn = _rmath_ffi.lib.gammafn
+
+    @vectorize(nopython=True)
+    def gamma(x):
+        return gammafn(x)
+
+    # -------
+    # lgamma
+    # -------
+
+    lgammafn = _rmath_ffi.lib.lgammafn
+
+    @vectorize(nopython=True)
+    def lgamma(x):
+        return lgammafn(x)
+
+    # -------
+    # digamma
+    # -------
+
+    digammafn = _rmath_ffi.lib.digamma
+
+    @vectorize(nopython=True)
+    def digamma(x):
+        return digammafn(x)
+
+    # -------
+    # beta
+    # -------
+
+    betafn = _rmath_ffi.lib.beta
+
+    @vectorize(nopython=True)
+    def beta(x, y):
+        return betafn(x, y)
+
+    # -------
+    # bessel_k
+    # Modified Bessel function of the second kind
+    # -------
+
+    bessel_k_fn = _rmath_ffi.lib.bessel_k
+
+    @vectorize(nopython=True)
+    def bessel_k(nu, x):
+        return bessel_k_fn(x, nu, 1)
+
+    """
+    with open("specials.py", "w") as f:
+        f.write(textwrap.dedent(pre_code))
+
+
+# =========================================
+# write out preamble for classes
+# =========================================
+
 def _initiate_univariate():
     '''
     Initiate python file which collects all the classes of different distributions.
@@ -161,9 +230,8 @@ def _initiate_univariate():
     from numba import int32, float32
 
     import numpy as np
-    from math import inf, gamma, lgamma, ceil, floor
-    from numpy.random import beta
-    from .specials import digamma
+    from math import inf, ceil, floor
+    from .specials import gamma, lgamma, digamma, beta, bessel_k
 
     import _rmath_ffi
     from numba import cffi_support
@@ -659,9 +727,12 @@ with open("metadata.yml", 'r') as ymlfile:
 
 
 if __name__ == '__main__':
-    ffi.compile(verbose=True)
+    # ffi.compile(verbose=True)
     
-    # Preamble
+    # Write out specials.py
+    _initiate_sepcials()
+
+    # Preamble for univariate.py
     _initiate_univariate()
     
     # Normal

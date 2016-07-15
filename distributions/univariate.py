@@ -2,9 +2,8 @@ from numba import vectorize, jit, jitclass
 from numba import int32, float32
 
 import numpy as np
-from math import inf, gamma, lgamma, ceil, floor
-from numpy.random import beta
-from .specials import digamma
+from math import inf, ceil, floor
+from .specials import gamma, lgamma, digamma, beta, bessel_k
 
 import _rmath_ffi
 from numba import cffi_support
@@ -923,7 +922,7 @@ def tdist_mgf(v, x):
 
 @vectorize(nopython=True)
 def tdist_cf(v, x):
-    return None
+    return bessel_k(v/2, np.sqrt(v)*abs(x))*(np.sqrt(v)*abs(x))**(v/2)/ (gamma(v/2)*2**(v/2 - 1))
 
 #  ------
 #  T

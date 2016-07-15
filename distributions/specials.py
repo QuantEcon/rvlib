@@ -1,45 +1,57 @@
-# =======================================================
-# @vectorize-d functions for the Distributions.py package
-# =======================================================
+import _rmath_ffi
+from numba import vectorize, jit
+from numba import cffi_support
 
-import numpy as np
-from numba import vectorize
+cffi_support.register_module(_rmath_ffi)
+
+# -------
+# gamma
+# -------
+
+gammafn = _rmath_ffi.lib.gammafn
+
+@vectorize(nopython=True)
+def gamma(x):
+    return gammafn(x)
+
+# -------
+# lgamma
+# -------
+
+lgammafn = _rmath_ffi.lib.lgammafn
+
+@vectorize(nopython=True)
+def lgamma(x):
+    return lgammafn(x)
 
 # -------
 # digamma
 # -------
 
+digammafn = _rmath_ffi.lib.digamma
+
 @vectorize(nopython=True)
 def digamma(x):
-	"""Approximates the digamma function using
-	the Euler-Maclaurin formula. For small values
-	use the following recurrence formula to shift 
-	x above 6:
-	\psi(x-1) = \psi(x) - 1/x
+    return digammafn(x)
 
-	Details can be found
-	https://en.wikipedia.org/wiki/Digamma_function
+# -------
+# beta
+# -------
 
-	Parameters:
-	-----------
-	x: float, positive real number
+betafn = _rmath_ffi.lib.beta
 
-	Returns:
-	--------
-	float, value of the digamma function
-	"""
+@vectorize(nopython=True)
+def beta(x, y):
+    return betafn(x, y)
 
-	if x < 0.0:
-		return np.nan
+# -------
+# bessel_k
+# Modified Bessel function of the second kind
+# -------
 
-	value = 0.0
+bessel_k_fn = _rmath_ffi.lib.bessel_k
 
-	while x < 6.5:
-		value = value - 1/x
-		x += 1 
+@vectorize(nopython=True)
+def bessel_k(nu, x):
+    return bessel_k_fn(x, nu, 1)
 
-	value = value + ( np.log(x) - 1/(2*x) - 1/(12*x**2) \
-			+ 1/(120*x**4)  - 1/(252*x**6) + 1/(240*x**8) \
-			- 5/(660*x**10) + 691/(32760*x**12) - 1/(12*x**14))
-
-	return value
