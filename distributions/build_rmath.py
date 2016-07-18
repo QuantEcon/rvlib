@@ -790,9 +790,32 @@ if __name__ == '__main__':
     _write_class_specific(mtdt["Poisson"], "mu")
     _write_class_rmath("pois", "pois", "mu")
 
-    # _import_rmath("binom", "n", "p")
-    # _import_rmath("geom", "geom", "p")
-    # _import_rmath("hyper", "hyper", "s", "f", "n")
-    # _import_rmath("nbinom", "nbinom", "r", "p")
-    # _import_rmath("weibull", "weibull", "alpha", "theta")
-    # _import_rmath("logis", "logis", "mu", "theta")
+    # Geometric
+    _import_rmath("geom", "geom", "p")
+    _write_class_specific(mtdt["Geometric"], "p")
+    _write_class_rmath("geom", "geom", "p")
+
+    # Binomial
+    _import_rmath("binom", "binom", "n", "p")
+    _write_class_specific(mtdt["Binomial"], "n", "p")
+    _write_class_rmath("binom", "binom", "n", "p")
+    
+    # Logistic
+    _import_rmath("logis", "logis", "mu", "theta")
+    _write_class_specific(mtdt["Logistic"], "mu", "theta")
+    _write_class_rmath("logis", "logis", "mu", "theta")
+
+    # Weibull
+    _import_rmath("weibull", "weibull", "alpha", "theta")
+    _write_class_specific(mtdt["Weibull"], "alpha", "theta")
+    _write_class_rmath("weibull", "weibull", "alpha", "theta")
+
+    # Hypergeometric
+    _import_rmath("hyper", "hyper", "s", "f", "n")
+    _write_class_specific(mtdt["Hypergeometric"], "s", "f", "n")
+    _write_class_rmath("hyper", "hyper", "s", "f", "n")
+
+    # NegativeBinomial
+    _import_rmath("nbinom", "nbinom", "r", "p")
+    _write_class_specific(mtdt["NegativeBinomial"], "r", "p")
+    _write_class_rmath("nbinom", "nbinom", "r", "p")

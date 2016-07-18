@@ -298,3 +298,167 @@ Poisson:
      param_names: ["mu"]
      param_descrs: ["Shape parameter"]
      string: Poisson(mu=%.5f)
+
+Geometric:
+     name: Geometric
+     spec: ('p', float32)
+     pyname: geom
+     loc: None
+     scale: None
+     shape: None
+     mean: 1/self.p
+     median: ceil(-1/(np.log2(1-self.p)))
+     mode: 1
+     var: (1 - self.p)/(self.p**2)
+     std: np.sqrt(self.var)
+     skewness: (2 - self.p)/(np.sqrt(1 - self.p))
+     kurtosis: 9 + self.p/((1 - self.p)**2)
+     entropy: (-(1 - self.p)*np.log2(1 - self.p) - 
+               self.p*np.log2(self.p))/self.p
+     mgf: p*np.exp(x)/(1 - (1 - p)*np.exp(x)) 
+          if x < -np.log(1-p) else None
+     cf: p*np.exp(x*1j)/(1 - (1 - p)*np.exp(x*1j))
+     insupport: isinstance(x, int)
+     name_doc: Geometric
+     pdf_tex: p(x; p) = (1 - p)^{x-1} * p
+     param_names: ["p"]
+     param_descrs: ["Succes probability"]
+     string: Geometric(p=%.5f)
+
+Binomial:
+     name: Binomial
+     spec: ('n', int32), ("p", float32) 
+     pyname: binom
+     loc: None
+     scale: None
+     shape: None
+     mean: self.n*self.p
+     median: (floor(self.n*self.p), ceil(self.n*self.p))
+     mode: (floor((self.n + 1)*self.p), ceil((self.n + 1)*self.p) - 1)
+     var: self.n*self.p*(1 - self.p)
+     std: np.sqrt(self.var)
+     skewness: (1 - 2*self.p)/(np.sqrt(self.n*self.p*(1 - self.p)))
+     kurtosis: 3 + (1 - 6*self.p*(1 - self.p))/(self.n*self.p*(1 - self.p))
+     entropy: .5*np.log(2*np.pi*np.e*self.n*self.p*(1 - self.p))
+     mgf: (1 - p + p*np.exp(x))**n
+     cf: (1 - p + p*np.exp(x*1j))**n
+     insupport: isinstance(x, int)
+     name_doc: Binomial
+     pdf_tex: p(x; p) = \binom{n}{k}p^k (1 - p)^{n-k}
+     param_names: ["n", "p"]
+     param_descrs: ["Number of trials", "Succes probability"]
+     string: Binomial(n=%.5f, p=%.5f)
+
+Logistic:
+     name: Logistic
+     spec: ('mu', float32), ("theta", float32) 
+     pyname: logis
+     loc: self.mu
+     scale: self.theta
+     shape: None
+     mean: self.mu
+     median: self.mu
+     mode: self.mu
+     var: (self.theta**2 * np.pi**2)/3
+     std: np.sqrt(self.var)
+     skewness: 0
+     kurtosis: 3 + 1.2
+     entropy: np.log(self.theta) + 2
+     mgf: np.exp(mu*x)*beta(1 - theta*x, 1 + theta*x)
+     cf: np.exp(mu*x*1j)*np.pi*theta*x/np.sinh(np.pi*theta*x)
+     insupport: -inf < x < inf
+     name_doc: Logistic
+     pdf_tex: p(x; \mu, \theta) = \frac{1}{4\theta} 
+               \text{sech}^2\left(\frac{x - \mu}{2\theta}\right)
+     param_names: ["mu", "theta"]
+     param_descrs: ["Location parameter", "Scale parameter"]
+     string: Logistic(mu=%.5f, theta=%.5f)
+
+Weibull:
+     name: Weibull
+     spec: ('alpha', float32), ("theta", float32) 
+     pyname: weibull
+     loc: None
+     scale: self.alpha
+     shape: self.theta
+     mean: self.alpha*gamma(1 + 1/self.theta)
+     median: self.alpha(np.log(2))**(1/self.theta)
+     mode: self.alpha*((self.theta - 1)/self.theta)**(1/self.theta)
+     var: self.alpha**2*(gamma(1 + 2/self.theta) - (gamma(1 + 1/self.theta))**2)
+     std: np.sqrt(self.var)
+     skewness: (gamma(1 + 3/self.theta)*self.alpha**3 - 3*self.mean*self.var - 
+               self.mean**3)/(self.var**(3/2))
+     kurtosis: (self.alpha**4*gamma(1 + 4/self.theta) - 4*self.skewness*
+               self.var**(3/2)*self.mean - 6*self.mean**2*self.var - 
+               self.mean**4)/(self.var**2)
+     entropy: 0.577215664901532860606512090082 * (1 - 1/self.theta) + 
+               np.log(self.alpha/self.theta) + 1
+     mgf: None
+     cf: None
+     insupport: 0 <= x < inf
+     name_doc: Weibull
+     pdf_tex: p(x; \alpha, \theta) = \frac{\theta}{\alha}
+               \left(\frac{x}{\alpha}\right)^{\theta} 
+               e^{-(x/\alpha)^{\theta}}
+     param_names: ["alpha", "theta"]
+     param_descrs: ["Scale parameter", "Shape parameter"]
+     string: Weibull(alpha=%.5f, theta=%.5f)
+
+Hypergeometric:
+     name: Hypergeometric
+     spec: ('s', int32), ("f", int32), ("n", int32) 
+     pyname: hyper
+     loc: None
+     scale: None
+     shape: None
+     mean: self.n*(self.s/(self.s + self.f))
+     median: None
+     mode: floor((self.n + 1)*(self.s + 1)/(self.s + self.f + 2))
+     var: self.n*(self.s/(self.s + self.f))*(self.f/(self.s + self.f))*
+          (self.s + self.f - self.n)/(self.s + self.f - 1)
+     std: np.sqrt(self.var)
+     skewness: ((self.f)*(self.s + self.f - 1)**(.5)*
+               (self.s + self.f - 2*self.n))/(((self.n*self.s*self.s*
+               (self.s + self.f - self.n))**(.5)*(self.s + self.f - 2)))
+     kurtosis: 3 + 1/(self.n*self.s*self.f*(self.s + self.f - self.n)*
+               (self.s + self.f - 2)*(self.s + self.f - 3))*
+               ((self.s + self.f - 1)*(self.s + self.f)**2*((self.s + self.f)*
+               (self.s + self.f + 1) - 6*self.s*self.f - 6*self.n*
+               (self.s + self.f -self.n)) + 6*self.n*self.s*self.f*
+               (self.s + self.f - self.n)*(5*(self.s + self.f) - 6))
+     entropy: None
+     mgf: None
+     cf: None
+     insupport: isinstance(x, int)
+     name_doc: Hypergeometric
+     pdf_tex: p(x; s, f, n) = \frac{\binom{s}{x} 
+               \binom{f}{n - x}}{\binom{s + f}{n}}
+     param_names: ["s", "f", "n"]
+     param_descrs: ["Number of successes in population",
+                    "Number of failures in population", "Number of trials"]
+     string: Hypergeometric(s=%.5f, f=%.5f, n=%.5f)
+
+NegativeBinomial:
+     name: NegativeBinomial
+     spec: ('r', int32), ("p", int32) 
+     pyname: nbinom
+     loc: None
+     scale: None
+     shape: None
+     mean: self.p*self.r/(1 - self.p)
+     median: None
+     mode: floor(self.p*(self.r - 1 )/(1 - self.p)) if self.r > 1 else 0
+     var: self.p*self.r/(1 - self.p)**2
+     std: np.sqrt(self.var)
+     skewness: (self.p + 1)/(np.sqrt(self.p*self.r))
+     kurtosis: 3 + 6/self.r + (1 - self.p)**2/(self.p*self.r)
+     entropy: None
+     mgf: ((1 - p)/(1 - p*np.exp(x)))**r
+     cf: ((1 - p)/(1 - p*np.exp(x*1j)))**r
+     insupport: isinstance(x, int)
+     name_doc: Negative Binomial
+     pdf_tex: p(x; r, p) = \binom{x + r - 1}{x} p^r (1 - p)^x
+     param_names: ["r", "p"]
+     param_descrs: ["Number of failures before exoeriment stops",
+                    "Success probability"]
+     string: NegativeBinomial(r=%.5f, p=%.5f)

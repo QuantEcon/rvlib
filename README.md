@@ -38,11 +38,17 @@ Univariate continuous:
 * Gamma
 * Exponential
 * Cauchy
-
+* Logistic
+* Weibull
 
 Univariate discrete:
 
 * Poisson
+* Geometric
+* Hypergeometric
+* Binomial
+* Negative Binomial
+
 
 Multivariate continuous:
 
