@@ -475,6 +475,15 @@ static void *_cffi_types[] = {
 /* 48 */ _CFFI_OP(_CFFI_OP_PRIMITIVE, 7),
 /* 49 */ _CFFI_OP(_CFFI_OP_PRIMITIVE, 7),
 /* 50 */ _CFFI_OP(_CFFI_OP_FUNCTION_END, 0),
+/* 51 */ _CFFI_OP(_CFFI_OP_FUNCTION, 59), // void()(unsigned int *, unsigned int *)
+/* 52 */ _CFFI_OP(_CFFI_OP_POINTER, 56), // unsigned int *
+/* 53 */ _CFFI_OP(_CFFI_OP_NOOP, 52),
+/* 54 */ _CFFI_OP(_CFFI_OP_FUNCTION_END, 0),
+/* 55 */ _CFFI_OP(_CFFI_OP_FUNCTION, 59), // void()(unsigned int, unsigned int)
+/* 56 */ _CFFI_OP(_CFFI_OP_PRIMITIVE, 8), // unsigned int
+/* 57 */ _CFFI_OP(_CFFI_OP_PRIMITIVE, 8),
+/* 58 */ _CFFI_OP(_CFFI_OP_FUNCTION_END, 0),
+/* 59 */ _CFFI_OP(_CFFI_OP_PRIMITIVE, 0), // void
 };
 
 static double _cffi_d_bessel_k(double x0, double x1, double x2)
@@ -1546,6 +1555,63 @@ _cffi_f_gammafn(PyObject *self, PyObject *arg0)
 }
 #else
 #  define _cffi_f_gammafn _cffi_d_gammafn
+#endif
+
+static void _cffi_d_get_seed(unsigned int * x0, unsigned int * x1)
+{
+  get_seed(x0, x1);
+}
+#ifndef PYPY_VERSION
+static PyObject *
+_cffi_f_get_seed(PyObject *self, PyObject *args)
+{
+  unsigned int * x0;
+  unsigned int * x1;
+  Py_ssize_t datasize;
+  PyObject *arg0;
+  PyObject *arg1;
+  PyObject **aa;
+
+  aa = _cffi_unpack_args(args, 2, "get_seed");
+  if (aa == NULL)
+    return NULL;
+  arg0 = aa[0];
+  arg1 = aa[1];
+
+  datasize = _cffi_prepare_pointer_call_argument(
+      _cffi_type(52), arg0, (char **)&x0);
+  if (datasize != 0) {
+    if (datasize < 0)
+      return NULL;
+    x0 = (unsigned int *)alloca((size_t)datasize);
+    memset((void *)x0, 0, (size_t)datasize);
+    if (_cffi_convert_array_from_object((char *)x0, _cffi_type(52), arg0) < 0)
+      return NULL;
+  }
+
+  datasize = _cffi_prepare_pointer_call_argument(
+      _cffi_type(52), arg1, (char **)&x1);
+  if (datasize != 0) {
+    if (datasize < 0)
+      return NULL;
+    x1 = (unsigned int *)alloca((size_t)datasize);
+    memset((void *)x1, 0, (size_t)datasize);
+    if (_cffi_convert_array_from_object((char *)x1, _cffi_type(52), arg1) < 0)
+      return NULL;
+  }
+
+  Py_BEGIN_ALLOW_THREADS
+  _cffi_restore_errno();
+  { get_seed(x0, x1); }
+  _cffi_save_errno();
+  Py_END_ALLOW_THREADS
+
+  (void)self; /* unused */
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+#else
+#  define _cffi_f_get_seed _cffi_d_get_seed
 #endif
 
 static double _cffi_d_lgammafn(double x0)
@@ -4313,6 +4379,48 @@ _cffi_f_rweibull(PyObject *self, PyObject *args)
 #  define _cffi_f_rweibull _cffi_d_rweibull
 #endif
 
+static void _cffi_d_set_seed(unsigned int x0, unsigned int x1)
+{
+  set_seed(x0, x1);
+}
+#ifndef PYPY_VERSION
+static PyObject *
+_cffi_f_set_seed(PyObject *self, PyObject *args)
+{
+  unsigned int x0;
+  unsigned int x1;
+  PyObject *arg0;
+  PyObject *arg1;
+  PyObject **aa;
+
+  aa = _cffi_unpack_args(args, 2, "set_seed");
+  if (aa == NULL)
+    return NULL;
+  arg0 = aa[0];
+  arg1 = aa[1];
+
+  x0 = _cffi_to_c_int(arg0, unsigned int);
+  if (x0 == (unsigned int)-1 && PyErr_Occurred())
+    return NULL;
+
+  x1 = _cffi_to_c_int(arg1, unsigned int);
+  if (x1 == (unsigned int)-1 && PyErr_Occurred())
+    return NULL;
+
+  Py_BEGIN_ALLOW_THREADS
+  _cffi_restore_errno();
+  { set_seed(x0, x1); }
+  _cffi_save_errno();
+  Py_END_ALLOW_THREADS
+
+  (void)self; /* unused */
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+#else
+#  define _cffi_f_set_seed _cffi_d_set_seed
+#endif
+
 static const struct _cffi_global_s _cffi_globals[] = {
   { "bessel_k", (void *)_cffi_f_bessel_k, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 7), (void *)_cffi_d_bessel_k },
   { "beta", (void *)_cffi_f_beta, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 3), (void *)_cffi_d_beta },
@@ -4335,6 +4443,7 @@ static const struct _cffi_global_s _cffi_globals[] = {
   { "dunif", (void *)_cffi_f_dunif, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 27), (void *)_cffi_d_dunif },
   { "dweibull", (void *)_cffi_f_dweibull, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 27), (void *)_cffi_d_dweibull },
   { "gammafn", (void *)_cffi_f_gammafn, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_O, 0), (void *)_cffi_d_gammafn },
+  { "get_seed", (void *)_cffi_f_get_seed, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 51), (void *)_cffi_d_get_seed },
   { "lgammafn", (void *)_cffi_f_lgammafn, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_O, 0), (void *)_cffi_d_lgammafn },
   { "pbeta", (void *)_cffi_f_pbeta, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 33), (void *)_cffi_d_pbeta },
   { "pbinom", (void *)_cffi_f_pbinom, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 33), (void *)_cffi_d_pbinom },
@@ -4387,6 +4496,7 @@ static const struct _cffi_global_s _cffi_globals[] = {
   { "rt", (void *)_cffi_f_rt, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_O, 0), (void *)_cffi_d_rt },
   { "runif", (void *)_cffi_f_runif, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 3), (void *)_cffi_d_runif },
   { "rweibull", (void *)_cffi_f_rweibull, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 3), (void *)_cffi_d_rweibull },
+  { "set_seed", (void *)_cffi_f_set_seed, _CFFI_OP(_CFFI_OP_CPYTHON_BLTN_V, 55), (void *)_cffi_d_set_seed },
 };
 
 static const struct _cffi_type_context_s _cffi_type_context = {
@@ -4396,12 +4506,12 @@ static const struct _cffi_type_context_s _cffi_type_context = {
   NULL,  /* no struct_unions */
   NULL,  /* no enums */
   NULL,  /* no typenames */
-  73,  /* num_globals */
+  75,  /* num_globals */
   0,  /* num_struct_unions */
   0,  /* num_enums */
   0,  /* num_typenames */
   NULL,  /* no includes */
-  51,  /* num_types */
+  60,  /* num_types */
   0,  /* flags */
 };
 

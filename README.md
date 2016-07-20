@@ -89,6 +89,16 @@ The following methods can be called for all distributions:
 * `invlogccdf`: evaluate the inverse function of the logccdf
 * `rand`: generate array of independent random draws
 
+Seed setting
+
+As the package is built around the `Rmath` library the seed for the random number generator has to be set using the `Rmath` `set_seed(x,y)` function. For example:
+
+```python
+import distributions as ds
+
+ds.set_seed(123, 456) # note that it requires two arguments
+```
+
 
 ### Use and Performance
 

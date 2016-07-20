@@ -3,7 +3,7 @@ from numba import int32, float32
 
 import numpy as np
 from math import inf, ceil, floor
-from .specials import gamma, lgamma, digamma, beta, bessel_k
+from .specials import gamma, lgamma, digamma, beta, bessel_k, set_seed
 
 import _rmath_ffi
 from numba import cffi_support

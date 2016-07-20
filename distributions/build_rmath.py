@@ -36,6 +36,10 @@ double  digamma(double);
 double  beta(double, double);
 double  bessel_k(double, double, double);
 
+// Seed
+void    set_seed(unsigned int, unsigned int);
+void    get_seed(unsigned int *, unsigned int *);
+
 // Distributions
 
 // Normal Distribution
@@ -210,6 +214,14 @@ def _initiate_sepcials():
     def bessel_k(nu, x):
         return bessel_k_fn(x, nu, 1)
 
+    # ----------
+    # set seed
+    # ----------
+
+    set_seed_rmath = _rmath_ffi.lib.set_seed
+
+    def set_seed(x, y):
+        return set_seed_rmath(x, y)
     """
     with open("specials.py", "w") as f:
         f.write(textwrap.dedent(pre_code))
@@ -231,7 +243,7 @@ def _initiate_univariate():
 
     import numpy as np
     from math import inf, ceil, floor
-    from .specials import gamma, lgamma, digamma, beta, bessel_k
+    from .specials import gamma, lgamma, digamma, beta, bessel_k, set_seed
 
     import _rmath_ffi
     from numba import cffi_support

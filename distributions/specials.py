@@ -55,3 +55,11 @@ bessel_k_fn = _rmath_ffi.lib.bessel_k
 def bessel_k(nu, x):
     return bessel_k_fn(x, nu, 1)
 
+# ----------
+# set seed
+# ----------
+
+set_seed_rmath = _rmath_ffi.lib.set_seed
+
+def set_seed(x, y):
+    return set_seed_rmath(x, y)
