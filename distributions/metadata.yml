@@ -176,7 +176,7 @@ Gamma:
      mode: (self.alpha - 1)/self.beta if self.alpha >= 1 else None
      var: self.alpha/(self.beta**2)
      std: np.sqrt(self.var)
-     skewness: 2/(np.sqrt(self.apha))
+     skewness: 2/(np.sqrt(self.alpha))
      kurtosis: 3 + 6/self.alpha
      entropy: self.alpha - np.log(self.beta) + np.log(gamma(self.alpha))
                + (1 - self.alpha)*digamma(self.alpha)
@@ -206,7 +206,7 @@ Beta:
                ((self.alpha + self.beta)**2 * (self.alpha + self.beta + 1))
      std: np.sqrt(self.var)
      skewness: 2 * (self.beta - self.alpha) * np.sqrt(self.alpha + self.beta + 1)/
-               ((self.alpha + self.beta + 2) * np.sqrt(self.apha * self.beta))
+               ((self.alpha + self.beta + 2) * np.sqrt(self.alpha * self.beta))
      kurtosis: 3 + 6 * ((self.alpha - self.beta)**2*(self.alpha + self.beta + 1) -
                 self.alpha * self.beta * (self.alpha + self.beta + 2) )/
                (self.alpha * self.beta * (self.alpha + self.beta + 2) * 
@@ -382,7 +382,7 @@ Weibull:
      scale: self.alpha
      shape: self.theta
      mean: self.alpha*gamma(1 + 1/self.theta)
-     median: self.alpha(np.log(2))**(1/self.theta)
+     median: self.alpha*(np.log(2))**(1/self.theta)
      mode: self.alpha*((self.theta - 1)/self.theta)**(1/self.theta)
      var: self.alpha**2*(gamma(1 + 2/self.theta) - (gamma(1 + 1/self.theta))**2)
      std: np.sqrt(self.var)
@@ -459,6 +459,6 @@ NegativeBinomial:
      name_doc: Negative Binomial
      pdf_tex: p(x; r, p) = \binom{x + r - 1}{x} p^r (1 - p)^x
      param_names: ["r", "p"]
-     param_descrs: ["Number of failures before exoeriment stops",
+     param_descrs: ["Number of failures before experiment stops",
                     "Success probability"]
      string: NegativeBinomial(r=%.5f, p=%.5f)
