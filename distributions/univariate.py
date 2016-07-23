@@ -1,3 +1,4 @@
+from os.path import join, dirname, abspath
 from numba import vectorize, jit, jitclass
 from numba import int32, float32
 
@@ -5,7 +6,7 @@ import numpy as np
 from math import inf, ceil, floor
 from .specials import gamma, lgamma, digamma, beta, bessel_k, set_seed
 
-import _rmath_ffi
+from . import _rmath_ffi
 from numba import cffi_support
 
 cffi_support.register_module(_rmath_ffi)
@@ -15,7 +16,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import yaml
-with open("metadata.yml", 'r') as ymlfile:
+fn = join(dirname(abspath(__file__)), "metadata.yml")
+with open(fn, 'r') as ymlfile:
     mtdt = yaml.load(ymlfile)
 
 # --------------------------------------------------
@@ -41,7 +43,7 @@ Attributes
 location: scalar(float)
     lcoation of the distribution
 scale: scalar(float)
-    scale of the distribution 
+    scale of the distribution
 shape: scalar(float)
     shape of the distribution
 mean :  scalar(float)
@@ -301,7 +303,7 @@ class Normal():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return norm_pdf(self.mu, self.sigma, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return norm_logpdf(self.mu, self.sigma, x)
@@ -310,35 +312,35 @@ class Normal():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(norm_logpdf(self.mu, self.sigma, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return norm_cdf(self.mu, self.sigma, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return norm_ccdf(self.mu, self.sigma, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return norm_logcdf(self.mu, self.sigma, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return norm_logccdf(self.mu, self.sigma, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return norm_invcdf(self.mu, self.sigma, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return norm_invccdf(self.mu, self.sigma, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return norm_invlogcdf(self.mu, self.sigma, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return norm_invlogccdf(self.mu, self.sigma, lq)
@@ -346,7 +348,7 @@ class Normal():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
@@ -551,7 +553,7 @@ class Chisq():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return chisq_pdf(self.v, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return chisq_logpdf(self.v, x)
@@ -560,35 +562,35 @@ class Chisq():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(chisq_logpdf(self.v, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return chisq_cdf(self.v, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return chisq_ccdf(self.v, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return chisq_logcdf(self.v, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return chisq_logccdf(self.v, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return chisq_invcdf(self.v, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return chisq_invccdf(self.v, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return chisq_invlogcdf(self.v, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return chisq_invlogccdf(self.v, lq)
@@ -596,7 +598,7 @@ class Chisq():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
@@ -801,7 +803,7 @@ class Uniform():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return unif_pdf(self.a, self.b, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return unif_logpdf(self.a, self.b, x)
@@ -810,35 +812,35 @@ class Uniform():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(unif_logpdf(self.a, self.b, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return unif_cdf(self.a, self.b, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return unif_ccdf(self.a, self.b, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return unif_logcdf(self.a, self.b, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return unif_logccdf(self.a, self.b, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return unif_invcdf(self.a, self.b, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return unif_invccdf(self.a, self.b, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return unif_invlogcdf(self.a, self.b, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return unif_invlogccdf(self.a, self.b, lq)
@@ -846,7 +848,7 @@ class Uniform():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
@@ -1051,7 +1053,7 @@ class T():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return tdist_pdf(self.v, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return tdist_logpdf(self.v, x)
@@ -1060,35 +1062,35 @@ class T():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(tdist_logpdf(self.v, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return tdist_cdf(self.v, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return tdist_ccdf(self.v, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return tdist_logcdf(self.v, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return tdist_logccdf(self.v, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return tdist_invcdf(self.v, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return tdist_invccdf(self.v, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return tdist_invlogcdf(self.v, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return tdist_invlogccdf(self.v, lq)
@@ -1096,7 +1098,7 @@ class T():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
@@ -1301,7 +1303,7 @@ class LogNormal():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return lognormal_pdf(self.mu, self.sigma, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return lognormal_logpdf(self.mu, self.sigma, x)
@@ -1310,35 +1312,35 @@ class LogNormal():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(lognormal_logpdf(self.mu, self.sigma, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return lognormal_cdf(self.mu, self.sigma, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return lognormal_ccdf(self.mu, self.sigma, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return lognormal_logcdf(self.mu, self.sigma, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return lognormal_logccdf(self.mu, self.sigma, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return lognormal_invcdf(self.mu, self.sigma, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return lognormal_invccdf(self.mu, self.sigma, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return lognormal_invlogcdf(self.mu, self.sigma, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return lognormal_invlogccdf(self.mu, self.sigma, lq)
@@ -1346,7 +1348,7 @@ class LogNormal():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
@@ -1551,7 +1553,7 @@ class F():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return fdist_pdf(self.v1, self.v2, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return fdist_logpdf(self.v1, self.v2, x)
@@ -1560,35 +1562,35 @@ class F():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(fdist_logpdf(self.v1, self.v2, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return fdist_cdf(self.v1, self.v2, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return fdist_ccdf(self.v1, self.v2, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return fdist_logcdf(self.v1, self.v2, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return fdist_logccdf(self.v1, self.v2, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return fdist_invcdf(self.v1, self.v2, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return fdist_invccdf(self.v1, self.v2, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return fdist_invlogcdf(self.v1, self.v2, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return fdist_invlogccdf(self.v1, self.v2, lq)
@@ -1596,7 +1598,7 @@ class F():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
@@ -1801,7 +1803,7 @@ class Gamma():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return gamma_pdf(self.alpha, self.beta, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return gamma_logpdf(self.alpha, self.beta, x)
@@ -1810,35 +1812,35 @@ class Gamma():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(gamma_logpdf(self.alpha, self.beta, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return gamma_cdf(self.alpha, self.beta, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return gamma_ccdf(self.alpha, self.beta, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return gamma_logcdf(self.alpha, self.beta, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return gamma_logccdf(self.alpha, self.beta, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return gamma_invcdf(self.alpha, self.beta, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return gamma_invccdf(self.alpha, self.beta, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return gamma_invlogcdf(self.alpha, self.beta, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return gamma_invlogccdf(self.alpha, self.beta, lq)
@@ -1846,7 +1848,7 @@ class Gamma():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
@@ -2051,7 +2053,7 @@ class Beta():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return beta_pdf(self.alpha, self.beta, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return beta_logpdf(self.alpha, self.beta, x)
@@ -2060,35 +2062,35 @@ class Beta():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(beta_logpdf(self.alpha, self.beta, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return beta_cdf(self.alpha, self.beta, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return beta_ccdf(self.alpha, self.beta, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return beta_logcdf(self.alpha, self.beta, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return beta_logccdf(self.alpha, self.beta, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return beta_invcdf(self.alpha, self.beta, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return beta_invccdf(self.alpha, self.beta, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return beta_invlogcdf(self.alpha, self.beta, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return beta_invlogccdf(self.alpha, self.beta, lq)
@@ -2096,7 +2098,7 @@ class Beta():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
@@ -2301,7 +2303,7 @@ class Exponential():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return exp_pdf(self.theta, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return exp_logpdf(self.theta, x)
@@ -2310,35 +2312,35 @@ class Exponential():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(exp_logpdf(self.theta, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return exp_cdf(self.theta, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return exp_ccdf(self.theta, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return exp_logcdf(self.theta, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return exp_logccdf(self.theta, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return exp_invcdf(self.theta, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return exp_invccdf(self.theta, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return exp_invlogcdf(self.theta, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return exp_invlogccdf(self.theta, lq)
@@ -2346,7 +2348,7 @@ class Exponential():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
@@ -2551,7 +2553,7 @@ class Cauchy():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return cauchy_pdf(self.mu, self.sigma, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return cauchy_logpdf(self.mu, self.sigma, x)
@@ -2560,35 +2562,35 @@ class Cauchy():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(cauchy_logpdf(self.mu, self.sigma, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return cauchy_cdf(self.mu, self.sigma, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return cauchy_ccdf(self.mu, self.sigma, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return cauchy_logcdf(self.mu, self.sigma, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return cauchy_logccdf(self.mu, self.sigma, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return cauchy_invcdf(self.mu, self.sigma, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return cauchy_invccdf(self.mu, self.sigma, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return cauchy_invlogcdf(self.mu, self.sigma, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return cauchy_invlogccdf(self.mu, self.sigma, lq)
@@ -2596,7 +2598,7 @@ class Cauchy():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
@@ -2801,7 +2803,7 @@ class Poisson():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return pois_pdf(self.mu, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return pois_logpdf(self.mu, x)
@@ -2810,35 +2812,35 @@ class Poisson():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(pois_logpdf(self.mu, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return pois_cdf(self.mu, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return pois_ccdf(self.mu, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return pois_logcdf(self.mu, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return pois_logccdf(self.mu, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return pois_invcdf(self.mu, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return pois_invccdf(self.mu, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return pois_invlogcdf(self.mu, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return pois_invlogccdf(self.mu, lq)
@@ -2846,7 +2848,7 @@ class Poisson():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
@@ -3051,7 +3053,7 @@ class Geometric():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return geom_pdf(self.p, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return geom_logpdf(self.p, x)
@@ -3060,35 +3062,35 @@ class Geometric():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(geom_logpdf(self.p, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return geom_cdf(self.p, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return geom_ccdf(self.p, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return geom_logcdf(self.p, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return geom_logccdf(self.p, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return geom_invcdf(self.p, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return geom_invccdf(self.p, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return geom_invlogcdf(self.p, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return geom_invlogccdf(self.p, lq)
@@ -3096,7 +3098,7 @@ class Geometric():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
@@ -3301,7 +3303,7 @@ class Binomial():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return binom_pdf(self.n, self.p, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return binom_logpdf(self.n, self.p, x)
@@ -3310,35 +3312,35 @@ class Binomial():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(binom_logpdf(self.n, self.p, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return binom_cdf(self.n, self.p, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return binom_ccdf(self.n, self.p, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return binom_logcdf(self.n, self.p, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return binom_logccdf(self.n, self.p, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return binom_invcdf(self.n, self.p, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return binom_invccdf(self.n, self.p, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return binom_invlogcdf(self.n, self.p, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return binom_invlogccdf(self.n, self.p, lq)
@@ -3346,7 +3348,7 @@ class Binomial():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
@@ -3551,7 +3553,7 @@ class Logistic():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return logis_pdf(self.mu, self.theta, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return logis_logpdf(self.mu, self.theta, x)
@@ -3560,35 +3562,35 @@ class Logistic():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(logis_logpdf(self.mu, self.theta, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return logis_cdf(self.mu, self.theta, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return logis_ccdf(self.mu, self.theta, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return logis_logcdf(self.mu, self.theta, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return logis_logccdf(self.mu, self.theta, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return logis_invcdf(self.mu, self.theta, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return logis_invccdf(self.mu, self.theta, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return logis_invlogcdf(self.mu, self.theta, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return logis_invlogccdf(self.mu, self.theta, lq)
@@ -3596,7 +3598,7 @@ class Logistic():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
@@ -3801,7 +3803,7 @@ class Weibull():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return weibull_pdf(self.alpha, self.theta, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return weibull_logpdf(self.alpha, self.theta, x)
@@ -3810,35 +3812,35 @@ class Weibull():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(weibull_logpdf(self.alpha, self.theta, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return weibull_cdf(self.alpha, self.theta, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return weibull_ccdf(self.alpha, self.theta, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return weibull_logcdf(self.alpha, self.theta, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return weibull_logccdf(self.alpha, self.theta, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return weibull_invcdf(self.alpha, self.theta, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return weibull_invccdf(self.alpha, self.theta, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return weibull_invlogcdf(self.alpha, self.theta, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return weibull_invlogccdf(self.alpha, self.theta, lq)
@@ -3846,7 +3848,7 @@ class Weibull():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
@@ -4051,7 +4053,7 @@ class Hypergeometric():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return hyper_pdf(self.s, self.f, self.n, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return hyper_logpdf(self.s, self.f, self.n, x)
@@ -4060,35 +4062,35 @@ class Hypergeometric():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(hyper_logpdf(self.s, self.f, self.n, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return hyper_cdf(self.s, self.f, self.n, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return hyper_ccdf(self.s, self.f, self.n, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return hyper_logcdf(self.s, self.f, self.n, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return hyper_logccdf(self.s, self.f, self.n, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return hyper_invcdf(self.s, self.f, self.n, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return hyper_invccdf(self.s, self.f, self.n, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return hyper_invlogcdf(self.s, self.f, self.n, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return hyper_invlogccdf(self.s, self.f, self.n, lq)
@@ -4096,7 +4098,7 @@ class Hypergeometric():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
@@ -4301,7 +4303,7 @@ class NegativeBinomial():
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
         return nbinom_pdf(self.r, self.p, x)
-    
+
     def logpdf(self, x):
         """The logarithm of the pdf value(s) evaluated at x."""
         return nbinom_logpdf(self.r, self.p, x)
@@ -4310,35 +4312,35 @@ class NegativeBinomial():
         """The log-likelihood of the distribution w.r.t. all
         samples contained in array x."""
         return sum(nbinom_logpdf(self.r, self.p, x))
-    
+
     def cdf(self, x):
         """The cdf value(s) evaluated at x."""
         return nbinom_cdf(self.r, self.p, x)
-    
+
     def ccdf(self, x):
         """The complementary cdf evaluated at x, i.e. 1 - cdf(x)."""
         return nbinom_ccdf(self.r, self.p, x)
-    
+
     def logcdf(self, x):
         """The logarithm of the cdf value(s) evaluated at x."""
         return nbinom_logcdf(self.r, self.p, x)
-    
+
     def logccdf(self, x):
         """The logarithm of the complementary cdf evaluated at x."""
         return nbinom_logccdf(self.r, self.p, x)
-    
+
     def quantile(self, q):
         """The quantile value evaluated at q."""
         return nbinom_invcdf(self.r, self.p, q)
-    
+
     def cquantile(self, q):
         """The complementary quantile value evaluated at q."""
         return nbinom_invccdf(self.r, self.p, q)
-    
+
     def invlogcdf(self, lq):
         """The inverse function of logcdf."""
         return nbinom_invlogcdf(self.r, self.p, lq)
-    
+
     def invlogccdf(self, lq):
         """The inverse function of logccdf."""
         return nbinom_invlogccdf(self.r, self.p, lq)
@@ -4346,7 +4348,7 @@ class NegativeBinomial():
     # ========
     # Sampling
     # ========
-    
+
     def rand(self, n):
         """Generates a random draw from the distribution."""
         out = np.empty(n)
