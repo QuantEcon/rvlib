@@ -10,4 +10,4 @@ __version__ = 0.1
 
 from .univariate import *
 from .specials import *
-from _rmath_ffi import *
+from ._rmath_ffi import *

@@ -1,4 +1,4 @@
-import _rmath_ffi
+from . import _rmath_ffi
 from numba import vectorize, jit
 from numba import cffi_support
 
