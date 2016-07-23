@@ -15,7 +15,8 @@ def _initiate_sepcials():
     the Rmath.h file
     '''
 
-    # Define code which appears irrespective of specific functions
+    # Define code for all special functions -- used mainly 
+    # for characteristic functions
     pre_code = """\
     from . import _rmath_ffi
     from numba import vectorize, jit
@@ -594,7 +595,7 @@ def _write_class_rmath(rname, pyname, *pargs):
 
 
 def main():
-# Write out specials.py
+    # Write out specials.py
     _initiate_sepcials()
 
     # Preamble for univariate.py
