@@ -685,6 +685,6 @@ def main():
     _write_class_specific(mtdt["NegativeBinomial"], "r", "p")
     _write_class_rmath("nbinom", "nbinom", "r", "p")
 
-with open("metadata.yml", 'r') as ymlfile:
+with open(os.path.join("distributions", "metadata.yml"), 'r') as ymlfile:
     mtdt = yaml.load(ymlfile)
     main()
