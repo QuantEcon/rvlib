@@ -9,5 +9,6 @@ attaining similar performance exploiting numba<http://numba.pydata.org/>.
 __version__ = 0.1
 
 from .univariate import *
+from .multivariate import *
 from .specials import *
 from ._rmath_ffi import *
