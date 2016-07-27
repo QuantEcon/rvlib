@@ -1,3 +1,11 @@
+"""
+Univariate distributions.
+
+@authors :  Daniel Csaba <daniel.csaba@nyu.edu>
+            Spencer Lyon <spencer.lyon@stern.nyu.edu>
+@date : 2016-07-26
+"""
+
 from os.path import join, dirname, abspath
 from numba import vectorize, jit, jitclass
 from numba import int32, float32
@@ -205,22 +213,22 @@ class Normal():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.mu, self.sigma)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return self.mu
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return self.sigma
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return None
 
     # ==========
@@ -229,37 +237,37 @@ class Normal():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return self.mu
 
     @property
     def median(self):
-        """Returns median."""
+        """Return the median."""
         return self.quantile(.5)
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return self.mu
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return self.sigma ** 2
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return self.sigma
 
     @property
     def skewness(self):
-        """Returns skewness."""
+        """Return the skewness."""
         return 0.0
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return 0.0
 
     @property
@@ -279,7 +287,7 @@ class Normal():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return 0.5 * (np.log(2*np.pi) + 1.0) + np.log(self.sigma)
 
     def mgf(self, x):
@@ -297,7 +305,8 @@ class Normal():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return -inf < x < inf
 
     def pdf(self, x):
@@ -350,7 +359,7 @@ class Normal():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = norm_rand(self.mu, self.sigma)
@@ -455,22 +464,22 @@ class Chisq():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.v)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return None
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return None
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return self.v
 
     # ==========
@@ -479,37 +488,37 @@ class Chisq():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return self.v
 
     @property
     def median(self):
-        """Returns median."""
+        """Return the median."""
         return self.quantile(.5)
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return max(self.v - 2, 0)
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return self.v * 2.0
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return np.sqrt(self.v * 2.0)
 
     @property
     def skewness(self):
-        """Returns skewness."""
+        """Return the skewness."""
         return np.sqrt(8.0 / self.v)
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return 12.0 / self.v
 
     @property
@@ -529,7 +538,7 @@ class Chisq():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return .5 * self.v +  np.log(2.0) + lgamma(.5 * self.v) + (1.0 - .5 * self.v) * digamma(.5 * self.v)
 
     def mgf(self, x):
@@ -547,7 +556,8 @@ class Chisq():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return 0 <= x < inf
 
     def pdf(self, x):
@@ -600,7 +610,7 @@ class Chisq():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = chisq_rand(self.v)
@@ -705,22 +715,22 @@ class Uniform():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.a, self.b)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return self.a
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return self.b - self.a
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return None
 
     # ==========
@@ -729,37 +739,37 @@ class Uniform():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return .5 * (self.a + self.b)
 
     @property
     def median(self):
-        """Returns median."""
+        """Return the median."""
         return .5 * (self.a + self.b)
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return None
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return (self.b - self.a)**2/12
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return (self.b - self.a)/np.sqrt(12)
 
     @property
     def skewness(self):
-        """Returns skewness."""
+        """Return the skewness."""
         return 0
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return -1.2
 
     @property
@@ -779,7 +789,7 @@ class Uniform():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return np.log(self.b - self.a)
 
     def mgf(self, x):
@@ -797,7 +807,8 @@ class Uniform():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return a <= x < b
 
     def pdf(self, x):
@@ -850,7 +861,7 @@ class Uniform():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = unif_rand(self.a, self.b)
@@ -955,22 +966,22 @@ class T():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.v)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return None
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return None
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return self.v
 
     # ==========
@@ -979,37 +990,37 @@ class T():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return 0
 
     @property
     def median(self):
-        """Returns median."""
+        """Return the median."""
         return 0
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return 0
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return self.v/(self.v - 2) if self.v > 2 else inf
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return np.sqrt(self.v/(self.v - 2)) if self.v > 2 else inf
 
     @property
     def skewness(self):
-        """Returns skewness."""
+        """Return the skewness."""
         return 0 if self.v > 3 else None
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return 6/(self.v - 4) if self.v > 4 else inf
 
     @property
@@ -1029,7 +1040,7 @@ class T():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return .5*(self.v + 1)*(digamma(.5*(self.v + 1)) - digamma(.5*self.v)) + np.log(np.sqrt(self.v) * beta(.5*self.v, .5))
 
     def mgf(self, x):
@@ -1047,7 +1058,8 @@ class T():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return -inf <= x < inf
 
     def pdf(self, x):
@@ -1100,7 +1112,7 @@ class T():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = tdist_rand(self.v)
@@ -1205,22 +1217,22 @@ class LogNormal():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.mu, self.sigma)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return self.mu
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return self.sigma
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return None
 
     # ==========
@@ -1229,37 +1241,37 @@ class LogNormal():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return np.exp(self.mu + .5* self.sigma**2)
 
     @property
     def median(self):
-        """Returns median."""
+        """Return the median."""
         return np.exp(self.mu)
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return np.exp(self.mu - self.sigma**2)
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return (np.exp(self.sigma**2) - 1) * np.exp(2*self.mu + self.sigma**2)
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return np.sqrt(self.var)
 
     @property
     def skewness(self):
-        """Returns skewness."""
+        """Return the skewness."""
         return (np.exp(self.sigma**2) + 2) * np.sqrt(np.exp(self.sigma**2) - 1)
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return np.exp(4*self.sigma**2) + 2*np.exp(3*self.sigma**2) + 3*np.exp(2*self.sigma**2) - 6
 
     @property
@@ -1279,7 +1291,7 @@ class LogNormal():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return np.log(self.sigma*np.exp(self.mu + .5)*np.sqrt(2*np.pi))
 
     def mgf(self, x):
@@ -1297,7 +1309,8 @@ class LogNormal():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return 0 < x < inf
 
     def pdf(self, x):
@@ -1350,7 +1363,7 @@ class LogNormal():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = lognormal_rand(self.mu, self.sigma)
@@ -1455,22 +1468,22 @@ class F():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.v1, self.v2)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return None
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return None
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return (self.v1, self.v2)
 
     # ==========
@@ -1479,37 +1492,37 @@ class F():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return self.v2/(self.v2 - 2) if self.v2 > 2 else inf
 
     @property
     def median(self):
-        """Returns median."""
+        """Return the median."""
         return None
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return (self.v1 - 2)/self.v1 * self.v2/(self.v2 + 2) if self.v1 > 2 else inf
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return 2*self.v2**2*(self.v1 + self.v2 - 2)/ (self.v1*(self.v2 - 2)**2*(self.v2 - 4)) if self.v2 > 4 else inf
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return np.sqrt(self.var)
 
     @property
     def skewness(self):
-        """Returns skewness."""
+        """Return the skewness."""
         return (2*self.v1 + self.v2 - 2)*np.sqrt(8*(self.v2 - 4))/ ((self.v2 - 6)*np.sqrt(self.v1*(self.v1+self.v2-2))) if self.v2 > 6 else inf
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return 3 + 12*(self.v1*(5*self.v2 - 22)*(self.v1+self.v2-2) + (self.v2 - 4)*(self.v2 - 2)**2)/ (self.v1*(self.v2-6)*(self.v2-8)*(self.v1+self.v2-2))
 
     @property
@@ -1529,7 +1542,7 @@ class F():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return None
 
     def mgf(self, x):
@@ -1547,7 +1560,8 @@ class F():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return 0 <= x < inf
 
     def pdf(self, x):
@@ -1600,7 +1614,7 @@ class F():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = fdist_rand(self.v1, self.v2)
@@ -1705,22 +1719,22 @@ class Gamma():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.alpha, self.beta)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return None
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return 1/self.beta
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return self.alpha
 
     # ==========
@@ -1729,37 +1743,37 @@ class Gamma():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return self.alpha/self.beta
 
     @property
     def median(self):
-        """Returns median."""
+        """Return the median."""
         return None
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return (self.alpha - 1)/self.beta if self.alpha >= 1 else None
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return self.alpha/(self.beta**2)
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return np.sqrt(self.var)
 
     @property
     def skewness(self):
-        """Returns skewness."""
-        return 2/(np.sqrt(self.apha))
+        """Return the skewness."""
+        return 2/(np.sqrt(self.alpha))
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return 3 + 6/self.alpha
 
     @property
@@ -1779,7 +1793,7 @@ class Gamma():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return self.alpha - np.log(self.beta) + np.log(gamma(self.alpha)) + (1 - self.alpha)*digamma(self.alpha)
 
     def mgf(self, x):
@@ -1797,7 +1811,8 @@ class Gamma():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return 0 < x < inf
 
     def pdf(self, x):
@@ -1850,7 +1865,7 @@ class Gamma():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = gamma_rand(self.alpha, self.beta)
@@ -1955,22 +1970,22 @@ class Beta():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.alpha, self.beta)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return None
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return None
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return (self.alpha, self.beta)
 
     # ==========
@@ -1979,37 +1994,37 @@ class Beta():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return self.alpha/(self.alpha + self.beta)
 
     @property
     def median(self):
-        """Returns median."""
+        """Return the median."""
         return (self.alpha - 1/3)/(self.alpha + self.beta - 2/3) if self.alpha >=1 and self.beta >= 1 else None
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return (self.alpha - 1)/(self.alpha + self.beta - 2) if self.alpha > 1 and self.beta > 1 else None
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return (self.alpha * self.beta)/ ((self.alpha + self.beta)**2 * (self.alpha + self.beta + 1))
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return np.sqrt(self.var)
 
     @property
     def skewness(self):
-        """Returns skewness."""
-        return 2 * (self.beta - self.alpha) * np.sqrt(self.alpha + self.beta + 1)/ ((self.alpha + self.beta + 2) * np.sqrt(self.apha * self.beta))
+        """Return the skewness."""
+        return 2 * (self.beta - self.alpha) * np.sqrt(self.alpha + self.beta + 1)/ ((self.alpha + self.beta + 2) * np.sqrt(self.alpha * self.beta))
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return 3 + 6 * ((self.alpha - self.beta)**2*(self.alpha + self.beta + 1) - self.alpha * self.beta * (self.alpha + self.beta + 2) )/ (self.alpha * self.beta * (self.alpha + self.beta + 2) * (self.alpha + self.beta + 3))
 
     @property
@@ -2029,7 +2044,7 @@ class Beta():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return np.log(beta(self.alpha, self.beta)) - (self.alpha - 1)* digamma(self.alpha) - (self.beta - 1)*digamma(self.beta) + (self.alpha + self.beta - 2)*digamma(self.alpha + self.beta)
 
     def mgf(self, x):
@@ -2047,7 +2062,8 @@ class Beta():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return 0 < x < 1
 
     def pdf(self, x):
@@ -2100,7 +2116,7 @@ class Beta():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = beta_rand(self.alpha, self.beta)
@@ -2205,22 +2221,22 @@ class Exponential():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.theta)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return None
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return 1/self.theta
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return None
 
     # ==========
@@ -2229,37 +2245,37 @@ class Exponential():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return 1/self.theta
 
     @property
     def median(self):
-        """Returns median."""
+        """Return the median."""
         return 1/self.theta * np.log(2)
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return 0
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return self.theta**(-2)
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return np.sqrt(self.var)
 
     @property
     def skewness(self):
-        """Returns skewness."""
+        """Return the skewness."""
         return 2
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return 9
 
     @property
@@ -2279,7 +2295,7 @@ class Exponential():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return 1 - np.log(self.theta)
 
     def mgf(self, x):
@@ -2297,7 +2313,8 @@ class Exponential():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return 0 <= x < inf
 
     def pdf(self, x):
@@ -2350,7 +2367,7 @@ class Exponential():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = exp_rand(self.theta)
@@ -2455,22 +2472,22 @@ class Cauchy():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.mu, self.sigma)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return self.mu
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return self.sigma
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return None
 
     # ==========
@@ -2479,37 +2496,37 @@ class Cauchy():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return None
 
     @property
     def median(self):
-        """Returns median."""
+        """Return the median."""
         return self.mu
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return self.mu
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return None
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return None
 
     @property
     def skewness(self):
-        """Returns skewness."""
+        """Return the skewness."""
         return None
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return 0
 
     @property
@@ -2529,7 +2546,7 @@ class Cauchy():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return np.log(self.sigma) + np.log(4*np.pi)
 
     def mgf(self, x):
@@ -2547,7 +2564,8 @@ class Cauchy():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return -inf < x < inf
 
     def pdf(self, x):
@@ -2600,7 +2618,7 @@ class Cauchy():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = cauchy_rand(self.mu, self.sigma)
@@ -2705,22 +2723,22 @@ class Poisson():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.mu)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return None
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return None
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return self.mu
 
     # ==========
@@ -2729,37 +2747,37 @@ class Poisson():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return self.mu
 
     @property
     def median(self):
-        """Returns median."""
+        """Return the median."""
         return floor(self.mu + 1/3 - 0.02/self.mu)
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return (ceil(self.mu) - 1, floor(self.mu))
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return self.mu
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return np.sqrt(self.var)
 
     @property
     def skewness(self):
-        """Returns skewness."""
+        """Return the skewness."""
         return self.mu**(.5)
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return 1/self.mu
 
     @property
@@ -2779,7 +2797,7 @@ class Poisson():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return .5*np.log(2*np.pi*np.e*self.mu) - 1/(12*self.mu) - 1/(24*self.mu**2) - 19/(360*self.mu**3)
 
     def mgf(self, x):
@@ -2797,7 +2815,8 @@ class Poisson():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return isinstance(x, int)
 
     def pdf(self, x):
@@ -2850,7 +2869,7 @@ class Poisson():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = pois_rand(self.mu)
@@ -2955,22 +2974,22 @@ class Geometric():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.p)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return None
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return None
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return None
 
     # ==========
@@ -2979,37 +2998,37 @@ class Geometric():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return 1/self.p
 
     @property
     def median(self):
-        """Returns median."""
+        """Return the median."""
         return ceil(-1/(np.log2(1-self.p)))
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return 1
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return (1 - self.p)/(self.p**2)
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return np.sqrt(self.var)
 
     @property
     def skewness(self):
-        """Returns skewness."""
+        """Return the skewness."""
         return (2 - self.p)/(np.sqrt(1 - self.p))
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return 9 + self.p/((1 - self.p)**2)
 
     @property
@@ -3029,7 +3048,7 @@ class Geometric():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return (-(1 - self.p)*np.log2(1 - self.p) - self.p*np.log2(self.p))/self.p
 
     def mgf(self, x):
@@ -3047,7 +3066,8 @@ class Geometric():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return isinstance(x, int)
 
     def pdf(self, x):
@@ -3100,7 +3120,7 @@ class Geometric():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = geom_rand(self.p)
@@ -3205,22 +3225,22 @@ class Binomial():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.n, self.p)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return None
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return None
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return None
 
     # ==========
@@ -3229,37 +3249,37 @@ class Binomial():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return self.n*self.p
 
     @property
     def median(self):
-        """Returns median."""
+        """Return the median."""
         return (floor(self.n*self.p), ceil(self.n*self.p))
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return (floor((self.n + 1)*self.p), ceil((self.n + 1)*self.p) - 1)
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return self.n*self.p*(1 - self.p)
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return np.sqrt(self.var)
 
     @property
     def skewness(self):
-        """Returns skewness."""
+        """Return the skewness."""
         return (1 - 2*self.p)/(np.sqrt(self.n*self.p*(1 - self.p)))
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return 3 + (1 - 6*self.p*(1 - self.p))/(self.n*self.p*(1 - self.p))
 
     @property
@@ -3279,7 +3299,7 @@ class Binomial():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return .5*np.log(2*np.pi*np.e*self.n*self.p*(1 - self.p))
 
     def mgf(self, x):
@@ -3297,7 +3317,8 @@ class Binomial():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return isinstance(x, int)
 
     def pdf(self, x):
@@ -3350,7 +3371,7 @@ class Binomial():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = binom_rand(self.n, self.p)
@@ -3455,22 +3476,22 @@ class Logistic():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.mu, self.theta)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return self.mu
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return self.theta
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return None
 
     # ==========
@@ -3479,37 +3500,37 @@ class Logistic():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return self.mu
 
     @property
     def median(self):
-        """Returns median."""
+        """Return the median."""
         return self.mu
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return self.mu
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return (self.theta**2 * np.pi**2)/3
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return np.sqrt(self.var)
 
     @property
     def skewness(self):
-        """Returns skewness."""
+        """Return the skewness."""
         return 0
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return 3 + 1.2
 
     @property
@@ -3529,7 +3550,7 @@ class Logistic():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return np.log(self.theta) + 2
 
     def mgf(self, x):
@@ -3547,7 +3568,8 @@ class Logistic():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return -inf < x < inf
 
     def pdf(self, x):
@@ -3600,7 +3622,7 @@ class Logistic():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = logis_rand(self.mu, self.theta)
@@ -3705,22 +3727,22 @@ class Weibull():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.alpha, self.theta)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return None
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return self.alpha
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return self.theta
 
     # ==========
@@ -3729,37 +3751,37 @@ class Weibull():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return self.alpha*gamma(1 + 1/self.theta)
 
     @property
     def median(self):
-        """Returns median."""
-        return self.alpha(np.log(2))**(1/self.theta)
+        """Return the median."""
+        return self.alpha*(np.log(2))**(1/self.theta)
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return self.alpha*((self.theta - 1)/self.theta)**(1/self.theta)
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return self.alpha**2*(gamma(1 + 2/self.theta) - (gamma(1 + 1/self.theta))**2)
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return np.sqrt(self.var)
 
     @property
     def skewness(self):
-        """Returns skewness."""
+        """Return the skewness."""
         return (gamma(1 + 3/self.theta)*self.alpha**3 - 3*self.mean*self.var - self.mean**3)/(self.var**(3/2))
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return (self.alpha**4*gamma(1 + 4/self.theta) - 4*self.skewness* self.var**(3/2)*self.mean - 6*self.mean**2*self.var - self.mean**4)/(self.var**2)
 
     @property
@@ -3779,7 +3801,7 @@ class Weibull():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return 0.577215664901532860606512090082 * (1 - 1/self.theta) + np.log(self.alpha/self.theta) + 1
 
     def mgf(self, x):
@@ -3797,7 +3819,8 @@ class Weibull():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return 0 <= x < inf
 
     def pdf(self, x):
@@ -3850,7 +3873,7 @@ class Weibull():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = weibull_rand(self.alpha, self.theta)
@@ -3955,22 +3978,22 @@ class Hypergeometric():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.s, self.f, self.n)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return None
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return None
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return None
 
     # ==========
@@ -3979,37 +4002,37 @@ class Hypergeometric():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return self.n*(self.s/(self.s + self.f))
 
     @property
     def median(self):
-        """Returns median."""
+        """Return the median."""
         return None
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return floor((self.n + 1)*(self.s + 1)/(self.s + self.f + 2))
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return self.n*(self.s/(self.s + self.f))*(self.f/(self.s + self.f))* (self.s + self.f - self.n)/(self.s + self.f - 1)
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return np.sqrt(self.var)
 
     @property
     def skewness(self):
-        """Returns skewness."""
+        """Return the skewness."""
         return ((self.f)*(self.s + self.f - 1)**(.5)* (self.s + self.f - 2*self.n))/(((self.n*self.s*self.s* (self.s + self.f - self.n))**(.5)*(self.s + self.f - 2)))
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return 3 + 1/(self.n*self.s*self.f*(self.s + self.f - self.n)* (self.s + self.f - 2)*(self.s + self.f - 3))* ((self.s + self.f - 1)*(self.s + self.f)**2*((self.s + self.f)* (self.s + self.f + 1) - 6*self.s*self.f - 6*self.n* (self.s + self.f -self.n)) + 6*self.n*self.s*self.f* (self.s + self.f - self.n)*(5*(self.s + self.f) - 6))
 
     @property
@@ -4029,7 +4052,7 @@ class Hypergeometric():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return None
 
     def mgf(self, x):
@@ -4047,7 +4070,8 @@ class Hypergeometric():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return isinstance(x, int)
 
     def pdf(self, x):
@@ -4100,7 +4124,7 @@ class Hypergeometric():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = hyper_rand(self.s, self.f, self.n)
@@ -4205,22 +4229,22 @@ class NegativeBinomial():
 
     @property
     def params(self):
-        """Returns parameters."""
+        """Return a tuple of parameters."""
         return (self.r, self.p)
 
     @property
     def location(self):
-        """Returns location parameter if exists."""
+        """Return location parameter if exists."""
         return None
 
     @property
     def scale(self):
-        """Returns scale parameter if exists."""
+        """Return scale parameter if exists."""
         return None
 
     @property
     def shape(self):
-        """Returns shape parameter if exists."""
+        """Return shape parameter if exists."""
         return None
 
     # ==========
@@ -4229,37 +4253,37 @@ class NegativeBinomial():
 
     @property
     def mean(self):
-        """Returns mean."""
+        """Return the mean."""
         return self.p*self.r/(1 - self.p)
 
     @property
     def median(self):
-        """Returns median."""
+        """Return the median."""
         return None
 
     @property
     def mode(self):
-        """Returns mode."""
+        """Return the mode."""
         return floor(self.p*(self.r - 1 )/(1 - self.p)) if self.r > 1 else 0
 
     @property
     def var(self):
-        """Returns variance."""
+        """Return the variance."""
         return self.p*self.r/(1 - self.p)**2
 
     @property
     def std(self):
-        """Returns standard deviation."""
+        """Return the standard deviation."""
         return np.sqrt(self.var)
 
     @property
     def skewness(self):
-        """Returns skewness."""
+        """Return the skewness."""
         return (self.p + 1)/(np.sqrt(self.p*self.r))
 
     @property
     def kurtosis(self):
-        """Returns kurtosis."""
+        """Return the kurtosis."""
         return 3 + 6/self.r + (1 - self.p)**2/(self.p*self.r)
 
     @property
@@ -4279,7 +4303,7 @@ class NegativeBinomial():
 
     @property
     def entropy(self):
-        """Returns entropy."""
+        """Return the entropy."""
         return None
 
     def mgf(self, x):
@@ -4297,7 +4321,8 @@ class NegativeBinomial():
     def insupport(self, x):
         """When x is a scalar, it returns whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element."""
+        it returns whether every element of x is within
+        the support of the distribution."""
         return isinstance(x, int)
 
     def pdf(self, x):
@@ -4350,7 +4375,7 @@ class NegativeBinomial():
     # ========
 
     def rand(self, n):
-        """Generates a random draw from the distribution."""
+        """Generates a vector of n independent samples from the distribution."""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = nbinom_rand(self.r, self.p)
