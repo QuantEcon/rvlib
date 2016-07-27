@@ -21,7 +21,9 @@ cffi_support.register_module(_rmath_ffi)
 # Multivariate Normal
 #--------------------
 
-# no sufficient linalg support in numba 
+# ========================================================================
+# no sufficient linalg support in numba, linalg.det in next release though
+# ========================================================================
 #@vectorize(nopython=True)
 #def mvnormal_pdf(mu, sigma, dim, x):
 #    return np.sqrt((2*np.pi)**dim*np.linalg.det(sigma))*np.exp(-.5*(x - mu)@np.linalg.inv(sigma)@(x - mu))
@@ -38,8 +40,10 @@ def mvnormal_rand(dim):
         out[i] = rnorm(0, 1)
     return out
 
+# =============================================================================
 # for now from http://drsfenner.org/blog/2016/02/basic-cholesky-implementation/
 # let's write our own to avoid licensing issues
+# =============================================================================
 @jit(numba.double[:,:](numba.double[:,:]), nopython=True)
 def cholesky(A):
     """
@@ -77,17 +81,21 @@ class MvNormal_c(object):
     def __init__(self, mu, sigma):
         self.mu = mu #np.asarray(mu, dtype=np.float32)
         self.sigma = sigma #np.asarray(sigma, dtype=np.float32)
+        self.dim = mu.size
+
+        # =====================================
+        # raise ValueError not working in numba
+        # =====================================
 
         #Check if 'mu' and 'sigma' are compatible in size
-        self.dim = mu.size
         # ***FAIL at typeinference: "constant inference not possible for $const57.2 % $57.7"
         #if sigma.shape != (self.dim, self.dim):
         #   raise ValueError("Array 'sigma' must be a square matrix of dimension (%d, %d)" % (self.dim, self.dim))
 
-#       # Check if 'sigma' is symmetric
+        # Check if 'sigma' is symmetric
         # ***FAIL at typeinference: "constant inference not possible for $const57.2 % $57.7"
-#       if not (self.sigma.T == self.sigma).all():
-#           raise ValueError("Array 'sigma' must be symmetric.")
+        #if not (self.sigma.T == self.sigma).all():
+        #   raise ValueError("Array 'sigma' must be symmetric.")
 
 
 
@@ -136,7 +144,9 @@ class MvNormal_c(object):
         """Return the correlation matrix."""  
         return np.diag(self.var**(-.5)) @ self.cov @ np.diag(self.var**(-.5))
 
+# ======================================
 # np.linalg.det in next release of numba
+# ======================================
 #   @property
 #   def entropy(self):
 #       """Return the entropy."""
@@ -158,7 +168,9 @@ class MvNormal_c(object):
         #   raise ValueError("Array 'x' must be of dimension (%d)" % self.dim)
         return (-np.inf < x).all() and (x < np.inf).all() and x.shape[0] <= self.dim
 
+# =====================================
 # no sufficient linalg support in numba
+# =====================================
 #   def pdf(self, x):
 #       """Return the probabilty density evaluated at 'x'. If 'x' is a 
 #       vector then return the result as a scalar. If 'x' is a matrix
@@ -183,10 +195,12 @@ class MvNormal_c(object):
         """Sample n vectors from the distribution. This returns 
         a matrix of size (dim, n), where each column is a sample."""
         L = cholesky(self.sigma)
+        # ======================================================
         # not working for n dimensional yet
         #out = np.empty(n)
         #for i, _ in np.ndenumerate(out):
             #out[:, i] = L @ mvnormal_rand(self.dim) + self.mean
+        # ======================================================
         return L @ mvnormal_rand(self.dim) + self.mu
 
 # define wrapper to overcome failure of type inference

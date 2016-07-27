@@ -1755,7 +1755,7 @@ class Gamma():
     @property
     def skewness(self):
         """Returns skewness."""
-        return 2/(np.sqrt(self.apha))
+        return 2/(np.sqrt(self.alpha))
 
     @property
     def kurtosis(self):
@@ -2005,7 +2005,7 @@ class Beta():
     @property
     def skewness(self):
         """Returns skewness."""
-        return 2 * (self.beta - self.alpha) * np.sqrt(self.alpha + self.beta + 1)/ ((self.alpha + self.beta + 2) * np.sqrt(self.apha * self.beta))
+        return 2 * (self.beta - self.alpha) * np.sqrt(self.alpha + self.beta + 1)/ ((self.alpha + self.beta + 2) * np.sqrt(self.alpha * self.beta))
 
     @property
     def kurtosis(self):
@@ -3735,7 +3735,7 @@ class Weibull():
     @property
     def median(self):
         """Returns median."""
-        return self.alpha(np.log(2))**(1/self.theta)
+        return self.alpha*(np.log(2))**(1/self.theta)
 
     @property
     def mode(self):
