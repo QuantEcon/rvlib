@@ -628,7 +628,7 @@ cffi_support.register_module(_rmath_ffi)
 
 # -------------------
 # Multivariate Normal
-#--------------------
+# -------------------
 
 # ========================================================================
 # no sufficient linalg support in numba, linalg.det in next release though
