@@ -5,18 +5,16 @@ import textwrap
 import yaml
 
 # =========================================
-# write out preamble for special functions
+# write out file for special functions
 # =========================================
 
 
 def _initiate_specials():
     '''
     Initiate python file for special functions which are present in
-    the Rmath.h file
+    the Rmath.h file  -- used mainly for characteristic functions
     '''
 
-    # Define code for all special functions -- used mainly 
-    # for characteristic functions
     pre_code = """\
     \"""
     Special functions for distributions.
@@ -92,23 +90,23 @@ def _initiate_specials():
     def set_seed(x, y):
         return set_seed_rmath(x, y)
     """
-    with open(os.path.join("distributions", "specials.py"), "w") as f:
+    with open(os.path.join("rvlib", "specials.py"), "w") as f:
         f.write(textwrap.dedent(pre_code))
 
 
 # =========================================
-# write out preamble for classes
+# write out preamble for univariate classes
 # =========================================
 
 
 def _initiate_univariate():
     '''
-    Initiate python file which collects all the classes of different
-    distributions.
+    Initiate python file which collects all the  
+    classes of different univariate distributions.
     '''
 
-    # Define code which appears irrespective of specific classes of
-    # distributions
+    # Define code which appears irrespective of  the
+    # specific class of distribution
     pre_code = """\
     \"""
     Univariate distributions.
@@ -227,17 +225,12 @@ def _initiate_univariate():
 
         return univariate_class_docstr.format(**locals())
     """
-    with open(os.path.join("distributions", "univariate.py"), "w") as f:
+    with open(os.path.join("rvlib", "univariate.py"), "w") as f:
         f.write(textwrap.dedent(pre_code))
 
 
-# ======================================================================
-# globals called from the textwrapper with distribution specific content
-# ======================================================================
-
-
-# function to import and @vectorize the
-# distribution specific rmath functions
+# globals called from the textwrapper 
+# with distribution specific content
 
 def _import_rmath(rname, pyname, *pargs):
     """
@@ -333,7 +326,7 @@ def _import_rmath(rname, pyname, *pargs):
     """.format(**locals())
 
     # append code for class to main file
-    with open(os.path.join("distributions", "univariate.py"), "a") as f:
+    with open(os.path.join("rvlib", "univariate.py"), "a") as f:
         f.write(textwrap.dedent(code))
 
     if not has_rand:
@@ -349,7 +342,7 @@ def _import_rmath(rname, pyname, *pargs):
         return {rfun}({p_args})
 
         """.format(**locals())
-    with open(os.path.join("distributions", "univariate.py"), "a") as f:
+    with open(os.path.join("rvlib", "univariate.py"), "a") as f:
         f.write(textwrap.dedent(rand_code))
 
 
@@ -503,13 +496,13 @@ def _write_class_specific(metadata, *pargs):
         """.format(**locals(), **metadata)
 
     # append code for class to main file
-    with open(os.path.join("distributions", "univariate.py"), "a") as f:
+    with open(os.path.join("rvlib", "univariate.py"), "a") as f:
         f.write(textwrap.dedent(class_specific))
 
 
 def _write_class_rmath(rname, pyname, *pargs):
     """
-    # call top level @vectorized evaluation methods
+    call top level @vectorized evaluation methods
     """
 
     # construct distribution specific function names
@@ -585,7 +578,7 @@ def _write_class_rmath(rname, pyname, *pargs):
     """.format(**locals())
 
     # append code for class to main file
-    with open(os.path.join("distributions", "univariate.py"), "a") as f:
+    with open(os.path.join("rvlib", "univariate.py"), "a") as f:
         f.write(loc_code)
 
     if not has_rand:
@@ -607,7 +600,7 @@ def _write_class_rmath(rname, pyname, *pargs):
         return out
 
     """.format(**locals())
-    with open(os.path.join("distributions", "univariate.py"), "a") as f:
+    with open(os.path.join("rvlib", "univariate.py"), "a") as f:
         f.write(rand_code)
 
 
@@ -704,6 +697,6 @@ def main():
     _write_class_specific(mtdt["NegativeBinomial"], "r", "p")
     _write_class_rmath("nbinom", "nbinom", "r", "p")
 
-with open(os.path.join("distributions", "metadata.yml"), 'r') as ymlfile:
+with open(os.path.join("rvlib", "metadata.yml"), 'r') as ymlfile:
     mtdt = yaml.load(ymlfile)
     main()

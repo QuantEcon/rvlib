@@ -16,7 +16,7 @@ def write_version_py(filename=None):
 
     if not filename:
         filename = os.path.join(
-            os.path.dirname(__file__), "distributions", "version.py")
+            os.path.dirname(__file__), "rvlib", "version.py")
 
     f = open(filename, "w")
     try:
@@ -31,17 +31,16 @@ import build_interface
 build_interface.main()
 
 # Setup
-setup(name="Distributions.py",
-      packages=["distributions"],
+setup(name="rvlib",
+      packages=["rvlib"],
       setup_requires=["cffi>=1.0.0"],
       cffi_modules=["build_lib.py:ffi"],
       install_requires=["cffi>=1.0.0"],
       include_package_data=True,
       version=VERSION,
-      # ext_modules=[build_lib.ffi.distutils_extension()],
       description="Probability distributions mimicking Distrbutions.jl",
       author="Daniel Csaba, Spencer Lyon",
       author_email="daniel.csaba@nyu.edu, spencer.lyon@stern.nyu.edu",
-      url="https://github.com/QuantEcon/Distributions.py", # URL to the github repo
+      url="https://github.com/QuantEcon/rvlib", # URL to the github repo
       keywords=["statistics", "distributions"],
       long_description=long_desc)
