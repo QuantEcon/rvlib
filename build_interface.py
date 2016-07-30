@@ -5,19 +5,25 @@ import textwrap
 import yaml
 
 # =========================================
-# write out preamble for special functions
+# write out file for special functions
 # =========================================
 
 
 def _initiate_specials():
     '''
     Initiate python file for special functions which are present in
-    the Rmath.h file
+    the Rmath.h file  -- used mainly for characteristic functions
     '''
 
-    # Define code for all special functions -- used mainly 
-    # for characteristic functions
     pre_code = """\
+    \"""
+    Special functions for distributions.
+
+    @authors :  Daniel Csaba <daniel.csaba@nyu.edu>
+                Spencer Lyon <spencer.lyon@stern.nyu.edu>
+    @date : 2016-07-26
+    \"""
+
     from . import _rmath_ffi
     from numba import vectorize, jit
     from numba import cffi_support
@@ -84,24 +90,32 @@ def _initiate_specials():
     def set_seed(x, y):
         return set_seed_rmath(x, y)
     """
-    with open(os.path.join("distributions", "specials.py"), "w") as f:
+    with open(os.path.join("rvlib", "specials.py"), "w") as f:
         f.write(textwrap.dedent(pre_code))
 
 
 # =========================================
-# write out preamble for classes
+# write out preamble for univariate classes
 # =========================================
 
 
 def _initiate_univariate():
     '''
-    Initiate python file which collects all the classes of different
-    distributions.
+    Initiate python file which collects all the  
+    classes of different univariate distributions.
     '''
 
-    # Define code which appears irrespective of specific classes of
-    # distributions
+    # Define code which appears irrespective of  the
+    # specific class of distribution
     pre_code = """\
+    \"""
+    Univariate distributions.
+
+    @authors :  Daniel Csaba <daniel.csaba@nyu.edu>
+                Spencer Lyon <spencer.lyon@stern.nyu.edu>
+    @date : 2016-07-26
+    \"""
+
     from os.path import join, dirname, abspath
     from numba import vectorize, jit, jitclass
     from numba import int32, float32
@@ -211,17 +225,12 @@ def _initiate_univariate():
 
         return univariate_class_docstr.format(**locals())
     """
-    with open(os.path.join("distributions", "univariate.py"), "w") as f:
+    with open(os.path.join("rvlib", "univariate.py"), "w") as f:
         f.write(textwrap.dedent(pre_code))
 
 
-# ======================================================================
-# globals called from the textwrapper with distribution specific content
-# ======================================================================
-
-
-# function to import and @vectorize the
-# distribution specific rmath functions
+# globals called from the textwrapper 
+# with distribution specific content
 
 def _import_rmath(rname, pyname, *pargs):
     """
@@ -317,7 +326,7 @@ def _import_rmath(rname, pyname, *pargs):
     """.format(**locals())
 
     # append code for class to main file
-    with open(os.path.join("distributions", "univariate.py"), "a") as f:
+    with open(os.path.join("rvlib", "univariate.py"), "a") as f:
         f.write(textwrap.dedent(code))
 
     if not has_rand:
@@ -333,7 +342,7 @@ def _import_rmath(rname, pyname, *pargs):
         return {rfun}({p_args})
 
         """.format(**locals())
-    with open(os.path.join("distributions", "univariate.py"), "a") as f:
+    with open(os.path.join("rvlib", "univariate.py"), "a") as f:
         f.write(textwrap.dedent(rand_code))
 
 
@@ -389,22 +398,22 @@ def _write_class_specific(metadata, *pargs):
 
         @property
         def params(self):
-            \"""Returns parameters.\"""
+            \"""Return a tuple of parameters.\"""
             return ({p_args_self})
 
         @property
         def location(self):
-            \"""Returns location parameter if exists.\"""
+            \"""Return location parameter if exists.\"""
             return {loc}
 
         @property
         def scale(self):
-            \"""Returns scale parameter if exists.\"""
+            \"""Return scale parameter if exists.\"""
             return {scale}
 
         @property
         def shape(self):
-            \"""Returns shape parameter if exists.\"""
+            \"""Return shape parameter if exists.\"""
             return {shape}
 
         # ==========
@@ -413,37 +422,37 @@ def _write_class_specific(metadata, *pargs):
 
         @property
         def mean(self):
-            \"""Returns mean.\"""
+            \"""Return the mean.\"""
             return {mean}
 
         @property
         def median(self):
-            \"""Returns median.\"""
+            \"""Return the median.\"""
             return {median}
 
         @property
         def mode(self):
-            \"""Returns mode.\"""
+            \"""Return the mode.\"""
             return {mode}
 
         @property
         def var(self):
-            \"""Returns variance.\"""
+            \"""Return the variance.\"""
             return {var}
 
         @property
         def std(self):
-            \"""Returns standard deviation.\"""
+            \"""Return the standard deviation.\"""
             return {std}
 
         @property
         def skewness(self):
-            \"""Returns skewness.\"""
+            \"""Return the skewness.\"""
             return {skewness}
 
         @property
         def kurtosis(self):
-            \"""Returns kurtosis.\"""
+            \"""Return the kurtosis.\"""
             return {kurtosis}
 
         @property
@@ -463,7 +472,7 @@ def _write_class_specific(metadata, *pargs):
 
         @property
         def entropy(self):
-            \"""Returns entropy.\"""
+            \"""Return the entropy.\"""
             return {entropy}
 
         def mgf(self, x):
@@ -481,18 +490,19 @@ def _write_class_specific(metadata, *pargs):
         def insupport(self, x):
             \"""When x is a scalar, it returns whether x is within
             the support of the distribution. When x is an array,
-            it returns whether every element.\"""
+            it returns whether every element of x is within
+            the support of the distribution.\"""
             return {insupport}
         """.format(**locals(), **metadata)
 
     # append code for class to main file
-    with open(os.path.join("distributions", "univariate.py"), "a") as f:
+    with open(os.path.join("rvlib", "univariate.py"), "a") as f:
         f.write(textwrap.dedent(class_specific))
 
 
 def _write_class_rmath(rname, pyname, *pargs):
     """
-    # call top level @vectorized evaluation methods
+    call top level @vectorized evaluation methods
     """
 
     # construct distribution specific function names
@@ -568,7 +578,7 @@ def _write_class_rmath(rname, pyname, *pargs):
     """.format(**locals())
 
     # append code for class to main file
-    with open(os.path.join("distributions", "univariate.py"), "a") as f:
+    with open(os.path.join("rvlib", "univariate.py"), "a") as f:
         f.write(loc_code)
 
     if not has_rand:
@@ -583,15 +593,16 @@ def _write_class_rmath(rname, pyname, *pargs):
     # ========
 
     def rand(self, n):
-        \"""Generates a random draw from the distribution.\"""
+        \"""Generates a vector of n independent samples from the distribution.\"""
         out = np.empty(n)
         for i, _ in np.ndenumerate(out):
             out[i] = {rand}({p_args})
         return out
 
     """.format(**locals())
-    with open(os.path.join("distributions", "univariate.py"), "a") as f:
+    with open(os.path.join("rvlib", "univariate.py"), "a") as f:
         f.write(rand_code)
+
 
 
 # ==================================
@@ -915,6 +926,6 @@ def main():
     _write_class_specific(mtdt["NegativeBinomial"], "r", "p")
     _write_class_rmath("nbinom", "nbinom", "r", "p")
 
-with open(os.path.join("distributions", "metadata.yml"), 'r') as ymlfile:
+with open(os.path.join("rvlib", "metadata.yml"), 'r') as ymlfile:
     mtdt = yaml.load(ymlfile)
     main()

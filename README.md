@@ -1,4 +1,4 @@
-## `Distributions.py`
+## `rvlib`
 
 Anyone who has used [`Distributions.jl`](https://github.com/JuliaStats/Distributions.jl) will tell
 you how nice the interface is relative to the "exotic" (the most polite word
@@ -7,7 +7,7 @@ we can think of) interface to distributions exposed by
 `Distributions.jl` also brings better performace, particularly when its
 methods are used inside loops.
 
-For these reason we've put together `Distributions.py`, which mimics the
+For these reason we've put together `rvlib`, which mimics the
 interface of [`Distributions.jl`](https://github.com/JuliaStats/Distributions.jl), while at the same
 time attaining similar performance by exploiting [`numba`](http://numba.pydata.org/).
 
@@ -52,19 +52,21 @@ Univariate discrete:
 
 Multivariate continuous:
 
+* check for updates on mulitvariate normal in `multivariate` branch
+
 ### Functionality
 
-The following properties are shared by all the distributions:
+The following properties are shared by all the univariate distributions:
 
-* `params`: return a tuple of the distributions parameters
+* `params`: tuple of the distribution's parameters
 * `location`: the location of the distribution (if exists)
 * `scale`: the scale of the distribution (if exists)
 * `shape`: the shape of the distribution (if exists)
 * `mean`: the mean of the distribution
 * `median`: the median of the distribution
 * `mode`: the mode of the distribution
-* `var`: the var of the distribution
-* `std`: the std of the distribution
+* `var`: the variance of the distribution
+* `std`: the standard deviation of the distribution
 * `skewness`: the skewness of the distribution
 * `kurtosis`: the kurtosis of the distribution
 * `isplaykurtic`: boolean indicating if kurtosis is greater than zero
@@ -72,18 +74,18 @@ The following properties are shared by all the distributions:
 * `ismesokurtic`: boolean indicating if kurtosis is equal to zero
 * `entropy`: the entropy of the distribution
 
-The following methods can be called for all distributions:
+The following methods can be called for all univariate distributions:
 
-* `mgf`: evaluate the moment generating function
-* `cf`: evaluate the characteristic function
+* `mgf`: evaluate the moment generating function (if exists)
+* `cf`: evaluate the characteristic function (if exists)
 * `pdf`: evaluate the probability density function
-* `logpdf`: evaluate the log of the pdf
-* `loglikelihood`: evaluate the loglikelihood of the distribution with respect to all samples contained in array x
-* `cdf`: evaluate the cumulative density function
+* `logpdf`: evaluate the logarithm of the prabability density function
+* `loglikelihood`: evaluate the log-likelihood of the distribution with respect to all samples contained in array x
+* `cdf`: evaluate the cumulative distribution function
 * `ccdf`: evaluate the complementary cdf, i.e. (1 - cdf)
-* `logcdf`: evaluate the log of the cdf
-* `logccdf`: evaluate the log of the complementary cumulative density function
-* `quantile`: evaluate the quantile at critical value
+* `logcdf`: evaluate the logarithm of the cdf
+* `logccdf`: evaluate the logarithm of the complementary cdf
+* `quantile`: evaluate the quantile function at a critical value
 * `cquantile`: evaluate the complementary quantile function
 * `invlogcdf`: evaluate the inverse function of the logcdf
 * `invlogccdf`: evaluate the inverse function of the logccdf
@@ -94,9 +96,9 @@ Seed setting
 As the package is built around the `Rmath` library the seed for the random number generator has to be set using the `Rmath` `set_seed(x,y)` function. For example:
 
 ```python
-import distributions as ds
+import rvlib as rl
 
-ds.set_seed(123, 456) # note that it requires two arguments
+rl.set_seed(123, 456) # note that it requires two arguments
 ```
 
 
@@ -105,12 +107,12 @@ ds.set_seed(123, 456) # note that it requires two arguments
 Preliminary comparison with the `scipy.stats` package.
 
 ```python
-from distributions import Normal
+from rvlib import Normal
 from scipy.stats import norm
 import numpy as np
 import timeit
 
-N_dist = Normal(0,1) # Distributions.py version
+N_dist = Normal(0,1) # rvlib version
 N_scipy = norm(0,1) # scipy.stats version
 
 x = np.linspace(0,100,100)
@@ -125,6 +127,7 @@ Out[1]: The slowest run took 8.85 times longer than the fastest. This could mean
 In [2]: %timeit N_scipy.pdf(x)
 Out[2]: 10000 loops, best of 3: 150 µs per loop
 ```
+
 
 ```python
 In [3]: %timeit N_dist.cdf(x)
@@ -145,6 +148,12 @@ Out[5]: The slowest run took 2166.80 times longer than the fastest. This could m
 In [6]: %timeit N_scipy.rvs(1000)
 Out[6]: 10000 loops, best of 3: 119 µs per loop
 ```
+
+
+# Contributors
+
+* Daniel Csaba (daniel.csaba@nyu.edu)
+* Spencer Lyon (spencer.lyon@stern.nyu.edu)
 
 ---
 

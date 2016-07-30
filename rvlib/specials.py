@@ -1,3 +1,11 @@
+"""
+Special functions for distributions.
+
+@authors :  Daniel Csaba <daniel.csaba@nyu.edu>
+            Spencer Lyon <spencer.lyon@stern.nyu.edu>
+@date : 2016-07-26
+"""
+
 from . import _rmath_ffi
 from numba import vectorize, jit
 from numba import cffi_support

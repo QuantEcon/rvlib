@@ -1,4 +1,4 @@
-include distributions/metadata.yml
+include rvlib/metadata.yml
 include README.md
 include build_lib.py
 recursive-include src *
