@@ -359,6 +359,9 @@ def _write_class_specific(metadata, *pargs):
 
     p_args_self = ", ".join(["".join(("self.", par)) for par in pargs])
 
+    data = locals()
+    data.update(metadata)
+
     class_specific = """\
 
     @vectorize(nopython=True)
@@ -493,7 +496,7 @@ def _write_class_specific(metadata, *pargs):
             it returns whether every element of x is within
             the support of the distribution.\"""
             return {insupport}
-        """.format(**locals(), **metadata)
+        """.format(**data)
 
     # append code for class to main file
     with open(os.path.join("rvlib", "univariate.py"), "a") as f:
