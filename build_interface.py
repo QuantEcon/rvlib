@@ -121,7 +121,6 @@ def _initiate_univariate():
     from numba import int32, float32
 
     import numpy as np
-    from math import inf, ceil, floor
     from .specials import gamma, lgamma, digamma, beta, bessel_k, set_seed
 
     from . import _rmath_ffi
@@ -700,6 +699,6 @@ def main():
     _write_class_specific(mtdt["NegativeBinomial"], "r", "p")
     _write_class_rmath("nbinom", "nbinom", "r", "p")
 
-with open(os.path.join("rvlib", "metadata.yml"), 'r') as ymlfile:
+with open(os.path.join("rvlib", "metadata.yaml"), 'r') as ymlfile:
     mtdt = yaml.load(ymlfile)
     main()
