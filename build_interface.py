@@ -133,7 +133,7 @@ def _initiate_univariate():
     warnings.filterwarnings("ignore")
 
     import yaml
-    fn = join(dirname(abspath(__file__)), "metadata.yml")
+    fn = join(dirname(abspath(__file__)), "metadata.yaml")
     with open(fn, 'r') as ymlfile:
         mtdt = yaml.load(ymlfile)
 

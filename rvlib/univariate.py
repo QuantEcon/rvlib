@@ -11,7 +11,6 @@ from numba import vectorize, jit, jitclass
 from numba import int32, float32
 
 import numpy as np
-from math import inf, ceil, floor
 from .specials import gamma, lgamma, digamma, beta, bessel_k, set_seed
 
 from . import _rmath_ffi
@@ -24,7 +23,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import yaml
-fn = join(dirname(abspath(__file__)), "metadata.yml")
+fn = join(dirname(abspath(__file__)), "metadata.yaml")
 with open(fn, 'r') as ymlfile:
     mtdt = yaml.load(ymlfile)
 
@@ -307,7 +306,7 @@ class Normal():
         the support of the distribution. When x is an array,
         it returns whether every element of x is within
         the support of the distribution."""
-        return -inf < x < inf
+        return -np.inf < x < np.inf
 
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
@@ -558,7 +557,7 @@ class Chisq():
         the support of the distribution. When x is an array,
         it returns whether every element of x is within
         the support of the distribution."""
-        return 0 <= x < inf
+        return 0 <= x < np.inf
 
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
@@ -1006,12 +1005,12 @@ class T():
     @property
     def var(self):
         """Return the variance."""
-        return self.v/(self.v - 2) if self.v > 2 else inf
+        return self.v/(self.v - 2) if self.v > 2 else np.inf
 
     @property
     def std(self):
         """Return the standard deviation."""
-        return np.sqrt(self.v/(self.v - 2)) if self.v > 2 else inf
+        return np.sqrt(self.v/(self.v - 2)) if self.v > 2 else np.inf
 
     @property
     def skewness(self):
@@ -1021,7 +1020,7 @@ class T():
     @property
     def kurtosis(self):
         """Return the kurtosis."""
-        return 6/(self.v - 4) if self.v > 4 else inf
+        return 6/(self.v - 4) if self.v > 4 else np.inf
 
     @property
     def isplatykurtic(self):
@@ -1060,7 +1059,7 @@ class T():
         the support of the distribution. When x is an array,
         it returns whether every element of x is within
         the support of the distribution."""
-        return -inf <= x < inf
+        return -np.inf <= x < np.inf
 
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
@@ -1311,7 +1310,7 @@ class LogNormal():
         the support of the distribution. When x is an array,
         it returns whether every element of x is within
         the support of the distribution."""
-        return 0 < x < inf
+        return 0 < x < np.inf
 
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
@@ -1493,7 +1492,7 @@ class F():
     @property
     def mean(self):
         """Return the mean."""
-        return self.v2/(self.v2 - 2) if self.v2 > 2 else inf
+        return self.v2/(self.v2 - 2) if self.v2 > 2 else np.inf
 
     @property
     def median(self):
@@ -1503,12 +1502,12 @@ class F():
     @property
     def mode(self):
         """Return the mode."""
-        return (self.v1 - 2)/self.v1 * self.v2/(self.v2 + 2) if self.v1 > 2 else inf
+        return (self.v1 - 2)/self.v1 * self.v2/(self.v2 + 2) if self.v1 > 2 else np.inf
 
     @property
     def var(self):
         """Return the variance."""
-        return 2*self.v2**2*(self.v1 + self.v2 - 2)/ (self.v1*(self.v2 - 2)**2*(self.v2 - 4)) if self.v2 > 4 else inf
+        return 2*self.v2**2*(self.v1 + self.v2 - 2)/ (self.v1*(self.v2 - 2)**2*(self.v2 - 4)) if self.v2 > 4 else np.inf
 
     @property
     def std(self):
@@ -1518,7 +1517,7 @@ class F():
     @property
     def skewness(self):
         """Return the skewness."""
-        return (2*self.v1 + self.v2 - 2)*np.sqrt(8*(self.v2 - 4))/ ((self.v2 - 6)*np.sqrt(self.v1*(self.v1+self.v2-2))) if self.v2 > 6 else inf
+        return (2*self.v1 + self.v2 - 2)*np.sqrt(8*(self.v2 - 4))/ ((self.v2 - 6)*np.sqrt(self.v1*(self.v1+self.v2-2))) if self.v2 > 6 else np.inf
 
     @property
     def kurtosis(self):
@@ -1562,7 +1561,7 @@ class F():
         the support of the distribution. When x is an array,
         it returns whether every element of x is within
         the support of the distribution."""
-        return 0 <= x < inf
+        return 0 <= x < np.inf
 
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
@@ -1813,7 +1812,7 @@ class Gamma():
         the support of the distribution. When x is an array,
         it returns whether every element of x is within
         the support of the distribution."""
-        return 0 < x < inf
+        return 0 < x < np.inf
 
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
@@ -2315,7 +2314,7 @@ class Exponential():
         the support of the distribution. When x is an array,
         it returns whether every element of x is within
         the support of the distribution."""
-        return 0 <= x < inf
+        return 0 <= x < np.inf
 
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
@@ -2566,7 +2565,7 @@ class Cauchy():
         the support of the distribution. When x is an array,
         it returns whether every element of x is within
         the support of the distribution."""
-        return -inf < x < inf
+        return -np.inf < x < np.inf
 
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
@@ -2753,12 +2752,12 @@ class Poisson():
     @property
     def median(self):
         """Return the median."""
-        return floor(self.mu + 1/3 - 0.02/self.mu)
+        return np.floor(self.mu + 1/3 - 0.02/self.mu)
 
     @property
     def mode(self):
         """Return the mode."""
-        return (ceil(self.mu) - 1, floor(self.mu))
+        return (np.ceil(self.mu) - 1, np.floor(self.mu))
 
     @property
     def var(self):
@@ -3004,7 +3003,7 @@ class Geometric():
     @property
     def median(self):
         """Return the median."""
-        return ceil(-1/(np.log2(1-self.p)))
+        return np.ceil(-1/(np.log2(1-self.p)))
 
     @property
     def mode(self):
@@ -3255,12 +3254,12 @@ class Binomial():
     @property
     def median(self):
         """Return the median."""
-        return (floor(self.n*self.p), ceil(self.n*self.p))
+        return (np.floor(self.n*self.p), np.ceil(self.n*self.p))
 
     @property
     def mode(self):
         """Return the mode."""
-        return (floor((self.n + 1)*self.p), ceil((self.n + 1)*self.p) - 1)
+        return (np.floor((self.n + 1)*self.p), np.ceil((self.n + 1)*self.p) - 1)
 
     @property
     def var(self):
@@ -3570,7 +3569,7 @@ class Logistic():
         the support of the distribution. When x is an array,
         it returns whether every element of x is within
         the support of the distribution."""
-        return -inf < x < inf
+        return -np.inf < x < np.inf
 
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
@@ -3821,7 +3820,7 @@ class Weibull():
         the support of the distribution. When x is an array,
         it returns whether every element of x is within
         the support of the distribution."""
-        return 0 <= x < inf
+        return 0 <= x < np.inf
 
     def pdf(self, x):
         """The pdf value(s) evaluated at x."""
@@ -4013,7 +4012,7 @@ class Hypergeometric():
     @property
     def mode(self):
         """Return the mode."""
-        return floor((self.n + 1)*(self.s + 1)/(self.s + self.f + 2))
+        return np.floor((self.n + 1)*(self.s + 1)/(self.s + self.f + 2))
 
     @property
     def var(self):
@@ -4264,7 +4263,7 @@ class NegativeBinomial():
     @property
     def mode(self):
         """Return the mode."""
-        return floor(self.p*(self.r - 1 )/(1 - self.p)) if self.r > 1 else 0
+        return np.floor(self.p*(self.r - 1 )/(1 - self.p)) if self.r > 1 else 0
 
     @property
     def var(self):
