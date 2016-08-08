@@ -1,5 +1,6 @@
 import glob
 import os
+import platform
 
 from cffi import FFI
 
@@ -13,7 +14,8 @@ rmath_src = [f
              if ("librandom.c" not in f) and ("randmtzig.c" not in f)]
 
 extra_compile_args = ['-DMATHLIB_STANDALONE']
-extra_compile_args.append('-std=c99')
+if platform.system != 'Windows':
+	extra_compile_args.append('-std=c99')
 
 ffi = FFI()
 ffi.set_source("rvlib._rmath_ffi",
