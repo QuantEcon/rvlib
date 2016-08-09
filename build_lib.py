@@ -15,7 +15,7 @@ rmath_src = [f
 
 extra_compile_args = ['-DMATHLIB_STANDALONE']
 if platform.system != 'Windows':
-	extra_compile_args.append('-std=c99')
+    extra_compile_args.append('-std=c99')
 
 ffi = FFI()
 ffi.set_source("rvlib._rmath_ffi",
