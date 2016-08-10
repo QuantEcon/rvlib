@@ -644,7 +644,7 @@ cffi_support.register_module(_rmath_ffi)
 # -------------------
 
 
-@vectorize(nopython=True)
+@jit(nopython=True)
 def mvnormal_pdf(mu, sigma, dim, x):
     return np.sqrt((2*np.pi)**dim*np.linalg.det(sigma))*np.exp(-.5*(x - mu)@np.linalg.inv(sigma)@(x - mu))
 
@@ -786,15 +786,16 @@ class MvNormal_c(object):
         # not working for n dimensional yet
         #out = np.empty(n)
         #for i, _ in np.ndenumerate(out):
-            #out[:, i] = L @ mvnormal_rand(self.dim) + self.mean
+        #    out[:, i] = L @ mvnormal_rand(self.dim) + self.mean
         # ======================================================
         return L @ mvnormal_rand(self.dim) + self.mu
+        
 
 # define wrapper to overcome failure of type inference
 def MvNormal(mu, sigma):
     return MvNormal_c(np.array(mu, dtype=np.float64), np.array(sigma, dtype=np.float64))
     """
-    with open(os.path.join("distributions", "multivariate.py"), "w") as f:
+    with open(os.path.join("rvlib", "multivariate.py"), "w") as f:
         f.write(textwrap.dedent(pre_code))
 
 
