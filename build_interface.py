@@ -641,12 +641,10 @@ cffi_support.register_module(_rmath_ffi)
 # Multivariate Normal
 # -------------------
 
-# ========================================================================
-# no sufficient linalg support in numba, linalg.det in next release though
-# ========================================================================
-#@vectorize(nopython=True)
-#def mvnormal_pdf(mu, sigma, dim, x):
-#    return np.sqrt((2*np.pi)**dim*np.linalg.det(sigma))*np.exp(-.5*(x - mu)@np.linalg.inv(sigma)@(x - mu))
+
+@vectorize(nopython=True)
+def mvnormal_pdf(mu, sigma, dim, x):
+    return np.sqrt((2*np.pi)**dim*np.linalg.det(sigma))*np.exp(-.5*(x - mu)@np.linalg.inv(sigma)@(x - mu))
 
 
 rnorm = _rmath_ffi.lib.rnorm
@@ -660,39 +658,10 @@ def mvnormal_rand(dim):
         out[i] = rnorm(0, 1)
     return out
 
-# =============================================================================
-# for now from http://drsfenner.org/blog/2016/02/basic-cholesky-implementation/
-# let's write our own to avoid licensing issues
-# =============================================================================
-@jit(numba.double[:,:](numba.double[:,:]), nopython=True)
-def cholesky(A):
-    \"""
-       Performs a Cholesky decomposition of on symmetric, pos-def A.
-       Returns lower-triangular L (full sized, zeroed above diag)
-    \"""
-    n = A.shape[0]
-    L = np.empty_like(A)
-
-    # Perform the Cholesky decomposition
-    for row in range(n):
-        for col in range(row+1):
-            tmp_sum = 0.0
-            for j in range(col):
-                tmp_sum += L[row,j] * L[col,j]
-            if (row == col): 
-                # diag elts.
-                L[row,col] = np.sqrt(A[row,row] - tmp_sum)
-            else:
-                # off diag elts.
-                L[row,col] = (1.0 / L[col,col] * (A[row,col] - tmp_sum))
-        L[row, row+1:] = 0.0
-    return L
-
-
 spec = [
-        ('mu', float64[:]),     # array field for mean 
+        ('mu', float64[:]),         # array field for mean 
         ('sigma', float64[:,:]),    # array field for covariance matrix
-        ('dim', int64)          # scalar for dimension  
+        ('dim', int64)              # scalar for dimension  
     ]
 
 @jitclass(spec)
@@ -764,13 +733,11 @@ class MvNormal_c(object):
         \"""Return the correlation matrix.\"""  
         return np.diag(self.var**(-.5)) @ self.cov @ np.diag(self.var**(-.5))
 
-# ======================================
-# np.linalg.det in next release of numba
-# ======================================
-#   @property
-#   def entropy(self):
-#       \"""Return the entropy.\"""
-#       return .5*(self.length*(1 + np.log(2*np.pi)) + np.log(np.linalg.det(self.sigma)))
+
+    @property
+    def entropy(self):
+        \"""Return the entropy.\"""
+        return .5*(self.length*(1 + np.log(2*np.pi)) + np.log(np.linalg.det(self.sigma)))
 
 
     # ==========
@@ -788,24 +755,22 @@ class MvNormal_c(object):
         #   raise ValueError("Array 'x' must be of dimension (%d)" % self.dim)
         return (-np.inf < x).all() and (x < np.inf).all() and x.shape[0] <= self.dim
 
-# =====================================
-# no sufficient linalg support in numba
-# =====================================
-#   def pdf(self, x):
-#       \"""Return the probabilty density evaluated at 'x'. If 'x' is a 
-#       vector then return the result as a scalar. If 'x' is a matrix
-#       then return the result as an array.\"""
-#
-#       # pdf only exists if 'sigma' is positive definite
-#       if not np.all(np.linalg.eigvals(self.sigma) > 0):
-#           raise ValueError("The pdf only exists if 'sigma' is positive definite.")
-#       return mvnormal_pdf(self.mu, self.sigma, self.dim, x)
 
-#   def logpdf(self, x):
-#       \"""Return the logarithm of the probabilty density evaluated
-#       at 'x'. If 'x' is a vector then return the result as a scalar.
-#       If 'x' is a matrix then return the result as an array.\"""
-#       return np.log(self.pdf(x))
+    def pdf(self, x):
+        \"""Return the probabilty density evaluated at 'x'. If 'x' is a 
+        vector then return the result as a scalar. If 'x' is a matrix
+        then return the result as an array.\"""
+
+        # pdf only exists if 'sigma' is positive definite
+        # if not np.all(np.linalg.eigvals(self.sigma) > 0):
+        #     raise ValueError("The pdf only exists if 'sigma' is positive definite.")
+        return mvnormal_pdf(self.mu, self.sigma, self.dim, x)
+
+    def logpdf(self, x):
+        \"""Return the logarithm of the probabilty density evaluated
+        at 'x'. If 'x' is a vector then return the result as a scalar.
+        If 'x' is a matrix then return the result as an array.\"""
+        return np.log(self.pdf(x))
 
     # ========
     # Sampling
@@ -814,7 +779,7 @@ class MvNormal_c(object):
     def rand(self):
         \"""Sample n vectors from the distribution. This returns 
         a matrix of size (dim, n), where each column is a sample.\"""
-        L = cholesky(self.sigma)
+        L = np.linalg.cholesky(self.sigma)
         # ======================================================
         # not working for n dimensional yet
         #out = np.empty(n)
