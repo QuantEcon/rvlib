@@ -38,6 +38,10 @@ def mvnormal_rand(dim):
         out[i] = rnorm(0, 1)
     return out
 
+
+
+
+
 spec = [
         ('mu', float64[:]),         # array field for mean 
         ('sigma', float64[:,:]),    # array field for covariance matrix
@@ -129,7 +133,6 @@ class MvNormal_c(object):
         within the support of the distribution. When 'x' 
         is a matrix, return whether every column of 'x' 
         is within the support of the distribution."""
-        x = np.array(x, dtype=float64)
         # can't raise valueerror in numba
         #if x.shape[0] != self.dim:
         #   raise ValueError("Array 'x' must be of dimension (%d)" % self.dim)
@@ -156,17 +159,19 @@ class MvNormal_c(object):
     # Sampling
     # ========
 
-    def rand(self):
+    def rand(self, n):
         """Sample n vectors from the distribution. This returns 
         a matrix of size (dim, n), where each column is a sample."""
         L = np.linalg.cholesky(self.sigma)
         # ======================================================
         # not working for n dimensional yet
-        #out = np.empty(n)
-        #for i, _ in np.ndenumerate(out):
-        #    out[:, i] = L @ mvnormal_rand(self.dim) + self.mean
+        d = self.mu.size
+        out = np.empty((n,d), dtype=np.float64)
+        for i in np.arange(n):
+            out[i, :] = L @ mvnormal_rand(self.dim) + self.mean
         # ======================================================
-        return L @ mvnormal_rand(self.dim) + self.mu
+        #return L @ mvnormal_rand(self.dim) + self.mu
+        return out
 
 
 # define wrapper to overcome failure of type inference
