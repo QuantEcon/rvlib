@@ -660,10 +660,6 @@ def mvnormal_rand(dim):
         out[i] = rnorm(0, 1)
     return out
 
-
-
-
-
 spec = [
         ('mu', float64[:]),         # array field for mean 
         ('sigma', float64[:,:]),    # array field for covariance matrix
@@ -674,8 +670,8 @@ spec = [
 class MvNormal_c(object):
 
     def __init__(self, mu, sigma):
-        self.mu = mu #np.asarray(mu, dtype=np.float32)
-        self.sigma = sigma #np.asarray(sigma, dtype=np.float32)
+        self.mu = mu #np.array(mu, dtype=np.float64)
+        self.sigma = sigma #np.array(sigma, dtype=np.float64)
         self.dim = mu.size
 
         # =====================================
@@ -762,9 +758,8 @@ class MvNormal_c(object):
 
 
     def pdf(self, x):
-        \"""Return the probabilty density evaluated at 'x'. If 'x' is a 
-        vector then return the result as a scalar. If 'x' is a matrix
-        then return the result as an array.\"""
+        \"""Return the probabilty density evaluated at 'x'. 'x' has to be
+        the same dimension as 'mu' and has to have 'dtype=np.float64'.\"""
 
         # pdf only exists if 'sigma' is positive definite
         # if not np.all(np.linalg.eigvals(self.sigma) > 0):
@@ -773,8 +768,8 @@ class MvNormal_c(object):
 
     def logpdf(self, x):
         \"""Return the logarithm of the probabilty density evaluated
-        at 'x'. If 'x' is a vector then return the result as a scalar.
-        If 'x' is a matrix then return the result as an array.\"""
+        at 'x'. 'x' has to be the same dimension as 'mu' 
+        and has to have 'dtype=np.float64'.\"""
         return np.log(self.pdf(x))
 
     # ========
@@ -783,16 +778,13 @@ class MvNormal_c(object):
 
     def rand(self, n):
         \"""Sample n vectors from the distribution. This returns 
-        a matrix of size (dim, n), where each column is a sample.\"""
+        a matrix of size (n, dim), where each row is a sample.\"""
+        
         L = np.linalg.cholesky(self.sigma)
-        # ======================================================
-        # not working for n dimensional yet
         d = self.mu.size
         out = np.empty((n,d), dtype=np.float64)
         for i in np.arange(n):
             out[i, :] = L @ mvnormal_rand(self.dim) + self.mean
-        # ======================================================
-        #return L @ mvnormal_rand(self.dim) + self.mu
         return out
         
 
