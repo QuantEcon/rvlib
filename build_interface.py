@@ -646,7 +646,7 @@ cffi_support.register_module(_rmath_ffi)
 
 @jit(nopython=True)
 def mvnormal_pdf(mu, sigma, dim, x):
-    return np.sqrt((2*np.pi)**dim*np.linalg.det(sigma))*np.exp(-.5*(x - mu)@np.linalg.inv(sigma)@(x - mu))
+    return 1/(np.sqrt((2*np.pi)**dim*np.linalg.det(sigma)))*np.exp(-.5*(x - mu)@np.linalg.inv(sigma)@(x - mu))
 
 
 rnorm = _rmath_ffi.lib.rnorm
@@ -747,10 +747,8 @@ class MvNormal_c(object):
     # ==========
 
     def insupport(self, x):
-        \"""When 'x' is a vector, return whether 'x' is 
-        within the support of the distribution. When 'x' 
-        is a matrix, return whether every column of 'x' 
-        is within the support of the distribution.\"""
+        \"""Return whether 'x' is within the support of the distribution. 'x' has to be
+        the same dimension as 'mu' and has to have 'dtype=np.float64'.\"""
         # can't raise valueerror in numba
         #if x.shape[0] != self.dim:
         #   raise ValueError("Array 'x' must be of dimension (%d)" % self.dim)

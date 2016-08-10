@@ -52,7 +52,15 @@ Univariate discrete:
 
 Multivariate continuous:
 
-* check for updates on mulitvariate normal in `multivariate` branch
+The multivariate normal distribution is built on some `numpy.linalg` functions which are only supported in the next (0.28) `numba` release. The developer version is already available through `conda` by running:
+```python
+conda install -c numba numba=0.28.0.dev 
+```
+Once the devoper version is set as the environment the code should be running. When passing new variables for evaluation the data type should match `np.float64` which is used for other calculations within the class. I.e. for evauating the pdf for an instance `MV_Normal`:
+```
+x = np.array([1,2], dtype=np.float64)
+MV_Normal.pdf(x)
+```
 
 ### Functionality
 
