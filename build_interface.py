@@ -121,7 +121,6 @@ def _initiate_univariate():
     from numba import int32, float32
 
     import numpy as np
-    from math import inf, ceil, floor
     from .specials import gamma, lgamma, digamma, beta, bessel_k, set_seed
 
     from . import _rmath_ffi
@@ -134,7 +133,7 @@ def _initiate_univariate():
     warnings.filterwarnings("ignore")
 
     import yaml
-    fn = join(dirname(abspath(__file__)), "metadata.yml")
+    fn = join(dirname(abspath(__file__)), "metadata.yaml")
     with open(fn, 'r') as ymlfile:
         mtdt = yaml.load(ymlfile)
 
@@ -359,6 +358,9 @@ def _write_class_specific(metadata, *pargs):
 
     p_args_self = ", ".join(["".join(("self.", par)) for par in pargs])
 
+    data = locals()
+    data.update(metadata)
+
     class_specific = """\
 
     @vectorize(nopython=True)
@@ -493,7 +495,7 @@ def _write_class_specific(metadata, *pargs):
             it returns whether every element of x is within
             the support of the distribution.\"""
             return {insupport}
-        """.format(**locals(), **metadata)
+        """.format(**data)
 
     # append code for class to main file
     with open(os.path.join("rvlib", "univariate.py"), "a") as f:
@@ -891,6 +893,6 @@ def main():
     _write_class_specific(mtdt["NegativeBinomial"], "r", "p")
     _write_class_rmath("nbinom", "nbinom", "r", "p")
 
-with open(os.path.join("rvlib", "metadata.yml"), 'r') as ymlfile:
+with open(os.path.join("rvlib", "metadata.yaml"), 'r') as ymlfile:
     mtdt = yaml.load(ymlfile)
     main()

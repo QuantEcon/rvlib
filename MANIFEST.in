@@ -1,4 +1,4 @@
-include rvlib/metadata.yml
+include rvlib/metadata.yaml
 include README.md
 include build_lib.py
 recursive-include src *
