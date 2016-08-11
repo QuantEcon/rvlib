@@ -33,8 +33,8 @@ with open(fn, 'r') as ymlfile:
 # --------------------------------------------------
 
 univariate_class_docstr = r"""
-Construct a distribution representing {name_doc} random variables. The pdf
-of the distribution is given by
+Construct a distribution representing {name_doc} random variables. The 
+probability density function of the distribution is given by
 
 .. math::
 
@@ -48,7 +48,7 @@ Attributes
 ----------
 {param_attributes}
 location: scalar(float)
-    lcoation of the distribution
+    location of the distribution
 scale: scalar(float)
     scale of the distribution
 shape: scalar(float)
@@ -60,19 +60,19 @@ median: scalar(float)
 mode :  scalar(float)
     mode of the distribution
 var :  scalar(float)
-    var of the distribution
+    variance of the distribution
 std :  scalar(float)
-    std of the distribution
+    standard deviation of the distribution
 skewness :  scalar(float)
     skewness of the distribution
 kurtosis :  scalar(float)
     kurtosis of the distribution
 isplatykurtic :  Boolean
-    boolean indicating if d.kurtosis > 0
+    boolean indicating if kurtosis > 0
 isleptokurtic :  bool
-    boolean indicating if d.kurtosis < 0
+    boolean indicating if kurtosis < 0
 ismesokurtic :  bool
-    boolean indicating if d.kurtosis == 0
+    boolean indicating if kurtosis == 0
 entropy :  scalar(float)
     entropy value of the distribution
 """
@@ -183,9 +183,9 @@ def norm_mgf(mu, sigma, x):
 def norm_cf(mu, sigma, x):
     return np.exp(1j * x * mu - 0.5 * sigma**2 * x**2)
 
-#  ------
+# -------------
 #  Normal
-#  ------
+# -------------
 
 spec = [
     ('mu', float32), ('sigma', float32)
@@ -290,11 +290,11 @@ class Normal():
         return 0.5 * (np.log(2*np.pi) + 1.0) + np.log(self.sigma)
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return norm_mgf(self.mu, self.sigma, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return norm_cf(self.mu, self.sigma, x)
 
     # ==========
@@ -302,9 +302,9 @@ class Normal():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return -np.inf < x < np.inf
 
@@ -346,11 +346,11 @@ class Normal():
         return norm_invccdf(self.mu, self.sigma, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return norm_invlogcdf(self.mu, self.sigma, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return norm_invlogccdf(self.mu, self.sigma, lq)
     
     # ========
@@ -434,9 +434,9 @@ def chisq_mgf(v, x):
 def chisq_cf(v, x):
     return (1.0 - 2.0 * 1j * x)**(-v * 0.5)
 
-#  ------
+# -------------
 #  Chisq
-#  ------
+# -------------
 
 spec = [
     ('v', int32)
@@ -541,11 +541,11 @@ class Chisq():
         return .5 * self.v +  np.log(2.0) + lgamma(.5 * self.v) + (1.0 - .5 * self.v) * digamma(.5 * self.v)
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return chisq_mgf(self.v, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return chisq_cf(self.v, x)
 
     # ==========
@@ -553,9 +553,9 @@ class Chisq():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return 0 <= x < np.inf
 
@@ -597,11 +597,11 @@ class Chisq():
         return chisq_invccdf(self.v, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return chisq_invlogcdf(self.v, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return chisq_invlogccdf(self.v, lq)
     
     # ========
@@ -685,9 +685,9 @@ def unif_mgf(a, b, x):
 def unif_cf(a, b, x):
     return (np.exp(1j * x * b) - np.exp(1j * x * a))/(1j * x * (b - a))
 
-#  ------
+# -------------
 #  Uniform
-#  ------
+# -------------
 
 spec = [
     ('a', float32), ('b', float32)
@@ -792,11 +792,11 @@ class Uniform():
         return np.log(self.b - self.a)
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return unif_mgf(self.a, self.b, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return unif_cf(self.a, self.b, x)
 
     # ==========
@@ -804,9 +804,9 @@ class Uniform():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return a <= x < b
 
@@ -848,11 +848,11 @@ class Uniform():
         return unif_invccdf(self.a, self.b, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return unif_invlogcdf(self.a, self.b, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return unif_invlogccdf(self.a, self.b, lq)
     
     # ========
@@ -936,9 +936,9 @@ def tdist_mgf(v, x):
 def tdist_cf(v, x):
     return bessel_k(v/2, np.sqrt(v)*abs(x))*(np.sqrt(v)*abs(x))**(v/2)/ (gamma(v/2)*2**(v/2 - 1))
 
-#  ------
+# -------------
 #  T
-#  ------
+# -------------
 
 spec = [
     ('v', int32)
@@ -1043,11 +1043,11 @@ class T():
         return .5*(self.v + 1)*(digamma(.5*(self.v + 1)) - digamma(.5*self.v)) + np.log(np.sqrt(self.v) * beta(.5*self.v, .5))
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return tdist_mgf(self.v, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return tdist_cf(self.v, x)
 
     # ==========
@@ -1055,9 +1055,9 @@ class T():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return -np.inf <= x < np.inf
 
@@ -1099,11 +1099,11 @@ class T():
         return tdist_invccdf(self.v, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return tdist_invlogcdf(self.v, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return tdist_invlogccdf(self.v, lq)
     
     # ========
@@ -1187,9 +1187,9 @@ def lnorm_mgf(mu, sigma, x):
 def lnorm_cf(mu, sigma, x):
     return None
 
-#  ------
+# -------------
 #  LogNormal
-#  ------
+# -------------
 
 spec = [
     ('mu', float32), ('sigma', float32)
@@ -1294,11 +1294,11 @@ class LogNormal():
         return np.log(self.sigma*np.exp(self.mu + .5)*np.sqrt(2*np.pi))
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return lnorm_mgf(self.mu, self.sigma, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return lnorm_cf(self.mu, self.sigma, x)
 
     # ==========
@@ -1306,9 +1306,9 @@ class LogNormal():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return 0 < x < np.inf
 
@@ -1350,11 +1350,11 @@ class LogNormal():
         return lognormal_invccdf(self.mu, self.sigma, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return lognormal_invlogcdf(self.mu, self.sigma, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return lognormal_invlogccdf(self.mu, self.sigma, lq)
     
     # ========
@@ -1438,9 +1438,9 @@ def fdist_mgf(v1, v2, x):
 def fdist_cf(v1, v2, x):
     return None
 
-#  ------
+# -------------
 #  F
-#  ------
+# -------------
 
 spec = [
     ('v1', float32), ('v2', float32)
@@ -1545,11 +1545,11 @@ class F():
         return None
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return fdist_mgf(self.v1, self.v2, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return fdist_cf(self.v1, self.v2, x)
 
     # ==========
@@ -1557,9 +1557,9 @@ class F():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return 0 <= x < np.inf
 
@@ -1601,11 +1601,11 @@ class F():
         return fdist_invccdf(self.v1, self.v2, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return fdist_invlogcdf(self.v1, self.v2, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return fdist_invlogccdf(self.v1, self.v2, lq)
     
     # ========
@@ -1689,9 +1689,9 @@ def gamma_mgf(alpha, beta, x):
 def gamma_cf(alpha, beta, x):
     return (1 - (1j * x)/beta)**(-alpha)
 
-#  ------
+# -------------
 #  Gamma
-#  ------
+# -------------
 
 spec = [
     ('alpha', float32), ('beta', float32)
@@ -1796,11 +1796,11 @@ class Gamma():
         return self.alpha - np.log(self.beta) + np.log(gamma(self.alpha)) + (1 - self.alpha)*digamma(self.alpha)
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return gamma_mgf(self.alpha, self.beta, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return gamma_cf(self.alpha, self.beta, x)
 
     # ==========
@@ -1808,9 +1808,9 @@ class Gamma():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return 0 < x < np.inf
 
@@ -1852,11 +1852,11 @@ class Gamma():
         return gamma_invccdf(self.alpha, self.beta, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return gamma_invlogcdf(self.alpha, self.beta, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return gamma_invlogccdf(self.alpha, self.beta, lq)
     
     # ========
@@ -1940,9 +1940,9 @@ def beta_mgf(alpha, beta, x):
 def beta_cf(alpha, beta, x):
     return None
 
-#  ------
+# -------------
 #  Beta
-#  ------
+# -------------
 
 spec = [
     ('alpha', float32), ('beta', float32)
@@ -2047,11 +2047,11 @@ class Beta():
         return np.log(beta(self.alpha, self.beta)) - (self.alpha - 1)* digamma(self.alpha) - (self.beta - 1)*digamma(self.beta) + (self.alpha + self.beta - 2)*digamma(self.alpha + self.beta)
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return beta_mgf(self.alpha, self.beta, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return beta_cf(self.alpha, self.beta, x)
 
     # ==========
@@ -2059,9 +2059,9 @@ class Beta():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return 0 < x < 1
 
@@ -2103,11 +2103,11 @@ class Beta():
         return beta_invccdf(self.alpha, self.beta, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return beta_invlogcdf(self.alpha, self.beta, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return beta_invlogccdf(self.alpha, self.beta, lq)
     
     # ========
@@ -2191,9 +2191,9 @@ def exp_mgf(theta, x):
 def exp_cf(theta, x):
     return theta/(theta - 1j*x)
 
-#  ------
+# -------------
 #  Exponential
-#  ------
+# -------------
 
 spec = [
     ('theta', float32)
@@ -2298,11 +2298,11 @@ class Exponential():
         return 1 - np.log(self.theta)
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return exp_mgf(self.theta, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return exp_cf(self.theta, x)
 
     # ==========
@@ -2310,9 +2310,9 @@ class Exponential():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return 0 <= x < np.inf
 
@@ -2354,11 +2354,11 @@ class Exponential():
         return exp_invccdf(self.theta, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return exp_invlogcdf(self.theta, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return exp_invlogccdf(self.theta, lq)
     
     # ========
@@ -2442,9 +2442,9 @@ def cauchy_mgf(mu, sigma, x):
 def cauchy_cf(mu, sigma, x):
     return np.exp(mu*1j*x - sigma*np.abs(x))
 
-#  ------
+# -------------
 #  Cauchy
-#  ------
+# -------------
 
 spec = [
     ('mu', float32), ('sigma', float32)
@@ -2549,11 +2549,11 @@ class Cauchy():
         return np.log(self.sigma) + np.log(4*np.pi)
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return cauchy_mgf(self.mu, self.sigma, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return cauchy_cf(self.mu, self.sigma, x)
 
     # ==========
@@ -2561,9 +2561,9 @@ class Cauchy():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return -np.inf < x < np.inf
 
@@ -2605,11 +2605,11 @@ class Cauchy():
         return cauchy_invccdf(self.mu, self.sigma, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return cauchy_invlogcdf(self.mu, self.sigma, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return cauchy_invlogccdf(self.mu, self.sigma, lq)
     
     # ========
@@ -2693,9 +2693,9 @@ def pois_mgf(mu, x):
 def pois_cf(mu, x):
     return np.exp(mu*(np.exp(1j*x) - 1))
 
-#  ------
+# -------------
 #  Poisson
-#  ------
+# -------------
 
 spec = [
     ('mu', float32)
@@ -2800,11 +2800,11 @@ class Poisson():
         return .5*np.log(2*np.pi*np.e*self.mu) - 1/(12*self.mu) - 1/(24*self.mu**2) - 19/(360*self.mu**3)
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return pois_mgf(self.mu, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return pois_cf(self.mu, x)
 
     # ==========
@@ -2812,9 +2812,9 @@ class Poisson():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return isinstance(x, int)
 
@@ -2856,11 +2856,11 @@ class Poisson():
         return pois_invccdf(self.mu, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return pois_invlogcdf(self.mu, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return pois_invlogccdf(self.mu, lq)
     
     # ========
@@ -2944,9 +2944,9 @@ def geom_mgf(p, x):
 def geom_cf(p, x):
     return p*np.exp(x*1j)/(1 - (1 - p)*np.exp(x*1j))
 
-#  ------
+# -------------
 #  Geometric
-#  ------
+# -------------
 
 spec = [
     ('p', float32)
@@ -3051,11 +3051,11 @@ class Geometric():
         return (-(1 - self.p)*np.log2(1 - self.p) - self.p*np.log2(self.p))/self.p
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return geom_mgf(self.p, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return geom_cf(self.p, x)
 
     # ==========
@@ -3063,9 +3063,9 @@ class Geometric():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return isinstance(x, int)
 
@@ -3107,11 +3107,11 @@ class Geometric():
         return geom_invccdf(self.p, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return geom_invlogcdf(self.p, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return geom_invlogccdf(self.p, lq)
     
     # ========
@@ -3195,9 +3195,9 @@ def binom_mgf(n, p, x):
 def binom_cf(n, p, x):
     return (1 - p + p*np.exp(x*1j))**n
 
-#  ------
+# -------------
 #  Binomial
-#  ------
+# -------------
 
 spec = [
     ('n', int32), ("p", float32)
@@ -3302,11 +3302,11 @@ class Binomial():
         return .5*np.log(2*np.pi*np.e*self.n*self.p*(1 - self.p))
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return binom_mgf(self.n, self.p, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return binom_cf(self.n, self.p, x)
 
     # ==========
@@ -3314,9 +3314,9 @@ class Binomial():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return isinstance(x, int)
 
@@ -3358,11 +3358,11 @@ class Binomial():
         return binom_invccdf(self.n, self.p, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return binom_invlogcdf(self.n, self.p, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return binom_invlogccdf(self.n, self.p, lq)
     
     # ========
@@ -3446,9 +3446,9 @@ def logis_mgf(mu, theta, x):
 def logis_cf(mu, theta, x):
     return np.exp(mu*x*1j)*np.pi*theta*x/np.sinh(np.pi*theta*x)
 
-#  ------
+# -------------
 #  Logistic
-#  ------
+# -------------
 
 spec = [
     ('mu', float32), ("theta", float32)
@@ -3553,11 +3553,11 @@ class Logistic():
         return np.log(self.theta) + 2
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return logis_mgf(self.mu, self.theta, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return logis_cf(self.mu, self.theta, x)
 
     # ==========
@@ -3565,9 +3565,9 @@ class Logistic():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return -np.inf < x < np.inf
 
@@ -3609,11 +3609,11 @@ class Logistic():
         return logis_invccdf(self.mu, self.theta, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return logis_invlogcdf(self.mu, self.theta, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return logis_invlogccdf(self.mu, self.theta, lq)
     
     # ========
@@ -3697,9 +3697,9 @@ def weibull_mgf(alpha, theta, x):
 def weibull_cf(alpha, theta, x):
     return None
 
-#  ------
+# -------------
 #  Weibull
-#  ------
+# -------------
 
 spec = [
     ('alpha', float32), ("theta", float32)
@@ -3804,11 +3804,11 @@ class Weibull():
         return 0.577215664901532860606512090082 * (1 - 1/self.theta) + np.log(self.alpha/self.theta) + 1
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return weibull_mgf(self.alpha, self.theta, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return weibull_cf(self.alpha, self.theta, x)
 
     # ==========
@@ -3816,9 +3816,9 @@ class Weibull():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return 0 <= x < np.inf
 
@@ -3860,11 +3860,11 @@ class Weibull():
         return weibull_invccdf(self.alpha, self.theta, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return weibull_invlogcdf(self.alpha, self.theta, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return weibull_invlogccdf(self.alpha, self.theta, lq)
     
     # ========
@@ -3948,9 +3948,9 @@ def hyper_mgf(s, f, n, x):
 def hyper_cf(s, f, n, x):
     return None
 
-#  ------
+# -------------
 #  Hypergeometric
-#  ------
+# -------------
 
 spec = [
     ('s', int32), ("f", int32), ("n", int32)
@@ -4055,11 +4055,11 @@ class Hypergeometric():
         return None
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return hyper_mgf(self.s, self.f, self.n, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return hyper_cf(self.s, self.f, self.n, x)
 
     # ==========
@@ -4067,9 +4067,9 @@ class Hypergeometric():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return isinstance(x, int)
 
@@ -4111,11 +4111,11 @@ class Hypergeometric():
         return hyper_invccdf(self.s, self.f, self.n, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return hyper_invlogcdf(self.s, self.f, self.n, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return hyper_invlogccdf(self.s, self.f, self.n, lq)
     
     # ========
@@ -4199,9 +4199,9 @@ def nbinom_mgf(r, p, x):
 def nbinom_cf(r, p, x):
     return ((1 - p)/(1 - p*np.exp(x*1j)))**r
 
-#  ------
+# -------------
 #  NegativeBinomial
-#  ------
+# -------------
 
 spec = [
     ('r', int32), ("p", int32)
@@ -4306,11 +4306,11 @@ class NegativeBinomial():
         return None
 
     def mgf(self, x):
-        """Evaluate moment generating function at x."""
+        """Evaluate the moment generating function at x."""
         return nbinom_mgf(self.r, self.p, x)
 
     def cf(self, x):
-        """Evaluate characteristic function at x."""
+        """Evaluate the characteristic function at x."""
         return nbinom_cf(self.r, self.p, x)
 
     # ==========
@@ -4318,9 +4318,9 @@ class NegativeBinomial():
     # ==========
 
     def insupport(self, x):
-        """When x is a scalar, it returns whether x is within
+        """When x is a scalar, return whether x is within
         the support of the distribution. When x is an array,
-        it returns whether every element of x is within
+        return whether every element of x is within
         the support of the distribution."""
         return isinstance(x, int)
 
@@ -4362,11 +4362,11 @@ class NegativeBinomial():
         return nbinom_invccdf(self.r, self.p, q)
 
     def invlogcdf(self, lq):
-        """The inverse function of logcdf."""
+        """The inverse function of the logcdf."""
         return nbinom_invlogcdf(self.r, self.p, lq)
 
     def invlogccdf(self, lq):
-        """The inverse function of logccdf."""
+        """The inverse function of the logccdf."""
         return nbinom_invlogccdf(self.r, self.p, lq)
     
     # ========

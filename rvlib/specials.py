@@ -1,5 +1,6 @@
 """
-Special functions for distributions.
+Special functions used mainly to evaluate characteristic
+functions of various distributions.
 
 @authors :  Daniel Csaba <daniel.csaba@nyu.edu>
             Spencer Lyon <spencer.lyon@stern.nyu.edu>
@@ -12,9 +13,9 @@ from numba import cffi_support
 
 cffi_support.register_module(_rmath_ffi)
 
-# -------
-# gamma
-# -------
+# ---------------
+# gamma function
+# ---------------
 
 gammafn = _rmath_ffi.lib.gammafn
 
@@ -22,9 +23,9 @@ gammafn = _rmath_ffi.lib.gammafn
 def gamma(x):
     return gammafn(x)
 
-# -------
-# lgamma
-# -------
+# ---------------------
+# log of gamma function
+# ---------------------
 
 lgammafn = _rmath_ffi.lib.lgammafn
 
@@ -32,9 +33,9 @@ lgammafn = _rmath_ffi.lib.lgammafn
 def lgamma(x):
     return lgammafn(x)
 
-# -------
-# digamma
-# -------
+# ----------------
+# digamma function
+# ----------------
 
 digammafn = _rmath_ffi.lib.digamma
 
@@ -42,9 +43,9 @@ digammafn = _rmath_ffi.lib.digamma
 def digamma(x):
     return digammafn(x)
 
-# -------
-# beta
-# -------
+# -------------
+# beta funciton
+# -------------
 
 betafn = _rmath_ffi.lib.beta
 
@@ -52,10 +53,9 @@ betafn = _rmath_ffi.lib.beta
 def beta(x, y):
     return betafn(x, y)
 
-# -------
-# bessel_k
-# Modified Bessel function of the second kind
-# -------
+# -------------------------------------------
+# modified Bessel function of the second kind
+# -------------------------------------------
 
 bessel_k_fn = _rmath_ffi.lib.bessel_k
 
@@ -63,9 +63,10 @@ bessel_k_fn = _rmath_ffi.lib.bessel_k
 def bessel_k(nu, x):
     return bessel_k_fn(x, nu, 1)
 
-# ----------
-# set seed
-# ----------
+# ----------------------------------
+# seed setting for the random number
+# generator of the Rmath library
+# ----------------------------------
 
 set_seed_rmath = _rmath_ffi.lib.set_seed
 

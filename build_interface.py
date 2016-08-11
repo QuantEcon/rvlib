@@ -5,7 +5,7 @@ import textwrap
 import yaml
 
 # =========================================
-# write out file for special functions
+# Write out file for special functions
 # =========================================
 
 
@@ -17,7 +17,8 @@ def _initiate_specials():
 
     pre_code = """\
     \"""
-    Special functions for distributions.
+    Special functions used mainly to evaluate characteristic
+    functions of various distributions.
 
     @authors :  Daniel Csaba <daniel.csaba@nyu.edu>
                 Spencer Lyon <spencer.lyon@stern.nyu.edu>
@@ -30,9 +31,9 @@ def _initiate_specials():
 
     cffi_support.register_module(_rmath_ffi)
 
-    # -------
-    # gamma
-    # -------
+    # ---------------
+    # gamma function
+    # ---------------
 
     gammafn = _rmath_ffi.lib.gammafn
 
@@ -40,9 +41,9 @@ def _initiate_specials():
     def gamma(x):
         return gammafn(x)
 
-    # -------
-    # lgamma
-    # -------
+    # ---------------------
+    # log of gamma function
+    # ---------------------
 
     lgammafn = _rmath_ffi.lib.lgammafn
 
@@ -50,9 +51,9 @@ def _initiate_specials():
     def lgamma(x):
         return lgammafn(x)
 
-    # -------
-    # digamma
-    # -------
+    # ----------------
+    # digamma function
+    # ----------------
 
     digammafn = _rmath_ffi.lib.digamma
 
@@ -60,9 +61,9 @@ def _initiate_specials():
     def digamma(x):
         return digammafn(x)
 
-    # -------
-    # beta
-    # -------
+    # -------------
+    # beta funciton
+    # -------------
 
     betafn = _rmath_ffi.lib.beta
 
@@ -70,10 +71,9 @@ def _initiate_specials():
     def beta(x, y):
         return betafn(x, y)
 
-    # -------
-    # bessel_k
-    # Modified Bessel function of the second kind
-    # -------
+    # -------------------------------------------
+    # modified Bessel function of the second kind
+    # -------------------------------------------
 
     bessel_k_fn = _rmath_ffi.lib.bessel_k
 
@@ -81,9 +81,10 @@ def _initiate_specials():
     def bessel_k(nu, x):
         return bessel_k_fn(x, nu, 1)
 
-    # ----------
-    # set seed
-    # ----------
+    # ----------------------------------
+    # seed setting for the random number
+    # generator of the Rmath library
+    # ----------------------------------
 
     set_seed_rmath = _rmath_ffi.lib.set_seed
 
@@ -102,11 +103,10 @@ def _initiate_specials():
 def _initiate_univariate():
     '''
     Initiate python file which collects all the  
-    classes of different univariate distributions.
+    classes for different univariate distributions.
     '''
 
-    # Define code which appears irrespective of  the
-    # specific class of distribution
+    # Define code which appears for all classes
     pre_code = """\
     \"""
     Univariate distributions.
@@ -143,8 +143,8 @@ def _initiate_univariate():
     # --------------------------------------------------
 
     univariate_class_docstr = r\"""
-    Construct a distribution representing {name_doc} random variables. The pdf
-    of the distribution is given by
+    Construct a distribution representing {name_doc} random variables. The 
+    probability density function of the distribution is given by
 
     .. math::
 
@@ -158,7 +158,7 @@ def _initiate_univariate():
     ----------
     {param_attributes}
     location: scalar(float)
-        lcoation of the distribution
+        location of the distribution
     scale: scalar(float)
         scale of the distribution
     shape: scalar(float)
@@ -170,19 +170,19 @@ def _initiate_univariate():
     mode :  scalar(float)
         mode of the distribution
     var :  scalar(float)
-        var of the distribution
+        variance of the distribution
     std :  scalar(float)
-        std of the distribution
+        standard deviation of the distribution
     skewness :  scalar(float)
         skewness of the distribution
     kurtosis :  scalar(float)
         kurtosis of the distribution
     isplatykurtic :  Boolean
-        boolean indicating if d.kurtosis > 0
+        boolean indicating if kurtosis > 0
     isleptokurtic :  bool
-        boolean indicating if d.kurtosis < 0
+        boolean indicating if kurtosis < 0
     ismesokurtic :  bool
-        boolean indicating if d.kurtosis == 0
+        boolean indicating if kurtosis == 0
     entropy :  scalar(float)
         entropy value of the distribution
     \"""
@@ -228,15 +228,14 @@ def _initiate_univariate():
         f.write(textwrap.dedent(pre_code))
 
 
-# globals called from the textwrapper 
+# globals are called from the textwrapper 
 # with distribution specific content
 
 def _import_rmath(rname, pyname, *pargs):
     """
-    # now we map from the _rmath_ffi.lib.Xrname functions
-    # to the friendly names from the julia file here:
-    # https://github.com/JuliaStats/StatsFuns.jl/blob/master/src/rmath.jl
+    Map the `_rmath.ffi.lib.*` function names to match the Julia API.
     """
+
     # extract Rmath.h function names
     dfun = "d{}".format(rname)
     pfun = "p{}".format(rname)
@@ -324,7 +323,7 @@ def _import_rmath(rname, pyname, *pargs):
 
     """.format(**locals())
 
-    # append code for class to main file
+    # append code for specific class to main `univariate.py` file
     with open(os.path.join("rvlib", "univariate.py"), "a") as f:
         f.write(textwrap.dedent(code))
 
@@ -340,19 +339,19 @@ def _import_rmath(rname, pyname, *pargs):
     def {rand}({p_args}):
         return {rfun}({p_args})
 
-        """.format(**locals())
+    """.format(**locals())
     with open(os.path.join("rvlib", "univariate.py"), "a") as f:
         f.write(textwrap.dedent(rand_code))
 
 
-# function to write out the dist specific part
+# function to write out the distribution specific part
 def _write_class_specific(metadata, *pargs):
+    """
+    Write out the distribution specific part of the class 
+    which is not related to the imported Rmath functions.
 
-    # write out the distribution specific part
-    # of the class which is not related to the
-    # imported rmath functions
-
-    # use _metadata_DIST and some derived locals
+    Builds on _metadata_DIST and some derived locals.
+    """
 
     p_args = ", ".join(pargs)
 
@@ -371,9 +370,9 @@ def _write_class_specific(metadata, *pargs):
     def {pyname}_cf({p_args}, x):
         return {cf}
 
-    #  ------
+    # -------------
     #  {name}
-    #  ------
+    # -------------
 
     spec = [
         {spec}
@@ -478,11 +477,11 @@ def _write_class_specific(metadata, *pargs):
             return {entropy}
 
         def mgf(self, x):
-            \"""Evaluate moment generating function at x.\"""
+            \"""Evaluate the moment generating function at x.\"""
             return {pyname}_mgf({p_args_self}, x)
 
         def cf(self, x):
-            \"""Evaluate characteristic function at x.\"""
+            \"""Evaluate the characteristic function at x.\"""
             return {pyname}_cf({p_args_self}, x)
 
         # ==========
@@ -490,21 +489,21 @@ def _write_class_specific(metadata, *pargs):
         # ==========
 
         def insupport(self, x):
-            \"""When x is a scalar, it returns whether x is within
+            \"""When x is a scalar, return whether x is within
             the support of the distribution. When x is an array,
-            it returns whether every element of x is within
+            return whether every element of x is within
             the support of the distribution.\"""
             return {insupport}
         """.format(**data)
 
-    # append code for class to main file
+    # append distribution specific code to `univariate.py` file
     with open(os.path.join("rvlib", "univariate.py"), "a") as f:
         f.write(textwrap.dedent(class_specific))
 
 
 def _write_class_rmath(rname, pyname, *pargs):
     """
-    call top level @vectorized evaluation methods
+    Call top level @vectorized evaluation methods from Rmath.
     """
 
     # construct distribution specific function names
@@ -571,15 +570,15 @@ def _write_class_rmath(rname, pyname, *pargs):
         return {invccdf}({p_args}, q)
 
     def invlogcdf(self, lq):
-        \"""The inverse function of logcdf.\"""
+        \"""The inverse function of the logcdf.\"""
         return {invlogcdf}({p_args}, lq)
 
     def invlogccdf(self, lq):
-        \"""The inverse function of logccdf.\"""
+        \"""The inverse function of the logccdf.\"""
         return {invlogccdf}({p_args}, lq)
     """.format(**locals())
 
-    # append code for class to main file
+    # append code for class to main `univariate.py` file
     with open(os.path.join("rvlib", "univariate.py"), "a") as f:
         f.write(loc_code)
 
