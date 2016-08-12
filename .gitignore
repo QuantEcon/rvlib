@@ -29,3 +29,5 @@ build/
 dist/
 
 *.so
+
+rvlib/_rmath_ffi.py
