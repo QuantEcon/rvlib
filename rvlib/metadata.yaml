@@ -97,10 +97,9 @@ T:
           (gamma(v/2)*2**(v/2 - 1))
      insupport: -np.inf <= x < np.inf
      name_doc: T 
-     pdf_tex: p(x;df)= \frac{G \left(\frac{df+1}{2}\right)}{\sqrt{df\pi}
-                G\left(\frac{df}{2} \right)}   
-                \left(1 + \frac{x^2}{df} \right)^{- \frac{df+1}{2}} 
-                \n where :math:`G(\cdot)` is the Gamma function
+     pdf_tex: p(x;df)= \frac{\Gamma \left(\frac{df+1}{2}\right)}{\sqrt{df\pi}
+               \Gamma\left(\frac{df}{2} \right)}   
+               \left(1 + \frac{x^2}{df} \right)^{- \frac{df+1}{2}}
      param_names: ["df"]
      param_descrs: ["Degrees of freedom (real, >0)"]
      string: T(df=%.5f)
