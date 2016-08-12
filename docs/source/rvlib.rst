@@ -4,35 +4,39 @@ rvlib package
 Submodules
 ----------
 
-rvlib.specials module
----------------------
-
-.. automodule:: rvlib.specials
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 rvlib.univariate module
 -----------------------
 
 .. automodule:: rvlib.univariate
     :members:
-    :undoc-members:
     :show-inheritance:
 
-rvlib.version module
---------------------
+.. autoclass:: Normal
 
-.. automodule:: rvlib.version
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. autoclass:: Chisq
 
+.. autoclass:: Uniform
 
-Module contents
----------------
+.. autoclass:: T
 
-.. automodule:: rvlib
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. autoclass:: LogNormal
+
+.. autoclass:: Gamma
+
+.. autoclass:: Beta
+
+.. autoclass:: Exponential
+
+.. autoclass:: Cauchy
+
+.. autoclass:: Poisson
+
+.. autoclass:: Binomial
+
+.. autoclass:: Logistic
+
+.. autuoclass:: Weibull
+
+.. autoclass:: Hypergeometric
+
+.. autoclass:: NegativeBinomial
