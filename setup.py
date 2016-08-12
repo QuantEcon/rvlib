@@ -1,6 +1,9 @@
 from setuptools import setup
 import os
 
+import build_lib
+build_lib.ffi.compile(verbose=True)
+
 rootdir = os.path.abspath(os.path.dirname(__file__))
 long_desc = open(os.path.join(rootdir, 'README.md')).read()
 
