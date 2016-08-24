@@ -11,6 +11,10 @@ For these reason we've put together `rvlib`, which mimics the
 interface of [`Distributions.jl`](https://github.com/JuliaStats/Distributions.jl), while at the same
 time attaining similar performance by exploiting [`numba`](http://numba.pydata.org/).
 
+This package was inspired by Joshua Adelman's ([@synapticarbors](https://github.com/synapticarbors)) 
+[blog post](https://www.continuum.io/blog/developer-blog/calling-c-libraries-numba-using-cffi) describing how 
+to call the Rmath C library from numba using [CFFI](http://cffi.readthedocs.io/), and utilizes his build script 
+to set up the CFFI interface.
 
 ### Objectives
 
