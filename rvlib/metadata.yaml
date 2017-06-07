@@ -38,13 +38,13 @@ Chisq:
      std: np.sqrt(self.v * 2.0)
      skewness: np.sqrt(8.0 / self.v)
      kurtosis: 12.0 / self.v
-     entropy: .5 * self.v +  np.log(2.0) + lgamma(.5 * self.v) + 
+     entropy: .5 * self.v +  np.log(2.0) + lgamma(.5 * self.v) +
                (1.0 - .5 * self.v) * digamma(.5 * self.v)
      mgf: (1.0 - 2.0 * x)**(-v * 0.5)
      cf: (1.0 - 2.0 * 1j * x)**(-v * 0.5)
      insupport: 0 <= x < np.inf
      name_doc: Chi squared
-     pdf_tex: p(x; k)= \frac{x^{k/2 - 1} e^{-x/2}}{2^{k/2} 
+     pdf_tex: p(x; k)= \frac{x^{k/2 - 1} e^{-x/2}}{2^{k/2}
                \Gamma(k/2)}, x > 0
      param_names: ["k"]
      param_descrs: ["Degrees of Freedom"]
@@ -89,17 +89,17 @@ T:
      std: np.sqrt(self.v/(self.v - 2)) if self.v > 2 else np.inf
      skewness: 0 if self.v > 3 else None
      kurtosis: 6/(self.v - 4) if self.v > 4 else np.inf
-     entropy: .5*(self.v + 1)*(digamma(.5*(self.v + 1)) - 
-               digamma(.5*self.v)) + np.log(np.sqrt(self.v) * 
+     entropy: .5*(self.v + 1)*(digamma(.5*(self.v + 1)) -
+               digamma(.5*self.v)) + np.log(np.sqrt(self.v) *
                beta(.5*self.v, .5))
      mgf: None
      cf: bessel_k(v/2, np.sqrt(v)*abs(x))*(np.sqrt(v)*abs(x))**(v/2)/
           (gamma(v/2)*2**(v/2 - 1))
      insupport: -np.inf <= x < np.inf
-     name_doc: T 
+     name_doc: T
      pdf_tex: p(x;df)= \frac{G \left(\frac{df+1}{2}\right)}{\sqrt{df\pi}
-                G\left(\frac{df}{2} \right)}   
-                \left(1 + \frac{x^2}{df} \right)^{- \frac{df+1}{2}} 
+                G\left(\frac{df}{2} \right)}
+                \left(1 + \frac{x^2}{df} \right)^{- \frac{df+1}{2}}
                 \n where :math:`G(\cdot)` is the Gamma function
      param_names: ["df"]
      param_descrs: ["Degrees of freedom (real, >0)"]
@@ -124,7 +124,7 @@ LogNormal:
      mgf: None
      cf: None
      insupport: 0 < x < np.inf
-     name_doc: Log-normal 
+     name_doc: Log-normal
      pdf_tex: p(x; \mu, \sigma) = \frac{1}{x \sqrt{2 \pi \sigma^2}}
                \exp \left( - \frac{(\log(x) - \mu)^2}{2 \sigma^2}\right)
      param_names: ["mu", "sigma"]
@@ -146,9 +146,9 @@ F:
           (self.v1*(self.v2 - 2)**2*(self.v2 - 4)) if self.v2 > 4 else np.inf
      std: np.sqrt(self.var)
      skewness: (2*self.v1 + self.v2 - 2)*np.sqrt(8*(self.v2 - 4))/
-               ((self.v2 - 6)*np.sqrt(self.v1*(self.v1+self.v2-2))) 
+               ((self.v2 - 6)*np.sqrt(self.v1*(self.v1+self.v2-2)))
                if self.v2 > 6 else np.inf
-     kurtosis: 3 + 12*(self.v1*(5*self.v2 - 22)*(self.v1+self.v2-2) + 
+     kurtosis: 3 + 12*(self.v1*(5*self.v2 - 22)*(self.v1+self.v2-2) +
                (self.v2 - 4)*(self.v2 - 2)**2)/
                (self.v1*(self.v2-6)*(self.v2-8)*(self.v1+self.v2-2))
      entropy: None
@@ -157,7 +157,7 @@ F:
      insupport: 0 <= x < np.inf
      name_doc: F
      pdf_tex: p(x; d_1, d_2) = \frac{1}{x B(d_1/2, d_2/2)}
-               \sqrt{\frac{(d_1 x)^{d_1} \cdot 
+               \sqrt{\frac{(d_1 x)^{d_1} \cdot
                d_2^{d_2}}{(d_1 x + d_2)^{d_1 + d_2}}}
      param_names: ["d1", "d2"]
      param_descrs: ["Numerator degrees of freedom (must be >0)",
@@ -169,12 +169,13 @@ Gamma:
      spec: ('alpha', float32), ('beta', float32)
      pyname: gamma
      loc: None
-     scale: 1/self.beta
+     scale: self.beta
      shape: self.alpha
-     mean: self.alpha/self.beta
+     rate: 1/self.beta
+     mean: self.alpha*self.beta
      median: None
-     mode: (self.alpha - 1)/self.beta if self.alpha >= 1 else None
-     var: self.alpha/(self.beta**2)
+     mode: (self.alpha - 1) * self.beta if self.alpha >= 1 else None
+     var: self.alpha * (self.beta**2)
      std: np.sqrt(self.var)
      skewness: 2/(np.sqrt(self.alpha))
      kurtosis: 3 + 6/self.alpha
@@ -184,10 +185,10 @@ Gamma:
      cf: (1 - (1j * x)/beta)**(-alpha)
      insupport: 0 < x < np.inf
      name_doc: Gamma
-     pdf_tex: p(x;\alpha,\beta)=\frac{x^{\alpha-1}e^{-x/\beta}}
-               {\Gamma(\alpha)\beta^{\alpha}}
+     pdf_tex: p(x;\alpha,\beta)=\frac{x^{\alpha-1} e^{-x/\beta}}
+                {\Gamma(\alpha) \beta^\alpha}
      param_names: ["alpha", "beta"]
-     param_descrs: ["Shape parameter", "Rate parameter"]
+     param_descrs: ["Shape parameter", "Scale parameter"]
      string: Gamma(alpha=%.5f, beta=%.5f)
 
 Beta:
@@ -209,10 +210,10 @@ Beta:
                ((self.alpha + self.beta + 2) * np.sqrt(self.alpha * self.beta))
      kurtosis: 3 + 6 * ((self.alpha - self.beta)**2*(self.alpha + self.beta + 1) -
                 self.alpha * self.beta * (self.alpha + self.beta + 2) )/
-               (self.alpha * self.beta * (self.alpha + self.beta + 2) * 
+               (self.alpha * self.beta * (self.alpha + self.beta + 2) *
                (self.alpha + self.beta + 3))
      entropy: np.log(beta(self.alpha, self.beta)) - (self.alpha - 1)*
-               digamma(self.alpha) - (self.beta - 1)*digamma(self.beta) + 
+               digamma(self.alpha) - (self.beta - 1)*digamma(self.beta) +
                (self.alpha + self.beta - 2)*digamma(self.alpha + self.beta)
      mgf: None
      cf: None
@@ -268,7 +269,7 @@ Cauchy:
      cf: np.exp(mu*1j*x - sigma*np.abs(x))
      insupport: -np.inf < x < np.inf
      name_doc: Cauchy
-     pdf_tex: p(x; \mu, \sigma) = \frac{1}{\pi \sigma (1 + 
+     pdf_tex: p(x; \mu, \sigma) = \frac{1}{\pi \sigma (1 +
                (\frac{x - \mu}{\sigma})^2)}
      param_names: ["mu", "sigma"]
      param_descrs: ["Location parameter", "Scale parameter"]
@@ -288,7 +289,7 @@ Poisson:
      std: np.sqrt(self.var)
      skewness: self.mu**(.5)
      kurtosis: 1/self.mu
-     entropy: .5*np.log(2*np.pi*np.e*self.mu) - 1/(12*self.mu) - 
+     entropy: .5*np.log(2*np.pi*np.e*self.mu) - 1/(12*self.mu) -
                1/(24*self.mu**2) - 19/(360*self.mu**3)
      mgf: np.exp(mu*(np.exp(x) - 1))
      cf: np.exp(mu*(np.exp(1j*x) - 1))
@@ -313,9 +314,9 @@ Geometric:
      std: np.sqrt(self.var)
      skewness: (2 - self.p)/(np.sqrt(1 - self.p))
      kurtosis: 9 + self.p/((1 - self.p)**2)
-     entropy: (-(1 - self.p)*np.log2(1 - self.p) - 
+     entropy: (-(1 - self.p)*np.log2(1 - self.p) -
                self.p*np.log2(self.p))/self.p
-     mgf: p*np.exp(x)/(1 - (1 - p)*np.exp(x)) 
+     mgf: p*np.exp(x)/(1 - (1 - p)*np.exp(x))
           if x < -np.log(1-p) else None
      cf: p*np.exp(x*1j)/(1 - (1 - p)*np.exp(x*1j))
      insupport: isinstance(x, int)
@@ -327,7 +328,7 @@ Geometric:
 
 Binomial:
      name: Binomial
-     spec: ('n', int32), ("p", float32) 
+     spec: ('n', int32), ("p", float32)
      pyname: binom
      loc: None
      scale: None
@@ -351,7 +352,7 @@ Binomial:
 
 Logistic:
      name: Logistic
-     spec: ('mu', float32), ("theta", float32) 
+     spec: ('mu', float32), ("theta", float32)
      pyname: logis
      loc: self.mu
      scale: self.theta
@@ -368,7 +369,7 @@ Logistic:
      cf: np.exp(mu*x*1j)*np.pi*theta*x/np.sinh(np.pi*theta*x)
      insupport: -np.inf < x < np.inf
      name_doc: Logistic
-     pdf_tex: p(x; \mu, \theta) = \frac{1}{4\theta} 
+     pdf_tex: p(x; \mu, \theta) = \frac{1}{4\theta}
                \text{sech}^2\left(\frac{x - \mu}{2\theta}\right)
      param_names: ["mu", "theta"]
      param_descrs: ["Location parameter", "Scale parameter"]
@@ -376,7 +377,7 @@ Logistic:
 
 Weibull:
      name: Weibull
-     spec: ('alpha', float32), ("theta", float32) 
+     spec: ('alpha', float32), ("theta", float32)
      pyname: weibull
      loc: None
      scale: self.alpha
@@ -386,19 +387,19 @@ Weibull:
      mode: self.alpha*((self.theta - 1)/self.theta)**(1/self.theta)
      var: self.alpha**2*(gamma(1 + 2/self.theta) - (gamma(1 + 1/self.theta))**2)
      std: np.sqrt(self.var)
-     skewness: (gamma(1 + 3/self.theta)*self.alpha**3 - 3*self.mean*self.var - 
+     skewness: (gamma(1 + 3/self.theta)*self.alpha**3 - 3*self.mean*self.var -
                self.mean**3)/(self.var**(3/2))
      kurtosis: (self.alpha**4*gamma(1 + 4/self.theta) - 4*self.skewness*
-               self.var**(3/2)*self.mean - 6*self.mean**2*self.var - 
+               self.var**(3/2)*self.mean - 6*self.mean**2*self.var -
                self.mean**4)/(self.var**2)
-     entropy: 0.577215664901532860606512090082 * (1 - 1/self.theta) + 
+     entropy: 0.577215664901532860606512090082 * (1 - 1/self.theta) +
                np.log(self.alpha/self.theta) + 1
      mgf: None
      cf: None
      insupport: 0 <= x < np.inf
      name_doc: Weibull
      pdf_tex: p(x; \alpha, \theta) = \frac{\theta}{\alha}
-               \left(\frac{x}{\alpha}\right)^{\theta} 
+               \left(\frac{x}{\alpha}\right)^{\theta}
                e^{-(x/\alpha)^{\theta}}
      param_names: ["alpha", "theta"]
      param_descrs: ["Scale parameter", "Shape parameter"]
@@ -406,7 +407,7 @@ Weibull:
 
 Hypergeometric:
      name: Hypergeometric
-     spec: ('s', int32), ("f", int32), ("n", int32) 
+     spec: ('s', int32), ("f", int32), ("n", int32)
      pyname: hyper
      loc: None
      scale: None
@@ -431,7 +432,7 @@ Hypergeometric:
      cf: None
      insupport: isinstance(x, int)
      name_doc: Hypergeometric
-     pdf_tex: p(x; s, f, n) = \frac{\binom{s}{x} 
+     pdf_tex: p(x; s, f, n) = \frac{\binom{s}{x}
                \binom{f}{n - x}}{\binom{s + f}{n}}
      param_names: ["s", "f", "n"]
      param_descrs: ["Number of successes in population",
@@ -440,7 +441,7 @@ Hypergeometric:
 
 NegativeBinomial:
      name: NegativeBinomial
-     spec: ('r', int32), ("p", int32) 
+     spec: ('r', int32), ("p", int32)
      pyname: nbinom
      loc: None
      scale: None

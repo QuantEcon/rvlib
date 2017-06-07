@@ -1729,7 +1729,7 @@ class Gamma():
     @property
     def scale(self):
         """Return scale parameter if exists."""
-        return 1/self.beta
+        return self.beta
 
     @property
     def shape(self):
@@ -1743,7 +1743,7 @@ class Gamma():
     @property
     def mean(self):
         """Return the mean."""
-        return self.alpha/self.beta
+        return self.alpha*self.beta
 
     @property
     def median(self):
@@ -1753,12 +1753,12 @@ class Gamma():
     @property
     def mode(self):
         """Return the mode."""
-        return (self.alpha - 1)/self.beta if self.alpha >= 1 else None
+        return (self.alpha - 1) * self.beta if self.alpha >= 1 else None
 
     @property
     def var(self):
         """Return the variance."""
-        return self.alpha/(self.beta**2)
+        return self.alpha * (self.beta**2)
 
     @property
     def std(self):
