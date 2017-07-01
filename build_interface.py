@@ -379,7 +379,7 @@ def _write_class_specific(metadata, *pargs):
     ]
 
     @jitclass(spec)
-    class {name}():
+    class {name}(object):
 
         # set docstring
         __doc__ = _create_class_docstr(**mtdt['{name}'])
