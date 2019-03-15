@@ -4204,7 +4204,7 @@ def nbinom_cf(r, p, x):
 # -------------
 
 spec = [
-    ('r', int32), ("p", int32)
+    ('r', int32), ("p", float32)
 ]
 
 @jitclass(spec)
