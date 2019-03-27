@@ -441,21 +441,21 @@ Hypergeometric:
 
 NegativeBinomial:
      name: NegativeBinomial
-     spec: ('r', int32), ("p", int32)
+     spec: ('r', int32), ("p", float32)
      pyname: nbinom
      loc: None
      scale: None
      shape: None
-     mean: self.p*self.r/(1 - self.p)
+     mean: (1 - self.p)*self.r/self.p
      median: None
-     mode: np.floor(self.p*(self.r - 1 )/(1 - self.p)) if self.r > 1 else 0
-     var: self.p*self.r/(1 - self.p)**2
+     mode: np.floor((1 - self.p)*(self.r - 1 )/self.p)
+     var: (1 - self.p)*self.r/self.p**2
      std: np.sqrt(self.var)
-     skewness: (self.p + 1)/(np.sqrt(self.p*self.r))
-     kurtosis: 3 + 6/self.r + (1 - self.p)**2/(self.p*self.r)
+     skewness: (2 - self.p)/(np.sqrt((1 - self.p)*self.r))
+     kurtosis: 6/self.r + self.p**2/((1 - self.p)*self.r)
      entropy: None
-     mgf: ((1 - p)/(1 - p*np.exp(x)))**r
-     cf: ((1 - p)/(1 - p*np.exp(x*1j)))**r
+     mgf: (p/(1 - (1 - p)*np.exp(x)))**r
+     cf: (p/(1 - (1 - p)*np.exp(x*1j)))**r
      insupport: isinstance(x, int)
      name_doc: Negative Binomial
      pdf_tex: p(x; r, p) = \binom{x + r - 1}{x} p^r (1 - p)^x
