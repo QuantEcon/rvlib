@@ -4253,7 +4253,7 @@ class NegativeBinomial():
     @property
     def mean(self):
         """Return the mean."""
-        return self.p*self.r/(1 - self.p)
+        return (1 - self.p)*self.r/self.p
 
     @property
     def median(self):
@@ -4263,12 +4263,12 @@ class NegativeBinomial():
     @property
     def mode(self):
         """Return the mode."""
-        return np.floor(self.p*(self.r - 1 )/(1 - self.p)) if self.r > 1 else 0
+        return np.floor((1 - self.p)*(self.r - 1 )/self.p)
 
     @property
     def var(self):
         """Return the variance."""
-        return self.p*self.r/(1 - self.p)**2
+        return (1 - self.p)*self.r/self.p**2
 
     @property
     def std(self):
@@ -4278,12 +4278,12 @@ class NegativeBinomial():
     @property
     def skewness(self):
         """Return the skewness."""
-        return (self.p + 1)/(np.sqrt(self.p*self.r))
+        return (2 - self.p)/(np.sqrt((1 - self.p)*self.r))
 
     @property
     def kurtosis(self):
         """Return the kurtosis."""
-        return 3 + 6/self.r + (1 - self.p)**2/(self.p*self.r)
+        return 6/self.r + self.p**2/((1 - self.p)*self.r)
 
     @property
     def isplatykurtic(self):
