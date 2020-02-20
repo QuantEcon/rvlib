@@ -73,7 +73,7 @@ The following properties are shared by all the univariate distributions:
 * `std`: the standard deviation of the distribution
 * `skewness`: the skewness of the distribution
 * `kurtosis`: the kurtosis of the distribution
-* `isplaykurtic`: boolean indicating if kurtosis is greater than zero
+* `isplatykurtic`: boolean indicating if kurtosis is greater than zero
 * `isleptokurtic`: boolean indicating if kurtosis is less than zero
 * `ismesokurtic`: boolean indicating if kurtosis is equal to zero
 * `entropy`: the entropy of the distribution
