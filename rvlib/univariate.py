@@ -14,7 +14,7 @@ import numpy as np
 from .specials import gamma, lgamma, digamma, beta, bessel_k, set_seed
 
 from . import _rmath_ffi
-from numba import cffi_support
+from numba.core.typing import cffi_utils as cffi_support
 
 cffi_support.register_module(_rmath_ffi)
 
