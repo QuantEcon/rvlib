@@ -4194,11 +4194,11 @@ def nbinom_rand(r, p):
 
 @vectorize(nopython=True)
 def nbinom_mgf(r, p, x):
-    return (p/(1 - (1 - p)*np.exp(x)))**r
+    return ((1 - p)/(1 - p*np.exp(x)))**r
 
 @vectorize(nopython=True)
 def nbinom_cf(r, p, x):
-    return (p/(1 - (1 - p)*np.exp(x*1j)))**r
+    return ((1 - p)/(1 - p*np.exp(x*1j)))**r
 
 # -------------
 #  NegativeBinomial
