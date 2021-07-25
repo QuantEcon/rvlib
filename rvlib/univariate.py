@@ -7,14 +7,15 @@ Univariate distributions.
 """
 
 from os.path import join, dirname, abspath
-from numba import vectorize, jit, jitclass
+from numba import vectorize, jit
+from numba.experimental import jitclass
 from numba import int32, float32
 
 import numpy as np
 from .specials import gamma, lgamma, digamma, beta, bessel_k, set_seed
 
 from . import _rmath_ffi
-from numba import cffi_support
+from numba.core.typing import cffi_utils as cffi_support
 
 cffi_support.register_module(_rmath_ffi)
 
@@ -4193,11 +4194,11 @@ def nbinom_rand(r, p):
 
 @vectorize(nopython=True)
 def nbinom_mgf(r, p, x):
-    return ((1 - p)/(1 - p*np.exp(x)))**r
+    return (p/(1 - (1 - p)*np.exp(x)))**r
 
 @vectorize(nopython=True)
 def nbinom_cf(r, p, x):
-    return ((1 - p)/(1 - p*np.exp(x*1j)))**r
+    return (p/(1 - (1 - p)*np.exp(x*1j)))**r
 
 # -------------
 #  NegativeBinomial
