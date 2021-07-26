@@ -9,7 +9,7 @@ functions of various distributions.
 
 from . import _rmath_ffi
 from numba import vectorize, jit
-from numba import cffi_support
+from numba.core.typing import cffi_utils as cffi_support
 
 cffi_support.register_module(_rmath_ffi)
 

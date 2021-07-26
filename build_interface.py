@@ -27,7 +27,7 @@ def _initiate_specials():
 
     from . import _rmath_ffi
     from numba import vectorize, jit
-    from numba import cffi_support
+    from numba.core.typing import cffi_utils as cffi_support
 
     cffi_support.register_module(_rmath_ffi)
 
@@ -117,14 +117,15 @@ def _initiate_univariate():
     \"""
 
     from os.path import join, dirname, abspath
-    from numba import vectorize, jit, jitclass
+    from numba import vectorize, jit
+    from numba.experimental import jitclass
     from numba import int32, float32
 
     import numpy as np
     from .specials import gamma, lgamma, digamma, beta, bessel_k, set_seed
 
     from . import _rmath_ffi
-    from numba import cffi_support
+    from numba.core.typing import cffi_utils as cffi_support
 
     cffi_support.register_module(_rmath_ffi)
 
