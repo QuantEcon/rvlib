@@ -5,7 +5,7 @@ rootdir = os.path.abspath(os.path.dirname(__file__))
 long_desc = open(os.path.join(rootdir, 'README.md')).read()
 
 # Write a versions.py file for class attribute
-VERSION = "0.0.1"
+VERSION = "0.0.3"
 
 
 def write_version_py(filename=None):

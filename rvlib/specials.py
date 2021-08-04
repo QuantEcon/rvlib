@@ -19,9 +19,11 @@ cffi_support.register_module(_rmath_ffi)
 
 gammafn = _rmath_ffi.lib.gammafn
 
+
 @vectorize(nopython=True)
 def gamma(x):
     return gammafn(x)
+
 
 # ---------------------
 # log of gamma function
@@ -29,9 +31,11 @@ def gamma(x):
 
 lgammafn = _rmath_ffi.lib.lgammafn
 
+
 @vectorize(nopython=True)
 def lgamma(x):
     return lgammafn(x)
+
 
 # ----------------
 # digamma function
@@ -39,9 +43,11 @@ def lgamma(x):
 
 digammafn = _rmath_ffi.lib.digamma
 
+
 @vectorize(nopython=True)
 def digamma(x):
     return digammafn(x)
+
 
 # -------------
 # beta funciton
@@ -49,9 +55,11 @@ def digamma(x):
 
 betafn = _rmath_ffi.lib.beta
 
+
 @vectorize(nopython=True)
 def beta(x, y):
     return betafn(x, y)
+
 
 # -------------------------------------------
 # modified Bessel function of the second kind
@@ -59,9 +67,11 @@ def beta(x, y):
 
 bessel_k_fn = _rmath_ffi.lib.bessel_k
 
+
 @vectorize(nopython=True)
 def bessel_k(nu, x):
     return bessel_k_fn(x, nu, 1)
+
 
 # ----------------------------------
 # seed setting for the random number
@@ -69,6 +79,7 @@ def bessel_k(nu, x):
 # ----------------------------------
 
 set_seed_rmath = _rmath_ffi.lib.set_seed
+
 
 def set_seed(x, y):
     return set_seed_rmath(x, y)
