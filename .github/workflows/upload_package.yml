@@ -27,12 +27,12 @@ jobs:
         password: ${{ secrets.pypi_password }}
     - name: Run Changelog
       run: |
-        jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=-1 --ExecutePreprocessor.kernel_name=python3 tools/gitcount.ipynb
+        jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=-1 --ExecutePreprocessor.kernel_name=python3 .ci/gitcount.ipynb
     - name: Cat Changelog
       uses: pCYSl5EDgo/cat@master
       id: changetxt
       with:
-        path: ./tools/changelog.md
+        path: .ci/changelog.md
       env:
         TEXT: ${{ steps.changetxt.outputs.text }}
     - name: Create Release

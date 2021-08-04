@@ -8,8 +8,8 @@ attaining similar performance exploiting numba<http://numba.pydata.org/>.
 @date : 2016-07-26
 
 """
-
-__version__ = 0.1
+from .version import version
+__version__ = version
 
 from .univariate import *
 from .specials import *

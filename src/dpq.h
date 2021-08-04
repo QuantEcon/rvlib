@@ -1,7 +1,3 @@
-/* Apart from these first lines: DIRECT COPY of
-   <R>/src/nmath/dpq.h
-       ----------------- @MM = ~/R/D/r-devel/R/src/nmath/dpq.h  */
-
 /*
  *  R : A Computer Language for Statistical Data Analysis
  *  Copyright (C) 2000--2015 The  R Core Team
@@ -39,19 +35,15 @@
 
 #define R_D_val(x)	(log_p	? log(x) : (x))		/*  x  in pF(x,..) */
 #define R_D_qIv(p)	(log_p	? exp(p) : (p))		/*  p  in qF(p,..) */
-#define R_D_exp(x)	(log_p	?  (x)	 : exp(x))	/* exp(x) = exp(log_p) */
-#define R_D_EXP(x)	(log_p	?  (x)	 : EXP(x))	/* (ditto, possibly for long double */
+#define R_D_exp(x)	(log_p	?  (x)	 : exp(x))	/* exp(x) */
 #define R_D_log(p)	(log_p	?  (p)	 : log(p))	/* log(p) */
 #define R_D_Clog(p)	(log_p	? log1p(-(p)) : (0.5 - (p) + 0.5)) /* [log](1-p) */
 
 // log(1 - exp(x))  in more stable form than log1p(- R_D_qIv(x)) :
-#define R_Log1_Exp(x)   ((x) > -M_LN2  ? log(-expm1(x)) : log1p(-exp(x)))
-#define R_LOG1_EXP(x)   ((x) > -M_LN2_ ? LOG(-EXPm1(x)) : LOG1p(-EXP(x)))
+#define R_Log1_Exp(x)   ((x) > -M_LN2 ? log(-expm1(x)) : log1p(-exp(x)))
 
 /* log(1-exp(x)):  R_D_LExp(x) == (log1p(- R_D_qIv(x))) but even more stable:*/
 #define R_D_LExp(x)     (log_p ? R_Log1_Exp(x) : log1p(-x))
-#define R_D_1Exp(x)     (log_p ? R_Log1_Exp(x) : -expm1(x))
-#define R_D_1EXP(x)     (log_p ? R_LOG1_EXP(x) : -EXPm1(x))
 
 #define R_DT_val(x)	(lower_tail ? R_D_val(x)  : R_D_Clog(x))
 #define R_DT_Cval(x)	(lower_tail ? R_D_Clog(x) : R_D_val(x))
