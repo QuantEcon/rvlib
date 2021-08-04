@@ -63,8 +63,8 @@ double qpois(double p, double lambda, int lower_tail, int log_p)
 	return p + lambda;
 #endif
     if(!R_FINITE(lambda))
-	ML_WARN_return_NAN;
-    if(lambda < 0) ML_WARN_return_NAN;
+	ML_ERR_return_NAN;
+    if(lambda < 0) ML_ERR_return_NAN;
     R_Q_P01_check(p);
     if(lambda == 0) return 0;
     if(p == R_DT_0) return 0;
@@ -87,7 +87,11 @@ double qpois(double p, double lambda, int lower_tail, int log_p)
 
     /* y := approx.value (Cornish-Fisher expansion) :  */
     z = qnorm(p, 0., 1., /*lower_tail*/TRUE, /*log_p*/FALSE);
+#ifdef HAVE_NEARBYINT
     y = nearbyint(mu + sigma * (z + gamma * (z*z - 1) / 6));
+#else
+    y = round(mu + sigma * (z + gamma * (z*z - 1) / 6));
+#endif
 
     z = ppois(y, lambda, /*lower_tail*/TRUE, /*log_p*/FALSE);
 

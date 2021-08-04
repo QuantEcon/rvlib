@@ -21,7 +21,7 @@
 #include "dpq.h"
 
 /* Compute  log(1 + exp(x))  without overflow (and fast for x > 18)
-   For the two cutoffs, consider in R
+   For the two cutoffs, consider
    curve(log1p(exp(x)) - x,       33.1, 33.5, n=2^10)
    curve(x+exp(-x) - log1p(exp(x)), 15, 25,   n=2^11)
 */
@@ -39,10 +39,10 @@ double plogis(double x, double location, double scale,
     if (ISNAN(x) || ISNAN(location) || ISNAN(scale))
 	return x + location + scale;
 #endif
-    if (scale <= 0.0)	ML_WARN_return_NAN;
+    if (scale <= 0.0)	ML_ERR_return_NAN;
 
     x = (x - location) / scale;
-    if (ISNAN(x))	ML_WARN_return_NAN;
+    if (ISNAN(x))	ML_ERR_return_NAN;
     R_P_bounds_Inf_01(x);
 
     if(log_p) {

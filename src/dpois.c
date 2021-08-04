@@ -8,7 +8,7 @@
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
+ *  the Free Software Foundation; either version 3 of the License, or
  *  (at your option) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
@@ -61,7 +61,7 @@ double dpois(double x, double lambda, int give_log)
         return x + lambda;
 #endif
 
-    if (lambda < 0) ML_WARN_return_NAN;
+    if (lambda < 0) ML_ERR_return_NAN;
     R_D_nonint_check(x);
     if (x < 0 || !R_FINITE(x))
 	return R_D__0;

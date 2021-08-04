@@ -1,10 +1,4 @@
-/* Rconfig.h.  
- * 
- * Originally generated automatically, but modified by Simon Byrne to avoid the
- * need for autotools.
- */
-
-
+/* Rconfig.h.  Generated automatically */
 #ifndef R_RCONFIG_H
 #define R_RCONFIG_H
 

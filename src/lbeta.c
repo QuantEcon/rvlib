@@ -25,9 +25,7 @@
  *
  *  DESCRIPTION
  *
- *    This function returns the value of the log beta function
- *
- *	log B(a,b) = log G(a) + log G(b) - log G(a+b)
+ *    This function returns the value of the log beta function.
  *
  *  NOTES
  *
@@ -51,7 +49,7 @@ double lbeta(double a, double b)
 
     /* both arguments must be >= 0 */
     if (p < 0)
-	ML_WARN_return_NAN
+	ML_ERR_return_NAN
     else if (p == 0) {
 	return ML_POSINF;
     }

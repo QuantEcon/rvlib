@@ -1,6 +1,6 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 1998-2019    The R Core Team
+ *  Copyright (C) 1998-2016    The R Core Team
  *
  *  This header file is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -23,62 +23,31 @@
 
 /* Included by R.h: API */
 
-#ifndef R_RANDOM_H
-#define R_RANDOM_H
-
-#include <R_ext/Boolean.h>
+#ifndef R_EXT_PRINT_H_
+#define R_EXT_PRINT_H_
 
 #ifdef  __cplusplus
+/* If the vprintf interface is defined at all in C++ it may only be
+   defined in namespace std.  It is part of the C++11 standard. */
+# ifdef R_USE_C99_IN_CXX
+#  include <cstdarg>
+#  define R_VA_LIST std::va_list
+# endif
 extern "C" {
+#else
+# include <stdarg.h>
+# define R_VA_LIST va_list
 #endif
 
-typedef enum {
-    WICHMANN_HILL,
-    MARSAGLIA_MULTICARRY,
-    SUPER_DUPER,
-    MERSENNE_TWISTER,
-    KNUTH_TAOCP,
-    USER_UNIF,
-    KNUTH_TAOCP2,
-    LECUYER_CMRG
-} RNGtype;
-
-/* Different kinds of "N(0,1)" generators :*/
-typedef enum {
-    BUGGY_KINDERMAN_RAMAGE,
-    AHRENS_DIETER,
-    BOX_MULLER,
-    USER_NORM,
-    INVERSION,
-    KINDERMAN_RAMAGE
-} N01type;
-
-/* Different ways to generate discrete uniform samples */
-typedef enum {
-    ROUNDING,
-    REJECTION
-} Sampletype;
-Sampletype R_sample_kind();
-
-void GetRNGstate(void);
-void PutRNGstate(void);
-
-double unif_rand(void);
-double R_unif_index(double);
-/* These are also defined in Rmath.h */
-double norm_rand(void);
-double exp_rand(void);
-
-typedef unsigned int Int32;
-double * user_unif_rand(void);
-void user_unif_init(Int32);
-int * user_unif_nseed(void);
-int * user_unif_seedloc(void);
-
-double * user_norm_rand(void);
+void Rprintf(const char *, ...);
+void REprintf(const char *, ...);
+#if !defined(__cplusplus) || defined R_USE_C99_IN_CXX
+void Rvprintf(const char *, R_VA_LIST);
+void REvprintf(const char *, R_VA_LIST);
+#endif
 
 #ifdef  __cplusplus
 }
 #endif
 
-#endif /* R_RANDOM_H */
+#endif /* R_EXT_PRINT_H_ */

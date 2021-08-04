@@ -1,6 +1,6 @@
 /*
  *  Mathlib : A C Library of Special Functions
- *  Copyright (C) 2003--2016 The R Foundation
+ *  Copyright (C) 2003--2015 The R Foundation
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -58,8 +58,8 @@
 
 double rnchisq(double df, double lambda)
 {
-    if (ISNAN(df) || !R_FINITE(lambda) || df < 0. || lambda < 0.)
-	ML_WARN_return_NAN;
+    if (!R_FINITE(df) || !R_FINITE(lambda) || df < 0. || lambda < 0.)
+	ML_ERR_return_NAN;
 
     if(lambda == 0.) {
 	return (df == 0.) ? 0. : rgamma(df / 2., 2.);
