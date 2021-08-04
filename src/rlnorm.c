@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -32,7 +32,7 @@
 double rlnorm(double meanlog, double sdlog)
 {
     if(ISNAN(meanlog) || !R_FINITE(sdlog) || sdlog < 0.)
-	ML_ERR_return_NAN;
+	ML_WARN_return_NAN;
 
     return exp(rnorm(meanlog, sdlog));
 }

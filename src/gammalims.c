@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -63,7 +63,7 @@ void attribute_hidden gammalims(double *xmin, double *xmax)
 
     /* unable to find xmin */
 
-    ML_ERROR(ME_NOCONV, "gammalims");
+    ML_WARNING(ME_NOCONV, "gammalims");
     *xmin = *xmax = ML_NAN;
 
 find_xmax:
@@ -83,7 +83,7 @@ find_xmax:
 
     /* unable to find xmax */
 
-    ML_ERROR(ME_NOCONV, "gammalims");
+    ML_WARNING(ME_NOCONV, "gammalims");
     *xmin = *xmax = ML_NAN;
 
 done:

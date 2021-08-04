@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  DESCRIPTION
  *
@@ -54,7 +54,7 @@ double qt(double p, double ndf, int lower_tail, int log_p)
 
     R_Q_P01_boundaries(p, ML_NEGINF, ML_POSINF);
 
-    if (ndf <= 0) ML_ERR_return_NAN;
+    if (ndf <= 0) ML_WARN_return_NAN;
 
     if (ndf < 1) { /* based on qnt */
 	const static double accu = 1e-13;
@@ -82,7 +82,7 @@ double qt(double p, double ndf, int lower_tail, int log_p)
 	    if (pt(nx, ndf, TRUE, FALSE) > p) ux = nx; else lx = nx;
 	} while ((ux - lx) / fabs(nx) > accu && ++iter < 1000);
 
-	if(iter >= 1000) ML_ERROR(ME_PRECISION, "qt");
+	if(iter >= 1000) ML_WARNING(ME_PRECISION, "qt");
 
 	return 0.5 * (lx + ux);
     }
@@ -126,8 +126,9 @@ double qt(double p, double ndf, int lower_tail, int log_p)
 	}
     }
     else if (ndf < 1 + eps) { /* df ~= 1  (df < 1 excluded above): Cauchy */
-	if(P > 0)
-	    q = 1/tan(P * M_PI_2);/* == - tan((P+1) * M_PI_2) -- suffers for P ~= 0 */
+	if(P == 1.) q = 0; // some versions of tanpi give Inf, some NaN
+	else if(P > 0)
+	    q = 1/tanpi(P/2.);/* == - tan((P+1) * M_PI_2) -- suffers for P ~= 0 */
 
 	else { /* P = 0, but maybe = 2*exp(p) ! */
 	    if(log_p) /* 1/tan(e) ~ 1/e */
@@ -145,7 +146,7 @@ double qt(double p, double ndf, int lower_tail, int log_p)
 
 	Rboolean P_ok1 = P > DBL_MIN || !log_p,  P_ok = P_ok1;
 	if(P_ok1) {
-	    y = pow(d * P, 2 / ndf);
+	    y = pow(d * P, 2.0 / ndf);
 	    P_ok = (y >= DBL_EPSILON);
 	}
 	if(!P_ok) {// log.p && P very.small  ||  (d*P)^(2/df) =: y < eps_c

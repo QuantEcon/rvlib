@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -33,7 +33,7 @@
 double rnorm(double mu, double sigma)
 {
     if (ISNAN(mu) || !R_FINITE(sigma) || sigma < 0.)
-	ML_ERR_return_NAN;
+	ML_WARN_return_NAN;
     if (sigma == 0. || !R_FINITE(mu))
 	return mu; /* includes mu = +/- Inf with finite sigma */
     else

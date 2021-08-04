@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -37,7 +37,7 @@ double rf(double n1, double n2)
 {
     double v1, v2;
     if (ISNAN(n1) || ISNAN(n2) || n1 <= 0. || n2 <= 0.)
-	ML_ERR_return_NAN;
+	ML_WARN_return_NAN;
 
     v1 = R_FINITE(n1) ? (rchisq(n1) / n1) : 1;
     v2 = R_FINITE(n2) ? (rchisq(n2) / n2) : 1;

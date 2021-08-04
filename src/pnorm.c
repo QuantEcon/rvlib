@@ -1,7 +1,7 @@
 /*
  *  Mathlib : A C Library of Special Functions
  *  Copyright (C) 1998	    Ross Ihaka
- *  Copyright (C) 2000-2010 The R Core Team
+ *  Copyright (C) 2000-2013 The R Core Team
  *  Copyright (C) 2003	    The R Foundation
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -72,7 +72,7 @@ double pnorm5(double x, double mu, double sigma, int lower_tail, int log_p)
 #endif
     if(!R_FINITE(x) && mu == x) return ML_NAN;/* x-mu is NaN */
     if (sigma <= 0) {
-	if(sigma < 0) ML_ERR_return_NAN;
+	if(sigma < 0) ML_WARN_return_NAN;
 	/* sigma = 0 : */
 	return (x < mu) ? R_DT_0 : R_DT_1;
     }

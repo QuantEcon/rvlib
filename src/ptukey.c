@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -309,7 +309,7 @@ double ptukey(double q, double rr, double cc, double df,
 
 #ifdef IEEE_754
     if (ISNAN(q) || ISNAN(rr) || ISNAN(cc) || ISNAN(df))
-	ML_ERR_return_NAN;
+	ML_WARN_return_NAN;
 #endif
 
     if (q <= 0)
@@ -318,7 +318,7 @@ double ptukey(double q, double rr, double cc, double df,
     /* df must be > 1 */
     /* there must be at least two values */
 
-    if (df < 2 || rr < 1 || cc < 2) ML_ERR_return_NAN;
+    if (df < 2 || rr < 1 || cc < 2) ML_WARN_return_NAN;
 
     if(!R_FINITE(q))
 	return R_DT_1;
@@ -401,7 +401,7 @@ double ptukey(double q, double rr, double cc, double df,
     }
 
     if(otsum > eps2) { /* not converged */
-	ML_ERROR(ME_PRECISION, "ptukey");
+	ML_WARNING(ME_PRECISION, "ptukey");
     }
     if (ans > 1.)
 	ans = 1.;

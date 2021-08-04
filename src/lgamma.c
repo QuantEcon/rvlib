@@ -1,7 +1,7 @@
 /*
  *  Mathlib : A C Library of Special Functions
+ *  Copyright (C) 2000-2018 The R Core Team
  *  Copyright (C) 1998 Ross Ihaka
- *  Copyright (C) 2000-2012 The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -59,7 +59,7 @@ double lgammafn_sign(double x, int *sgn)
    dxrel = sqrt(DBL_EPSILON) = 2^-26 = 5^26 * 1e-26 (is *exact* below !)
  */
 #define xmax  2.5327372760800758e+305
-#define dxrel 1.490116119384765696e-8
+#define dxrel 1.490116119384765625e-8
 #endif
 
     if (sgn != NULL) *sgn = 1;
@@ -68,23 +68,23 @@ double lgammafn_sign(double x, int *sgn)
     if(ISNAN(x)) return x;
 #endif
 
-    if (x < 0 && fmod(floor(-x), 2.) == 0)
-	if (sgn != NULL) *sgn = -1;
+    if (sgn != NULL && x < 0 && fmod(floor(-x), 2.) == 0)
+	*sgn = -1;
 
     if (x <= 0 && x == trunc(x)) { /* Negative integer argument */
-	ML_ERROR(ME_RANGE, "lgamma");
+	// No warning: this is the best answer; was  ML_WARNING(ME_RANGE, "lgamma");
 	return ML_POSINF;/* +Inf, since lgamma(x) = log|gamma(x)| */
     }
 
     y = fabs(x);
 
-    if (y < 1e-306) return -log(x); // denormalized range, R change
+    if (y < 1e-306) return -log(y); // denormalized range, R change
     if (y <= 10) return log(fabs(gammafn(x)));
     /*
       ELSE  y = |x| > 10 ---------------------- */
 
     if (y > xmax) {
-	ML_ERROR(ME_RANGE, "lgamma");
+	// No warning: +Inf is the best answer
 	return ML_POSINF;
     }
 
@@ -99,12 +99,12 @@ double lgammafn_sign(double x, int *sgn)
 	    return M_LN_SQRT_2PI + (x - 0.5) * log(x) - x + lgammacor(x);
     }
     /* else: x < -10; y = -x */
-    sinpiy = fabs(sin(M_PI * y));
+    sinpiy = fabs(sinpi(y));
 
     if (sinpiy == 0) { /* Negative integer argument ===
 			  Now UNNECESSARY: caught above */
 	MATHLIB_WARNING(" ** should NEVER happen! *** [lgamma.c: Neg.int, y=%g]\n",y);
-	ML_ERR_return_NAN;
+	ML_WARN_return_NAN;
     }
 
     ans = M_LN_SQRT_PId2 + (x - 0.5) * log(y) - x - log(sinpiy) - lgammacor(y);
@@ -114,7 +114,7 @@ double lgammafn_sign(double x, int *sgn)
 	/* The answer is less than half precision because
 	 * the argument is too near a negative integer. */
 
-	ML_ERROR(ME_PRECISION, "lgamma");
+	ML_WARNING(ME_PRECISION, "lgamma");
     }
 
     return ans;

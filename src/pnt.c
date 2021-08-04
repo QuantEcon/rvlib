@@ -1,6 +1,6 @@
 /*
  *  Mathlib : A C Library of Special Functions
- *  Copyright (C) 1998-2012 The R Core Team
+ *  Copyright (C) 1998-2015 The R Core Team
  *  based on AS243 (C) 1989 Royal Statistical Society
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  */
 
 /*  Algorithm AS 243  Lenth,R.V. (1989). Appl. Statist., Vol.38, 185-189.
@@ -46,7 +46,8 @@
  *	make CFLAGS='-DDEBUG_pnt -g'
 
  * -- Feb.3, 1999; M.Maechler:
-	- For 't > ncp > 20' (or so)	the result is completely WRONG!
+	- For 't > ncp > 20' (or so)	the result is completely WRONG!  <== no longer true
+	- but for ncp > 100
  */
 
 double pnt(double t, double df, double ncp, int lower_tail, int log_p)
@@ -60,7 +61,7 @@ double pnt(double t, double df, double ncp, int lower_tail, int log_p)
     const int itrmax = 1000;
     const static double errmax = 1.e-12;
 
-    if (df <= 0.0) ML_ERR_return_NAN;
+    if (df <= 0.0) ML_WARN_return_NAN;
     if(ncp == 0.0) return pt(t, df, lower_tail, log_p);
 
     if(!R_FINITE(t))
@@ -81,7 +82,7 @@ double pnt(double t, double df, double ncp, int lower_tail, int log_p)
 	/* Approx. from	 Abramowitz & Stegun 26.7.10 (p.949) */
 	s = 1./(4.*df);
 
-	return pnorm((double)(tt*(1. - s)), del, 
+	return pnorm((double)(tt*(1. - s)), del,
 		     sqrt((double) (1. + tt*tt*2.*s)),
 		     lower_tail != negdel, log_p);
     }
@@ -104,26 +105,26 @@ double pnt(double t, double df, double ncp, int lower_tail, int log_p)
 	if(p == 0.) { /* underflow! */
 
 	    /*========== really use an other algorithm for this case !!! */
-	    ML_ERROR(ME_UNDERFLOW, "pnt");
-	    ML_ERROR(ME_RANGE, "pnt"); /* |ncp| too large */
+	    ML_WARNING(ME_UNDERFLOW, "pnt");
+	    ML_WARNING(ME_RANGE, "pnt"); /* |ncp| too large */
 	    return R_DT_0;
 	}
 #ifdef DEBUG_pnt
-        REprintf("it  1e5*(godd,   geven)|          p           q           s"
-               /* 1.3 1..4..7.9 1..4..7.9|1..4..7.901 1..4..7.901 1..4..7.901 */
-                 "        pnt(*)     errbd\n");
-               /* 1..4..7..0..34 1..4..7.9*/
+	REprintf("it  1e5*(godd,   geven)|          p           q           s"
+	       /* 1.3 1..4..7.9 1..4..7.9|1..4..7.901 1..4..7.901 1..4..7.901 */
+		 "        pnt(*)     errbd\n");
+	       /* 1..4..7..0..34 1..4..7.9*/
 #endif
 	q = M_SQRT_2dPI * p * del;
 	s = .5 - p;
-        /* s = 0.5 - p = 0.5*(1 - exp(-.5 L)) =  -0.5*expm1(-.5 L)) */
-        if(s < 1e-7)
-            s = -0.5 * expm1(-0.5 * lambda);
+	/* s = 0.5 - p = 0.5*(1 - exp(-.5 L)) =  -0.5*expm1(-.5 L)) */
+	if(s < 1e-7)
+	    s = -0.5 * expm1(-0.5 * lambda);
 	a = .5;
 	b = .5 * df;
 	/* rxb = (1 - x) ^ b   [ ~= 1 - b*x for tiny x --> see 'xeven' below]
 	 *       where '(1 - x)' =: rxb {accurately!} above */
-        rxb = pow(rxb, b);
+	rxb = pow(rxb, b);
 	albeta = M_LN_SQRT_PI + lgammafn(b) - lgammafn(.5 + b);
 	xodd = pbeta(x, a, b, /*lower*/TRUE, /*log_p*/FALSE);
 	godd = 2. * rxb * exp(a * log(x) - albeta);
@@ -145,7 +146,7 @@ double pnt(double t, double df, double ncp, int lower_tail, int log_p)
 	    s -= p;
 	    /* R 2.4.0 added test for rounding error here. */
 	    if(s < -1.e-10) { /* happens e.g. for (t,df,ncp)=(40,10,38.5), after 799 it.*/
-		ML_ERROR(ME_PRECISION, "pnt");
+		ML_WARNING(ME_PRECISION, "pnt");
 #ifdef DEBUG_pnt
 		REprintf("s = %#14.7Lg < 0 !!! ---> non-convergence!!\n", s);
 #endif
@@ -160,7 +161,7 @@ double pnt(double t, double df, double ncp, int lower_tail, int log_p)
 	    if(fabs(errbd) < errmax) goto finis;/*convergence*/
 	}
 	/* non-convergence:*/
-	ML_ERROR(ME_NOCONV, "pnt");
+	ML_WARNING(ME_NOCONV, "pnt");
     }
     else { /* x = t = 0 */
 	tnc = 0.;
@@ -170,7 +171,7 @@ double pnt(double t, double df, double ncp, int lower_tail, int log_p)
 
     lower_tail = lower_tail != negdel; /* xor */
     if(tnc > 1 - 1e-10 && lower_tail)
-	ML_ERROR(ME_PRECISION, "pnt{final}");
+	ML_WARNING(ME_PRECISION, "pnt{final}");
 
     return R_DT_val(fmin2((double)tnc, 1.) /* Precaution */);
 }

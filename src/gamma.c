@@ -1,8 +1,8 @@
 /*
  *  Mathlib : A C Library of Special Functions
+ *  Copyright (C) 2000-2018 The R Core Team
+ *  Copyright (C) 2002-2018 The R Foundation
  *  Copyright (C) 1998 Ross Ihaka
- *  Copyright (C) 2000-2001 The R Core Team
- *  Copyright (C) 2002-2004 The R Foundation
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -123,8 +123,8 @@ double gammafn(double x)
 
     /* If the argument is exactly zero or a negative integer
      * then return NaN. */
-    if (x == 0 || (x < 0 && x == (long)x)) {
-	ML_ERROR(ME_DOMAIN, "gammafn");
+    if (x == 0 || (x < 0 && x == round(x))) {
+	ML_WARNING(ME_DOMAIN, "gammafn");
 	return ML_NAN;
     }
 
@@ -152,12 +152,12 @@ double gammafn(double x)
 	    /* The answer is less than half precision */
 	    /* because x too near a negative integer. */
 	    if (x < -0.5 && fabs(x - (int)(x - 0.5) / x) < dxrel) {
-		ML_ERROR(ME_PRECISION, "gammafn");
+		ML_WARNING(ME_PRECISION, "gammafn");
 	    }
 
 	    /* The argument is so close to 0 that the result would overflow. */
 	    if (y < xsml) {
-		ML_ERROR(ME_RANGE, "gammafn");
+		ML_WARNING(ME_RANGE, "gammafn");
 		if(x > 0) return ML_POSINF;
 		else return ML_NEGINF;
 	    }
@@ -182,12 +182,12 @@ double gammafn(double x)
 	/* gamma(x) for	 y = |x| > 10. */
 
 	if (x > xmax) {			/* Overflow */
-	    ML_ERROR(ME_RANGE, "gammafn");
+	    // No warning: +Inf is the best answer
 	    return ML_POSINF;
 	}
 
 	if (x < xmin) {			/* Underflow */
-	    ML_ERROR(ME_UNDERFLOW, "gammafn");
+	    // No warning: 0 is the best answer
 	    return 0.;
 	}
 
@@ -207,12 +207,12 @@ double gammafn(double x)
 	    /* The answer is less than half precision because */
 	    /* the argument is too near a negative integer. */
 
-	    ML_ERROR(ME_PRECISION, "gammafn");
+	    ML_WARNING(ME_PRECISION, "gammafn");
 	}
 
-	sinpiy = sin(M_PI * y);
+	sinpiy = sinpi(y);
 	if (sinpiy == 0) {		/* Negative integer arg - overflow */
-	    ML_ERROR(ME_RANGE, "gammafn");
+	    ML_WARNING(ME_RANGE, "gammafn");
 	    return ML_POSINF;
 	}
 

@@ -17,7 +17,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -59,7 +59,7 @@ double qnorm5(double p, double mu, double sigma, int lower_tail, int log_p)
 #endif
     R_Q_P01_boundaries(p, ML_NEGINF, ML_POSINF);
 
-    if(sigma  < 0)	ML_ERR_return_NAN;
+    if(sigma  < 0)	ML_WARN_return_NAN;
     if(sigma == 0)	return mu;
 
     p_ = R_DT_qIv(p);/* real lower_tail prob. p */

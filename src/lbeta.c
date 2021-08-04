@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -25,7 +25,9 @@
  *
  *  DESCRIPTION
  *
- *    This function returns the value of the log beta function.
+ *    This function returns the value of the log beta function
+ *
+ *	log B(a,b) = log G(a) + log G(b) - log G(a+b)
  *
  *  NOTES
  *
@@ -49,7 +51,7 @@ double lbeta(double a, double b)
 
     /* both arguments must be >= 0 */
     if (p < 0)
-	ML_ERR_return_NAN
+	ML_WARN_return_NAN
     else if (p == 0) {
 	return ML_POSINF;
     }
@@ -69,9 +71,10 @@ double lbeta(double a, double b)
 	return lgammafn(p) + corr + p - p * log(p + q)
 		+ (q - 0.5) * log1p(-p / (p + q));
     }
-    else
+    else {
 	/* p and q are small: p <= q < 10. */
 	/* R change for very small args */
 	if (p < 1e-306) return lgamma(p) + (lgamma(q) - lgamma(p+q));
-	return log(gammafn(p) * (gammafn(q) / gammafn(p + q)));
+	else return log(gammafn(p) * (gammafn(q) / gammafn(p + q)));
+    }
 }

@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  DESCRIPTION
  *
@@ -32,7 +32,7 @@ double dweibull(double x, double shape, double scale, int give_log)
     if (ISNAN(x) || ISNAN(shape) || ISNAN(scale))
 	return x + shape + scale;
 #endif
-    if (shape <= 0 || scale <= 0) ML_ERR_return_NAN;
+    if (shape <= 0 || scale <= 0) ML_WARN_return_NAN;
 
     if (x < 0) return R_D__0;
     if (!R_FINITE(x)) return R_D__0;

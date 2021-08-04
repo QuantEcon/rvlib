@@ -16,7 +16,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  DESCRIPTION
  *
@@ -32,7 +32,7 @@ double qweibull(double p, double shape, double scale, int lower_tail, int log_p)
     if (ISNAN(p) || ISNAN(shape) || ISNAN(scale))
 	return p + shape + scale;
 #endif
-    if (shape <= 0 || scale <= 0) ML_ERR_return_NAN;
+    if (shape <= 0 || scale <= 0) ML_WARN_return_NAN;
 
     R_Q_P01_boundaries(p, 0, ML_POSINF);
 

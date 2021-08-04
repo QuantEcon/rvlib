@@ -1,8 +1,8 @@
 /*
  *  Mathlib : A C Library of Special Functions
  *  Copyright (C) 1998 Ross Ihaka
- *  Copyright (C) 2000--2011 The R Core Team
- *  Copyright (C) 2004--2009 The R Foundation
+ *  Copyright (C) 2000--2015 The R Core Team
+ *  Copyright (C) 2004--2015 The R Foundation
  *  based on AS 91 (C) 1979 Royal Statistical Society
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  DESCRIPTION
  *
@@ -65,7 +65,7 @@ double qchisq_appr(double p, double nu, double g /* = log Gamma(nu/2) */,
 	return p + nu;
 #endif
     R_Q_P01_check(p);
-    if (nu <= 0) ML_ERR_return_NAN;
+    if (nu <= 0) ML_WARN_return_NAN;
 
     alpha = 0.5 * nu;/* = [pq]gamma() shape */
     c = alpha-1;
@@ -143,14 +143,15 @@ double qgamma(double p, double alpha, double scale, int lower_tail, int log_p)
 #endif
     R_Q_P01_boundaries(p, 0., ML_POSINF);
 
-    if (alpha < 0 || scale <= 0) ML_ERR_return_NAN;
+    if (alpha < 0 || scale <= 0) ML_WARN_return_NAN;
 
     if (alpha == 0) /* all mass at 0 : */ return 0.;
 
     if (alpha < 1e-10) {
     /* Warning seems unnecessary now: */
 #ifdef _DO_WARN_qgamma_
-	MATHLIB_WARNING("value of shape (%g) is extremely small: results may be unreliable", alpha);
+	MATHLIB_WARNING(_("value of shape (%g) is extremely small: results may be unreliable"),
+			alpha);
 #endif
 	max_it_Newton = 7;/* may still be increased below */
     }
@@ -231,7 +232,7 @@ double qgamma(double p, double alpha, double scale, int lower_tail, int log_p)
 		     p, MAXIT, ch/fabs(q - ch));
 #endif
 /* was
- *    ML_ERROR(ME_PRECISION, "qgamma");
+ *    ML_WARNING(ME_PRECISION, "qgamma");
  * does nothing in R !*/
 
 END:
@@ -242,7 +243,7 @@ END:
    *
    * Improved (MM): - only if rel.Err > EPS_N (= 1e-15);
    *		    - also for lower_tail = FALSE	 or log_p = TRUE
-   * 		    - optionally *iterate* Newton
+   *		    - optionally *iterate* Newton
    */
     x = 0.5*scale*ch;
     if(max_it_Newton) {

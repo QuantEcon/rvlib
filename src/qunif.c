@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  DESCRIPTION
  *
@@ -32,8 +32,8 @@ double qunif(double p, double a, double b, int lower_tail, int log_p)
 	return p + a + b;
 #endif
     R_Q_P01_check(p);
-    if (!R_FINITE(a) || !R_FINITE(b)) ML_ERR_return_NAN;
-    if (b < a) ML_ERR_return_NAN;
+    if (!R_FINITE(a) || !R_FINITE(b)) ML_WARN_return_NAN;
+    if (b < a) ML_WARN_return_NAN;
     if (b == a) return a;
 
     return a + R_DT_qIv(p) * (b - a);

@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  */
 
 #include "nmath.h"
@@ -32,9 +32,9 @@ double qnbeta(double p, double a, double b, double ncp,
     if (ISNAN(p) || ISNAN(a) || ISNAN(b) || ISNAN(ncp))
 	return p + a + b + ncp;
 #endif
-    if (!R_FINITE(a)) ML_ERR_return_NAN;
+    if (!R_FINITE(a)) ML_WARN_return_NAN;
 
-    if (ncp < 0. || a <= 0. || b <= 0.) ML_ERR_return_NAN;
+    if (ncp < 0. || a <= 0. || b <= 0.) ML_WARN_return_NAN;
 
     R_Q_P01_boundaries(p, 0, 1);
 

@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -57,18 +57,18 @@ double dnbeta(double x, double a, double b, double ncp, int give_log)
     const static double eps = 1.e-15;
 
     int kMax;
-    double k, ncp2, dx2, d, D, term;
-    LDOUBLE sum, p_k, q;
+    double k, ncp2, dx2, d, D;
+    LDOUBLE sum, term, p_k, q;
 
 #ifdef IEEE_754
     if (ISNAN(x) || ISNAN(a) || ISNAN(b) || ISNAN(ncp))
 	return x + a + b + ncp;
 #endif
     if (ncp < 0 || a <= 0 || b <= 0)
-	ML_ERR_return_NAN;
+	ML_WARN_return_NAN;
 
     if (!R_FINITE(a) || !R_FINITE(b) || !R_FINITE(ncp))
-	ML_ERR_return_NAN;
+	ML_WARN_return_NAN;
 
     if (x < 0 || x > 1) return(R_D__0);
     if(ncp == 0)

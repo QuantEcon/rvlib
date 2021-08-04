@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  */
 
 #include "nmath.h"
@@ -23,7 +23,7 @@
 double rlogis(double location, double scale)
 {
     if (ISNAN(location) || !R_FINITE(scale))
-	ML_ERR_return_NAN;
+	ML_WARN_return_NAN;
 
     if (scale == 0. || !R_FINITE(location))
 	return location;

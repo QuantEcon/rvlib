@@ -1,7 +1,6 @@
 /*
  *  Mathlib : A C Library of Special Functions
- *  Copyright (C) 1998 Ross Ihaka
- *  Copyright (C) 2000 The R Core Team
+ *  Copyright (C) 1998-2014  The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,26 +15,15 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
  *  https://www.R-project.org/Licenses/
- *
- *  SYNOPSIS
- *
- *    #include <Rmath.h>
- *    double rchisq(double df);
- *
- *  DESCRIPTION
- *
- *    Random variates from the chi-squared distribution.
- *
- *  NOTES
- *
- *    Calls rgamma to do the real work.
  */
 
-#include "nmath.h"
+/* Private header file for use during compilation of R */
+#ifndef MATHLIB_PRIVATE2_H
+#define MATHLIB_PRIVATE2_H
 
-double rchisq(double df)
-{
-    if (!R_FINITE(df) || df < 0.0) ML_WARN_return_NAN;
 
-    return rgamma(df / 2.0, 2.0);
-}
+extern N01type N01_kind;
+extern double BM_norm_keep;
+
+
+#endif /* MATHLIB_PRIVATE2_H */

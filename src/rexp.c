@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -35,7 +35,7 @@ double rexp(double scale)
     if (!R_FINITE(scale) || scale <= 0.0) {
 	if(scale == 0.) return 0.;
 	/* else */
-	ML_ERR_return_NAN;
+	ML_WARN_return_NAN;
     }
     return scale * exp_rand(); // --> in ./sexp.c
 }

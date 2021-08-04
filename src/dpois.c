@@ -4,7 +4,7 @@
  *    October 23, 2000.
  *
  *  Merge in to R:
- *	Copyright (C) 2000, The R Core Team
+ *	Copyright (C) 2000-2016 The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *
  * DESCRIPTION
@@ -35,16 +35,22 @@
 #include "nmath.h"
 #include "dpq.h"
 
-double attribute_hidden dpois_raw(double x, double lambda, int give_log)
+// called also from dgamma.c, pgamma.c, dnbeta.c, dnbinom.c, dnchisq.c :
+double dpois_raw(double x, double lambda, int give_log)
 {
     /*       x >= 0 ; integer for dpois(), but not e.g. for pgamma()!
         lambda >= 0
     */
     if (lambda == 0) return( (x == 0) ? R_D__1 : R_D__0 );
-    if (!R_FINITE(lambda)) return R_D__0;
+    if (!R_FINITE(lambda)) return R_D__0; // including for the case where  x = lambda = +Inf
     if (x < 0) return( R_D__0 );
     if (x <= lambda * DBL_MIN) return(R_D_exp(-lambda) );
-    if (lambda < x * DBL_MIN) return(R_D_exp(-lambda + x*log(lambda) -lgammafn(x+1)));
+    if (lambda < x * DBL_MIN) {
+	if (!R_FINITE(x)) // lambda < x = +Inf
+	    return R_D__0;
+	// else
+	return(R_D_exp(-lambda + x*log(lambda) -lgammafn(x+1)));
+    }
     return(R_D_fexp( M_2PI*x, -stirlerr(x)-bd0(x,lambda) ));
 }
 
@@ -55,12 +61,12 @@ double dpois(double x, double lambda, int give_log)
         return x + lambda;
 #endif
 
-    if (lambda < 0) ML_ERR_return_NAN;
+    if (lambda < 0) ML_WARN_return_NAN;
     R_D_nonint_check(x);
     if (x < 0 || !R_FINITE(x))
 	return R_D__0;
 
-    x = R_D_forceint(x);
+    x = R_forceint(x);
 
     return( dpois_raw(x,lambda,give_log) );
 }

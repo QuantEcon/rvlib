@@ -18,7 +18,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *
  *  DESCRIPTION
@@ -45,18 +45,17 @@ double dnf(double x, double df1, double df2, double ncp, int give_log)
      * if (ncp == 0)
      *   return df(x, df1, df2, give_log); */
 
-    if (df1 <= 0. || df2 <= 0. || ncp < 0) ML_ERR_return_NAN;
+    if (df1 <= 0. || df2 <= 0. || ncp < 0) ML_WARN_return_NAN;
     if (x < 0.)	 return(R_D__0);
     if (!R_FINITE(ncp)) /* ncp = +Inf -- FIXME?: in some cases, limit exists */
-	ML_ERR_return_NAN;
+	ML_WARN_return_NAN;
 
     /* This is not correct for  df1 == 2, ncp > 0 - and seems unneeded:
      *  if (x == 0.) return(df1 > 2 ? R_D__0 : (df1 == 2 ? R_D__1 : ML_POSINF));
      */
     if (!R_FINITE(df1) && !R_FINITE(df2)) { /* both +Inf */
 	/* PR: not sure about this (taken from  ncp==0)  -- FIXME ? */
-	if(x == 1.) return ML_POSINF;
-	/* else */  return R_D__0;
+	if(x == 1.) return ML_POSINF; else return R_D__0;
     }
     if (!R_FINITE(df2)) /* i.e.  = +Inf */
 	return df1* dnchisq(x*df1, df1, ncp, give_log);
