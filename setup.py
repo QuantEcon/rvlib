@@ -34,9 +34,9 @@ build_interface.main()
 # Setup
 setup(name="rvlib",
       packages=["rvlib"],
-      setup_requires=["cffi>=1.0.0","pyyaml"],
+      setup_requires=["cffi>=1.0.0","PyYAML"],
       cffi_modules=["build_lib.py:ffi"],
-      install_requires=["cffi>=1.0.0", "numba>=0.49", "numpy", "pyyaml"],
+      install_requires=["cffi>=1.0.0", "numba>=0.49", "numpy", "PyYAML"],
       include_package_data=True,
       version=VERSION,
       description="Probability distributions mimicking Distrbutions.jl",
