@@ -22,8 +22,9 @@ jobs:
       - name: Build wheels
         run: python -m pip install pyyaml --upgrade; python -m cibuildwheel --output-dir wheelhouse
         # to supply options, put them in 'env', like:
-        # env:
-        #   CIBW_SOME_OPTION: value
+        env:
+          CIBW_BEFORE_TEST: CC=gcc CXX=g++ pip install pyyaml
+          CIBW_TEST_EXTRAS: "pyyaml"
 
       - uses: actions/upload-artifact@v2
         with:
