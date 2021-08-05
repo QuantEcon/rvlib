@@ -2,10 +2,11 @@ from setuptools import setup
 import os
 
 rootdir = os.path.abspath(os.path.dirname(__file__))
-long_desc = open(os.path.join(rootdir, 'README.md')).read()
+with open("README.md", "r", encoding="utf8") as file:
+    long_description = file.read()
 
 # Write a versions.py file for class attribute
-VERSION = "0.0.3"
+VERSION = "0.0.4"
 
 
 def write_version_py(filename=None):
@@ -33,7 +34,7 @@ build_interface.main()
 # Setup
 setup(name="rvlib",
       packages=["rvlib"],
-      setup_requires=["cffi>=1.0.0",],
+      setup_requires=["cffi>=1.0.0","pyyaml"],
       cffi_modules=["build_lib.py:ffi"],
       install_requires=["cffi>=1.0.0", "numba>=0.49", "numpy", "pyyaml"],
       include_package_data=True,
@@ -43,4 +44,5 @@ setup(name="rvlib",
       author_email="daniel.csaba@nyu.edu, spencer.lyon@stern.nyu.edu",
       url="https://github.com/QuantEcon/rvlib", # URL to the github repo
       keywords=["statistics", "distributions"],
-      long_description=long_desc)
+      long_description=long_description,
+      long_description_content_type='text/markdown')
