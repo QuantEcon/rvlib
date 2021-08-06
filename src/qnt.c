@@ -1,6 +1,6 @@
 /*
  *  R : A Computer Language for Statistical Data Analysis
- *  Copyright (C) 2006-8 The R Core Team
+ *  Copyright (C) 2006-2015 The R Core Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  */
 
 #include "nmath.h"
@@ -31,8 +31,6 @@ double qnt(double p, double df, double ncp, int lower_tail, int log_p)
     if (ISNAN(p) || ISNAN(df) || ISNAN(ncp))
 	return p + df + ncp;
 #endif
-    if (!R_FINITE(df)) ML_ERR_return_NAN;
-
     /* Was
      * df = floor(df + 0.5);
      * if (df < 1 || ncp < 0) ML_ERR_return_NAN;
@@ -42,6 +40,9 @@ double qnt(double p, double df, double ncp, int lower_tail, int log_p)
     if(ncp == 0.0 && df >= 1.0) return qt(p, df, lower_tail, log_p);
 
     R_Q_P01_boundaries(p, ML_NEGINF, ML_POSINF);
+
+    if (!R_FINITE(df)) // df = Inf ==> limit N(ncp,1)
+	return qnorm(p, ncp, 1., lower_tail, log_p);
 
     p = R_DT_qIv(p);
 
@@ -59,10 +60,10 @@ double qnt(double p, double df, double ncp, int lower_tail, int log_p)
 
     /* 2. interval (lx,ux)  halving : */
     do {
-	nx = 0.5 * (lx + ux);
+	nx = 0.5 * (lx + ux); // could be zero
 	if (pnt(nx, df, ncp, TRUE, FALSE) > p) ux = nx; else lx = nx;
     }
-    while ((ux - lx) / fabs(nx) > accu);
+    while ((ux - lx) > accu * fmax2(fabs(lx), fabs(ux)));
 
     return 0.5 * (lx + ux);
 }

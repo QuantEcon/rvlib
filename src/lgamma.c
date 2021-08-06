@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -59,7 +59,7 @@ double lgammafn_sign(double x, int *sgn)
    dxrel = sqrt(DBL_EPSILON) = 2^-26 = 5^26 * 1e-26 (is *exact* below !)
  */
 #define xmax  2.5327372760800758e+305
-#define dxrel 1.490116119384765696e-8
+#define dxrel 1.490116119384765625e-8
 #endif
 
     if (sgn != NULL) *sgn = 1;
@@ -68,8 +68,8 @@ double lgammafn_sign(double x, int *sgn)
     if(ISNAN(x)) return x;
 #endif
 
-    if (x < 0 && fmod(floor(-x), 2.) == 0)
-	if (sgn != NULL) *sgn = -1;
+    if (sgn != NULL && x < 0 && fmod(floor(-x), 2.) == 0)
+	*sgn = -1;
 
     if (x <= 0 && x == trunc(x)) { /* Negative integer argument */
 	ML_ERROR(ME_RANGE, "lgamma");
@@ -78,7 +78,7 @@ double lgammafn_sign(double x, int *sgn)
 
     y = fabs(x);
 
-    if (y < 1e-306) return -log(x); // denormalized range, R change
+    if (y < 1e-306) return -log(y); // denormalized range, R change
     if (y <= 10) return log(fabs(gammafn(x)));
     /*
       ELSE  y = |x| > 10 ---------------------- */
@@ -99,7 +99,7 @@ double lgammafn_sign(double x, int *sgn)
 	    return M_LN_SQRT_2PI + (x - 0.5) * log(x) - x + lgammacor(x);
     }
     /* else: x < -10; y = -x */
-    sinpiy = fabs(sin(M_PI * y));
+    sinpiy = fabs(sinpi(y));
 
     if (sinpiy == 0) { /* Negative integer argument ===
 			  Now UNNECESSARY: caught above */

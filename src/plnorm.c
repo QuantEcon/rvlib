@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  DESCRIPTION
  *
@@ -31,7 +31,7 @@ double plnorm(double x, double meanlog, double sdlog, int lower_tail, int log_p)
     if (ISNAN(x) || ISNAN(meanlog) || ISNAN(sdlog))
 	return x + meanlog + sdlog;
 #endif
-    if (sdlog <= 0) ML_ERR_return_NAN;
+    if (sdlog < 0) ML_ERR_return_NAN;
 
     if (x > 0)
 	return pnorm(log(x), meanlog, sdlog, lower_tail, log_p);

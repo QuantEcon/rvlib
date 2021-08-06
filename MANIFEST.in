@@ -4,3 +4,4 @@ include build_lib.py
 include LICENSE.txt
 recursive-include src *
 recursive-include include *
+include build_interface.py

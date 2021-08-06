@@ -1,0 +1,21 @@
+name: test
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
+  - numba >=0.49
+  - cffi >=1.0.0
+  - pyyaml
+  - numpy
+  - scipy
+
+  # testing, docs, etc.
+  - codecov
+  - coverage
+  - nbsphinx
+  - numpydoc
+  - pytest
+  - pytest-cov
+  - sphinx>=1.4.3
+  - sphinxcontrib-bibtex==1.0.0
+  - sphinx_bootstrap_theme

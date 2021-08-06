@@ -15,7 +15,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, a copy is available at
- *  http://www.r-project.org/Licenses/
+ *  https://www.R-project.org/Licenses/
  *
  *  SYNOPSIS
  *
@@ -28,7 +28,7 @@
  *
  */
 
-#include <config.h> /* needed for HAVE_*, IEEE_754 */
+#include <config.h> /* needed for HAVE_* */
 #include "nmath.h"
 
 
@@ -39,7 +39,7 @@
 # define R_rint rint
 #else
 # define R_rint private_rint
-extern double private_rint(double x);
+# include "nmath2.h" // for private_rint
 
 /* also used potentially in fprec.c and main/format.c */
 double attribute_hidden private_rint(double x)

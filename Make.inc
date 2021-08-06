@@ -1,10 +1,17 @@
 # -*- mode: makefile-gmake -*-
+ifneq ($(OS),Windows_NT)
+  OS = $(shell uname)
+endif
 
-OS = $(shell uname)
-ARCH = $(shell uname -m)
-
-FC = gfortran
-FFLAGS-add += -O3
+ifneq (,$(findstring MINGW,$(OS)))
+override OS := Windows_NT
+endif
+ifneq (,$(findstring MSYS,$(OS)))
+override OS := Windows_NT
+endif
+ifneq (,$(findstring CYGWIN,$(OS)))
+override OS := Windows_NT
+endif
 
 USEGCC = 1
 USECLANG = 0
@@ -19,7 +26,6 @@ endif
 ifeq ($(USEGCC),1)
 CC = gcc
 endif
-AR = ar
 
 ifeq ($(OS), Linux)
 SHLIB_EXT = so
@@ -45,7 +51,7 @@ CFLAGS-add+=-fPIC
 FFLAGS-add+=-fPIC
 endif
 
-ifeq ($(OS), WINNT)
+ifeq ($(OS), Windows_NT)
 SHLIB_EXT = dll
 endif
 

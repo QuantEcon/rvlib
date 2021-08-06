@@ -2,10 +2,11 @@ from setuptools import setup
 import os
 
 rootdir = os.path.abspath(os.path.dirname(__file__))
-long_desc = open(os.path.join(rootdir, 'README.md')).read()
+with open("README.md", "r", encoding="utf8") as file:
+    long_description = file.read()
 
 # Write a versions.py file for class attribute
-VERSION = "0.0.1"
+VERSION = "0.0.5"
 
 
 def write_version_py(filename=None):
@@ -27,15 +28,13 @@ def write_version_py(filename=None):
 
 write_version_py()
 
-import build_interface
-build_interface.main()
-
 # Setup
 setup(name="rvlib",
       packages=["rvlib"],
-      setup_requires=["cffi>=1.0.0",],
+      setup_requires=["cffi>=1.0.0","PyYAML"],
+      scripts=["./build_interface.py"],
       cffi_modules=["build_lib.py:ffi"],
-      install_requires=["cffi>=1.0.0", "numba>=0.49", "numpy", "pyyaml"],
+      install_requires=["cffi>=1.0.0", "numba>=0.49", "numpy", "PyYAML"],
       include_package_data=True,
       version=VERSION,
       description="Probability distributions mimicking Distrbutions.jl",
@@ -43,4 +42,5 @@ setup(name="rvlib",
       author_email="daniel.csaba@nyu.edu, spencer.lyon@stern.nyu.edu",
       url="https://github.com/QuantEcon/rvlib", # URL to the github repo
       keywords=["statistics", "distributions"],
-      long_description=long_desc)
+      long_description=long_description,
+      long_description_content_type='text/markdown')
