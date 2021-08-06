@@ -28,13 +28,11 @@ def write_version_py(filename=None):
 
 write_version_py()
 
-import build_interface
-build_interface.main()
-
 # Setup
 setup(name="rvlib",
       packages=["rvlib"],
       setup_requires=["cffi>=1.0.0","PyYAML"],
+      scripts=["./build_interface.py"],
       cffi_modules=["build_lib.py:ffi"],
       install_requires=["cffi>=1.0.0", "numba>=0.49", "numpy", "PyYAML"],
       include_package_data=True,
