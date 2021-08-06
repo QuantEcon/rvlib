@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf8") as file:
     long_description = file.read()
 
 # Write a versions.py file for class attribute
-VERSION = "0.0.4"
+VERSION = "0.0.5"
 
 
 def write_version_py(filename=None):
