@@ -26,7 +26,7 @@ warnings.filterwarnings("ignore")
 import yaml
 fn = join(dirname(abspath(__file__)), "metadata.yaml")
 with open(fn, 'r') as ymlfile:
-    mtdt = yaml.load(ymlfile)
+    mtdt = yaml.safe_load(ymlfile)
 
 # --------------------------------------------------
 # docstring following Spencer Lyon's distcan package

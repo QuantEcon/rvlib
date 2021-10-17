@@ -4,7 +4,7 @@ Anyone who has used [`Distributions.jl`](https://github.com/JuliaStats/Distribut
 you how nice the interface is relative to the "exotic" (the most polite word
 we can think of) interface to distributions exposed by
 [scipy.stats](http://docs.scipy.org/doc/scipy-0.17.1/reference/stats.html).
-`Distributions.jl` also brings better performace, particularly when its
+`Distributions.jl` also brings better performance, particularly when its
 methods are used inside loops.
 
 For these reason we've put together `rvlib`, which mimics the
