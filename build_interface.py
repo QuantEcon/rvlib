@@ -136,7 +136,7 @@ def _initiate_univariate():
     import yaml
     fn = join(dirname(abspath(__file__)), "metadata.yaml")
     with open(fn, 'r') as ymlfile:
-        mtdt = yaml.load(ymlfile)
+        mtdt = yaml.safe_load(ymlfile)
 
     # --------------------------------------------------
     # docstring following Spencer Lyon's distcan package
@@ -700,5 +700,5 @@ def main():
     _write_class_rmath("nbinom", "nbinom", "r", "p")
 
 with open(os.path.join("rvlib", "metadata.yaml"), 'r') as ymlfile:
-    mtdt = yaml.load(ymlfile)
+    mtdt = yaml.safe_load(ymlfile)
     main()
