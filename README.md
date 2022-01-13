@@ -158,6 +158,7 @@ Out[6]: 10000 loops, best of 3: 119 µs per loop
 
 * Daniel Csaba (daniel.csaba@nyu.edu)
 * Spencer Lyon (spencer.lyon@stern.nyu.edu)
+* Eli Knaap (ek@knaaptime.com)
 
 ---
 
